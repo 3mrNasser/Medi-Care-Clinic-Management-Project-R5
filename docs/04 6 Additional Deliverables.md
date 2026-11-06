@@ -1,0 +1,52 @@
+# 4.6 Additional Deliverables
+
+**Project Name:** MediCare - Clinic Management & Appointment System  
+**DEPI Track:** Full Stack .NET Web Developer  
+**Submission Deadline:** 6 November 2026  
+
+[$\leftarrow$ Back to Main README](../README.md)
+
+---
+
+## 6.1 API & Internal Service Endpoints Documentation
+
+MediCare exposes internal MVC/JSON endpoints for interactive client components (`FullCalendar.js` and `Chart.js`), a real-time **SignalR** hub, and external notification integrations:
+
+| Endpoint / Method Signature | Layer / Component | Auth Role | Description & Payload Behavior |
+| :--- | :--- | :--- | :--- |
+| `GET /Doctors/Search` (`IDoctorRepository.Search(filter)`) | `MediCare.Web` $\rightarrow$ `MediCare.Data` | Public / Patient | Filters approved doctors (`IsApproved = true`) by `Specialty`, `ClinicAddress`, and open `AvailabilitySlots`. |
+| `POST /Appointments/Book` (`AppointmentService.BookAppointment(request)`) | `AppointmentsController` $\rightarrow$ `AppointmentService` | `Patient` | Validates inputs, begins an atomic `IUnitOfWork` transaction, checks `HasConflict()`, saves appointment as `Pending`, and triggers `AppointmentHub.NotifyDoctor()`. |
+| `POST /Appointments/Confirm` & `POST /Appointments/Reject` | `AppointmentsController` $\rightarrow$ `AppointmentService` | `Doctor` | Updates appointment status (`Confirmed` or `Rejected`), commits via `UnitOfWork`, and pushes real-time status to the patient via `AppointmentHub.NotifyPatient(status)`. |
+| `POST /Appointments/Cancel` & `POST /Appointments/Reschedule` | `AppointmentsController` $\rightarrow$ `AppointmentService` | `Patient`, `Doctor` | Validates cancellation policy window or new slot availability (`UC-15`), updates status to `Cancelled` or `Pending`, frees the original slot, and dispatches alerts (`UC-14`). |
+| `WSS /appointmentHub` (`AppointmentHub`) | `MediCare.Web` (SignalR) | `Patient`, `Doctor` | Pushes instant browser notifications when a new booking is created or when a booking request is confirmed/rejected. |
+| `GET /Admin/Analytics` & `GET /Admin/Export` | `AdminController` $\rightarrow$ `MediCare.Services` | `Admin` | Aggregates monthly appointments, popular specialties, patient demographics, and consultation revenues for **Chart.js** rendering and **PDF/Excel** export. |
+
+---
+
+## 6.2 Testing & Validation Plan
+
+The testing strategy validates functional workflows, concurrency constraints, security boundaries, and UI/UX usability targets:
+
+1. **Unit Testing:**
+   * Targets isolated business rules inside `MediCare.Services` using **Dependency Injection** and mocked repository/notification interfaces (`IUnitOfWork`, `INotificationSender`).
+   * Verifies schedule range validation ($\text{EndTime} > \text{StartTime}$, `DayOfWeek` between $0$ and $6$), prescription constraints ($\text{DurationDays} > 0$), and `NotificationFactory.Create(channel)` instantiation.
+2. **Integration & Concurrency Testing:**
+   * Validates EF Core repositories and `UnitOfWork` transactions against SQL Server to confirm that concurrent booking requests for the same `(DoctorId, AppointmentDate, StartTime)` result in $0$ **double bookings** (`NFR-03`).
+   * Verifies Role-Based Access Control (`FR-02`) and strict record ownership checks (`FR-11`, `FR-12`, `UC-06`, `UC-11`) so patients and doctors can only access authorized records, achieving a $\ge 95\%$ **test suite pass rate** with zero critical open bugs (`NFR-08`).
+3. **User Acceptance Testing (UAT) & Prototype Validation:**
+   * Executed using **100% synthetic mock data** (`NFR-03`, `NFR-06`) across desktop and mobile browsers (`NFR-07`).
+   * Evaluates the 5 core tasks defined in the **UI/UX Prototype Validation Checklist** (Find a doctor, Book an appointment, Manage schedule, Review activity, and Keyboard/WCAG 2.2 AA Accessibility) to ensure $\ge 80\%$ **of test users** complete core workflows without guidance (`NFR-05`).
+
+---
+
+## 6.3 Deployment Strategy
+
+* **Hosting Environment:**
+  * The application is hosted on **Microsoft Azure App Service** backed by **Azure SQL Database** and **Azure SignalR Service**, targeting $\ge 99.0\%$ **availability** during project evaluation and demonstration windows (`NFR-04`, `NFR-09`).
+  * All sensitive credentials (database connection strings, `Twilio` tokens, `SendGrid` API keys) are stored in protected environment secrets rather than source code (`NFR-02`).
+* **Continuous Integration & Deployment (CI/CD) Pipelines:**
+  * All code changes are merged via reviewed **GitHub Pull Requests** (`NFR-07`) following a feature-branch workflow.
+  * Automated **GitHub Actions / Azure DevOps** pipelines trigger on merges to `main`, executing `dotnet build`, running automated unit/integration tests, applying EF Core Code-First migrations, and deploying artifacts to Azure App Service.
+* **Scaling & Extensibility Considerations:**
+  * **Application & Notification Scaling (`NFR-10`):** The **Layered MVC Monolith** structure keeps deployment simple while interface-based services (`INotificationSender`, `IGenericRepository<T>`) allow seamless switching between local mock providers during development/testing and cloud `Twilio`/`SendGrid` services in production.
+  * **Database & Real-Time Scaling:** Offloading WebSocket connections to **Azure SignalR Service** prevents web server thread exhaustion, while the normalized `3NF` SQL schema supports vertical scaling and modular table additions (such as `MedicalRecords`, `MedicalDocuments`, and `VacationDays`) without breaking existing relationships.

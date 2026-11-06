@@ -1,0 +1,34 @@
+# 2. Literature Review
+
+**Project Name:** MediCare - Clinic Management & Appointment System  
+**DEPI Track:** Full Stack .NET Web Developer  
+**Submission Deadline:** 16 October 2026  
+
+[$\leftarrow$ Back to Main README](../README.md)
+
+---
+
+## 2.1 Feedback & Evaluation (Lecturer’s Assessment)
+* **Problem Relevance & System Value:** Traditional outpatient clinics rely on phone calls or fragmented paper ledgers for scheduling, resulting in double bookings, long waiting times, disorganized medical records, and high patient no-show rates. MediCare resolves these operational bottlenecks through an integrated digital platform uniting doctor discovery, conflict-free booking, electronic medical records, and automated reminders.
+* **Architectural Soundness:** Adopting an **N-Tier / Layered MVC Architecture** (`MediCare.Web`, `MediCare.Services`, `MediCare.Data`) with **Repository**, **Unit of Work**, **Factory**, and **Dependency Injection** patterns ensures clean separation of concerns, high testability, and adherence to enterprise .NET engineering standards.
+* **Instructor / Supervisor Evaluation Notes:** *[Reserved for official DEPI Supervisor feedback and milestone sign-off]*.
+
+---
+
+## 2.2 Suggested Improvements (Future Enhancements)
+1. **Online Payment & Insurance Processing:** Integrate digital payment gateways (such as Stripe or Paymob) to process doctor consultation fees (`ConsultationFee`) and verify health insurance claims online during booking.
+2. **Telemedicine Video Consultations:** Add live video consultation rooms (via WebRTC or Azure Communication Services) for remote follow-ups alongside in-clinic appointments.
+3. **Automated Drug-Allergy Interaction Warnings:** Cross-check prescribed medications (`PrescriptionItem`) against recorded patient `Allergies` automatically before saving a digital prescription.
+4. **External HIS Interoperability & Mobile API:** Build HL7/FHIR-compatible RESTful APIs on top of `MediCare.Services` to integrate with external Hospital Information Systems (HIS) and power dedicated iOS/Android mobile applications.
+
+---
+
+## 2.3 Final Grading Criteria
+Project evaluation is conducted based on four primary assessment pillars defined by the DEPI guidelines:
+
+| Evaluation Pillar | Suggested Weight | Key Assessment Criteria |
+| :--- | :--- | :--- |
+| **1. Documentation** | **20%** | Completeness, accuracy, and consistency of Project Planning, Literature Review, Requirements Gathering, System Analysis & Design diagrams, User Manual, and Technical Documentation on GitHub. |
+| **2. Implementation** | **40%** | Code quality, adherence to naming/coding standards, full implementation of the **N-Tier Architecture** and design patterns across the 4 development weeks, Git collaboration via reviewed Pull Requests, and live **Microsoft Azure** deployment. |
+| **3. Testing & Quality Assurance** | **20%** | Coverage of Unit, Integration, Concurrency, and User Acceptance Tests (UAT), verification of double-booking prevention, and documented bug reports with resolutions. |
+| **4. Final Presentation** | **20%** | Quality of the presentation deck (PPT/PDF), compliance with the **DEPI Single-Slide Infographic Template**, live demo execution using synthetic data, and team Q&A defense. |

@@ -1,0 +1,75 @@
+# 3. Requirements Gathering
+
+**Project Name:** MediCare - Clinic Management & Appointment System  
+**DEPI Track:** Full Stack .NET Web Developer  
+**Submission Deadline:** 16 October 2026  
+
+[$\leftarrow$ Back to Main README](../README.md)
+
+---
+
+## 3.1 Stakeholder Analysis
+
+| Stakeholder | Role Category | Primary Needs & Responsibilities |
+| :--- | :--- | :--- |
+| **Patient** | Primary End-User | Searches for doctors by specialty, location, and availability; books, cancels, or reschedules appointments; receives confirmations and reminders; and accesses medical history, documents, and prescriptions. |
+| **Doctor** | Primary Clinical User | Manages recurring weekly schedule availability and vacation days; reviews daily/weekly appointments; confirms or rejects requests; inspects relevant patient info; records visit diagnoses; and issues digital prescriptions. |
+| **Admin** | Primary Administrator | Approves and maintains doctor profiles and medical specializations; manages user accounts and permissions; monitors system-wide appointments and activity logs; and views/exports analytical reports. |
+| **Supervisor / Evaluator** | Academic / Industry Reviewer | Reviews system compliance against functional, non-functional, and architectural requirements and evaluates project deliverables across milestones. |
+
+---
+
+## 3.2 User Stories & Use Cases
+
+### Patient User Stories
+* **US-P01:** As a **Patient**, I want to search and filter doctors by specialization, location, and availability and view their profile and available time slots on an interactive calendar so that I can book a suitable appointment (`UC-02`, `UC-03`).
+* **US-P02:** As a **Patient**, I want to view my appointment history and status, and cancel or reschedule my appointment under confirmed clinic rules (`UC-04`, `UC-05`).
+* **US-P03:** As a **Patient**, I want to receive real-time confirmation/rejection alerts and 24-hour SMS/Email reminders, and securely view/download my medical records, uploaded documents, and printable prescriptions (`UC-06`, `UC-07`, `UC-14`).
+
+### Doctor User Stories
+* **US-D01:** As a **Doctor**, I want to configure my weekly working hours and vacation days with conflict checks, view upcoming and previous appointments in calendar/list views, and confirm or reject booking requests (`UC-08`, `UC-09`).
+* **US-D02:** As a **Doctor**, I want quick access to my patients' medical history and allergies, and the ability to record visit diagnoses, upload lab/X-ray documents, and write digital prescriptions (`UC-07`, `UC-10`, `UC-11`).
+
+### Admin User Stories
+* **US-A01:** As an **Admin**, I want to manage user accounts and permissions, approve doctor registrations, maintain specializations, monitor all appointments, and view/export **Chart.js** clinic analytics to PDF/Excel (`UC-12`, `UC-13`).
+
+---
+
+## 3.3 Functional Requirements
+
+| ID | Requirement |
+| :--- | :--- |
+| **FR-01** | Authenticate patients, doctors, and administrators using **ASP.NET Identity** with role-specific configuration. |
+| **FR-02** | Authorize pages and actions according to assigned user roles using ASP.NET Core Role-based Authorization. |
+| **FR-03** | Search doctors by specialization, location, and availability querying the Doctor and WorkingHours repositories. |
+| **FR-04** | Display doctor profiles and available appointment times integrated with **FullCalendar.js**. |
+| **FR-05** | Allow authenticated patients to book available appointments through the `IAppointmentRepository` service. |
+| **FR-06** | Prevent overlapping bookings for the same doctor and time slot using server-side conflict detection and the **Unit of Work** pattern. |
+| **FR-07** | Let patients view appointment history and status in their dedicated Patient Profile dashboard. |
+| **FR-08** | Allow cancellation/rescheduling under confirmed clinic rules enforcing strict validation checks. |
+| **FR-09** | Let doctors view upcoming and previous appointments in both list and calendar views on the Doctor Dashboard. |
+| **FR-10** | Let authorized doctors manage availability with conflict checks against already booked slots. |
+| **FR-11** | Allow authorized users to access relevant patient information, strictly matching the authorized patient-doctor relationship. |
+| **FR-12** | Support medical records and prescriptions with role/ownership checks ensuring only treating doctors can edit them. |
+| **FR-13** | Support medical document upload (e.g., X-rays, lab results) with secure file storage and extension validation. |
+| **FR-14** | Generate confirmations and reminders through configured channels via **SignalR**, **SendGrid**, and **Twilio**. |
+| **FR-15** | Allow administrators to manage patient/doctor accounts and permissions via the Admin Dashboard. |
+| **FR-16** | Allow administrators to maintain doctor profiles and specializations in the central database. |
+| **FR-17** | Allow administrators to monitor appointments and view agreed statistics visually using **Chart.js** with PDF/Excel export. |
+
+---
+
+## 3.4 Non-functional Requirements
+
+| ID / attribute | Requirement |
+| :--- | :--- |
+| **NFR-01 Performance** | Meet agreed search and booking response targets under a documented test load using EF Core async queries. |
+| **NFR-02 Security** | Use secure authentication, role-based authorization, server-side validation, protected secrets, and least privilege via **ASP.NET Identity**. |
+| **NFR-03 Privacy** | Restrict medical information to authorized users; use synthetic data in demos; define retention/access rules enforced at the controller level. |
+| **NFR-04 Reliability** | Preserve data consistency and return a clear result when an appointment slot becomes unavailable using atomic database transactions. |
+| **NFR-05 Usability** | Support core tasks on desktop/mobile with clear validation and status feedback using a responsive **Bootstrap 5** UI with Dark/Light mode. |
+| **NFR-06 Accessibility** | Use labels, keyboard-operable controls, readable contrast, and clear error messages compliant with web standards. |
+| **NFR-07 Compatibility** | Support agreed current desktop and mobile browsers used for project testing. |
+| **NFR-08 Maintainability** | Separate presentation, application logic, and data access in the MVC structure following **NTier Architecture**; document conventions. |
+| **NFR-09 Availability** | Meet an agreed demo/pilot availability target deployed on **Microsoft Azure App Service** and Azure SQL Database. |
+| **NFR-10 Scalability** | Keep scheduling/data access extensible utilizing the Repository and Factory design patterns. |
