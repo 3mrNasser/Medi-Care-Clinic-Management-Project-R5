@@ -23,56 +23,60 @@
 
 ---
 
+## Repository Folder Structure
+
+```text
+├── docs/                                                   # Official PDF Deliverables
+│   ├── 01_Project Planning & Management.pdf
+│   ├── 02_ Literature Review.pdf
+│   ├── 03_Requirements Gathering.pdf
+│   ├── 04_1_Problem Statement & Software Architecture.pdf
+│   ├── 04_2_Database Design & Data Modeling.pdf
+│   ├── 04_3_Data Flow & System Behavior.pdf
+│   ├── 04_4_UI UX Design & Prototyping.pdf
+│   ├── 04_5_System Deployment & Integration.pdf
+│   └── 04_6_Additional Deliverables.pdf
+│
+├── mdFiles/                                                # Markdown Documentation & Mermaid Diagrams
+│   ├── 1. Project Planning and Management.md
+│   ├── 2. Literature Review.md
+│   ├── 3. Requirements Gathering.md
+│   ├── 4.1 Problem Statement and Software Architecture.md
+│   ├── 4.2 Database Design and Data Modeling.md
+│   ├── 4.3 Data Flow and System Behavior.md
+│   ├── 4.4 UI UX Design and Prototyping.md
+│   ├── 4.5 System Deployment and Integration.md
+│   └── 4.6 Additional Deliverables.md
+│
+└── README.md                                               # Main Project Documentation Index
+```
+
+---
+
 ## Project Documentation Index (DEPI Deliverables)
 
-Every section of the DEPI Project Documentation Guidelines is organized into its own dedicated file inside the `mdFiles/` folder:
+All project deliverables are available in both **interactive Markdown format (`mdFiles/`)** and **printable PDF format (`docs/`)**:
 
 ### Phase 1: Planning, Literature Review & Requirements (Deadline: 16 Oct 2026)
-1. **[1. Project Planning & Management](mdFiles/1. Project Planning and Management.md)**
-   * Project Proposal (Overview, Objectives, Scope)
-   * Project Plan (Master Timeline, Mermaid Gantt Chart, Milestones & Resource Allocation)
-   * Task Assignment & Roles
-   * Risk Assessment & Mitigation Plan
-   * Key Performance Indicators (KPIs)
-2. **[2. Literature Review](mdFiles/2. Literature Review.md)**
-   * Feedback & Evaluation (Lecturer’s Assessment)
-   * Suggested Improvements (Future Enhancements)
-   * Final Grading Criteria
-3. **[3. Requirements Gathering](mdFiles/3. Requirements Gathering.md)**
-   * Stakeholder Analysis
-   * User Stories & Use Cases
-   * Functional Requirements (`FR-01` to `FR-17`)
-   * Non-Functional Requirements (`NFR-01` to `NFR-10`)
+
+| Section | Deliverable Details | Markdown File (`mdFiles/`) | PDF Document (`docs/`) |
+| :--- | :--- | :--- | :--- |
+| **1. Project Planning & Management** | Proposal, Timeline, Gantt Chart, Roles, Risk Plan & KPIs | [1. Project Planning and Management.md](mdFiles/1.%20Project%20Planning%20and%20Management.md) | [01_Project Planning & Management.pdf](docs/01_Project%20Planning%20%26%20Management.pdf) |
+| **2. Literature Review** | Lecturer Evaluation, Suggested Improvements & Grading Criteria | [2. Literature Review.md](mdFiles/2.%20Literature%20Review.md) | [02_ Literature Review.pdf](docs/02_%20Literature%20Review.pdf) |
+| **3. Requirements Gathering** | Stakeholders, User Stories, Use Cases, FRs (`FR-01`–`FR-17`) & NFRs (`NFR-01`–`NFR-10`) | [3. Requirements Gathering.md](mdFiles/3.%20Requirements%20Gathering.md) | [03_Requirements Gathering.pdf](docs/03_Requirements%20Gathering.pdf) |
+
+---
 
 ### Phase 2: System Analysis & Design (Deadline: 6 Nov 2026)
-4. **[4.1 Problem Statement, Use Cases & Software Architecture](mdFiles/4.1 Problem Statement and Architecture.md)**
-   * Problem Statement, Stakeholders, Objectives (`O1`–`O7`) & Scope Boundary
-   * Visual Use Case Diagram & Detailed Use Case Specifications (`UC-01` to `UC-15`)
-   * Functional & Non-Functional Requirements Mapping
-   * Software Architecture (`Layered MVC Monolith / N-Tier`) & Architectural Decisions (ADR)
-5. **[4.2 Database Design & Data Modeling](mdFiles/4.2 Database Design and Data Modeling.md)**
-   * Entity-Relationship Diagram (ERD) & Relationship Matrix
-   * Normalization Rules (`1NF`, `2NF`, `3NF`) & Double-Booking Prevention Index
-   * Physical Database Schema (`AspNetUsers`, `DoctorProfiles`, `AvailabilitySlots`, `Appointments`, `Prescriptions`)
-6. **[4.3 Data Flow & System Behavior](mdFiles/4.3 Data Flow and System Behavior.md)**
-   * Data Flow Diagrams (DFD Level 0 Context & Level 1 Processes `1.0` to `7.0`)
-   * Sequence Diagrams (Booking, Confirm/Reject, Automated 24h Reminder)
-   * Activity Diagram (End-to-End Patient Visit Workflow)
-   * State Diagrams (Appointment States & Doctor Account States)
-   * Class Diagrams (Domain Model & N-Tier Services/Repositories)
-7. **[4.4 UI/UX Design & Prototyping](mdFiles/4.4 UI UX Design and Prototyping.md)**
-   * Design Objective & Experience Principles
-   * Brand Color Palette (`#56060D` Burgundy & `#D9AA45` Warm Gold) & Typography
-   * Primary Screen Wireframes Overview
-   * UI/UX Guidelines, Accessibility (`WCAG 2.2 AA`) & Prototype Validation Checklist
-8. **[4.5 System Deployment & Integration](mdFiles/4.5 System Deployment and Integration.md)**
-   * Technology Stack (Frontend, Backend, Database, Cloud & External Services)
-   * Deployment Diagram
-   * Component Diagram
-9. **[4.6 Additional Deliverables](mdFiles/4.6 Additional Deliverables.md)**
-   * API & Internal Service Endpoints Documentation
-   * Testing & Validation Plan (Unit, Integration/Concurrency & UAT)
-   * Deployment Strategy (Azure Hosting, CI/CD Pipelines & Scaling Considerations)
+
+| Section | Deliverable Details | Markdown File (`mdFiles/`) | PDF Document (`docs/`) |
+| :--- | :--- | :--- | :--- |
+| **4.1 Problem Statement & Architecture** | Objectives (`O1`–`O7`), Scope, Use Case Diagram (`UC-01`–`UC-15`) & N-Tier Architecture | [4.1 Problem Statement and Software Architecture.md](mdFiles/4.1%20Problem%20Statement%20and%20Software%20Architecture.md) | [04_1_Problem Statement & Software Architecture.pdf](docs/04_1_Problem%20Statement%20%26%20Software%20Architecture.pdf) |
+| **4.2 Database Design & Data Modeling** | Corrected ERD, Relationship Matrix, `3NF` Rules & Physical SQL Schema | [4.2 Database Design and Data Modeling.md](mdFiles/4.2%20Database%20Design%20and%20Data%20Modeling.md) | [04_2_Database Design & Data Modeling.pdf](docs/04_2_Database%20Design%20%26%20Data%20Modeling.pdf) |
+| **4.3 Data Flow & System Behavior** | Level 0/1 DFD, Sequence, Activity, State & Class Diagrams | [4.3 Data Flow and System Behavior.md](mdFiles/4.3%20Data%20Flow%20and%20System%20Behavior.md) | [04_3_Data Flow & System Behavior.pdf](docs/04_3_Data%20Flow%20%26%20System%20Behavior.pdf) |
+| **4.4 UI/UX Design & Prototyping** | Wireframes, Color Palette (`#56060D`), Typography & `WCAG 2.2 AA` Guidelines | [4.4 UI UX Design and Prototyping.md](mdFiles/4.4%20UI%20UX%20Design%20and%20Prototyping.md) | [04_4_UI UX Design & Prototyping.pdf](docs/04_4_UI%20UX%20Design%20%26%20Prototyping.pdf) |
+| **4.5 System Deployment & Integration** | Technology Stack, Cloud Deployment Diagram & N-Tier Component Diagram | [4.5 System Deployment and Integration.md](mdFiles/4.5%20System%20Deployment%20and%20Integration.md) | [04_5_System Deployment & Integration.pdf](docs/04_5_System%20Deployment%20%26%20Integration.pdf) |
+| **4.6 Additional Deliverables** | Internal Endpoints/API Docs, Testing & Validation Plan & Azure CI/CD Strategy | [4.6 Additional Deliverables.md](mdFiles/4.6%20Additional%20Deliverables.md) | [04_6_Additional Deliverables.pdf](docs/04_6_Additional%20Deliverables.pdf) |
 
 ---
 
