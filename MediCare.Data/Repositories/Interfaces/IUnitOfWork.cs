@@ -1,0 +1,13 @@
+﻿using MediCare.Data.Entities;
+
+namespace MediCare.Data.Repositories.Interfaces;
+
+public interface IUnitOfWork
+{
+    IGenericRepository<DoctorProfile> Doctors { get; }
+    IGenericRepository<AvailabilitySlot> Slots { get; }
+    IGenericRepository<Appointment> Appointments { get; }
+    IGenericRepository<Prescription> Prescriptions { get; }
+
+    Task<int> SaveChangesAsync();
+}
