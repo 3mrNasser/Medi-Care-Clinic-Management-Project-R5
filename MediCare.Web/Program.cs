@@ -1,6 +1,9 @@
 using MediCare.Data.Context;
 using MediCare.Data.Repositories.Implementations;
 using MediCare.Data.Repositories.Interfaces;
+using MediCare.Data.Seed;
+using MediCare.Services.Implementations;
+using MediCare.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +16,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+builder.Services.AddScoped<IDoctorService, DoctorService>();
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await DbSeeder.SeedAsync(context);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
