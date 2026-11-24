@@ -1,4 +1,5 @@
-﻿using MediCare.Data.Enums;
+﻿using MediCare.Data.Entities;
+using MediCare.Data.Enums;
 using MediCare.Data.Repositories.Interfaces;
 using MediCare.Services.Common;
 using MediCare.Services.Interfaces;
@@ -45,7 +46,8 @@ public class AppointmentService : IAppointmentService
             while (current + step <= end)
             {
                 var time = TimeOnly.FromTimeSpan(current);
-                if (!bookedTimes.Contains(time))
+                var isPast = date == today && time <= TimeOnly.FromDateTime(DateTime.Now);
+                if (!bookedTimes.Contains(time) && !isPast)
                     result.Add(time);
 
                 current += step;
@@ -53,5 +55,40 @@ public class AppointmentService : IAppointmentService
         }
 
         return result.OrderBy(t => t);
+    }
+
+    public async Task<ServiceResult> BookAsync(
+    string patientId, int doctorId, DateOnly date, TimeOnly time, string? reason)
+    {
+        if (reason is { Length: > 500 })
+            return ServiceResult.Fail("Reason is too long (maximum 500 characters).");
+
+        var available = await GetAvailableTimesAsync(doctorId, date);
+        if (!available.Contains(time))
+            return ServiceResult.Fail("This time is not available.");
+
+        var step = TimeSpan.FromMinutes(BookingRules.AppointmentMinutes);
+        var slots = await _unitOfWork.Slots.FindAsync(s =>
+            s.DoctorProfileId == doctorId && s.DayOfWeek == date.DayOfWeek);
+
+        var slot = slots.FirstOrDefault(s =>
+            time >= s.StartTime && time.ToTimeSpan() + step <= s.EndTime.ToTimeSpan());
+
+        if (slot is null)
+            return ServiceResult.Fail("This time is not available.");
+
+        await _unitOfWork.Appointments.AddAsync(new Appointment
+        {
+            PatientId = patientId,
+            DoctorProfileId = doctorId,
+            AvailabilitySlotId = slot.Id,
+            AppointmentDate = date,
+            StartTime = time,
+            Status = AppointmentStatus.Pending,
+            ReasonForVisit = reason
+        });
+        await _unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Ok();
     }
 }

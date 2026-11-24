@@ -6,8 +6,26 @@ namespace MediCare.Data.Seed;
 
 public static class DbSeeder
 {
+    public const string TestPatientId = "test-patient-1";
+
     public static async Task SeedAsync(ApplicationDbContext context)
     {
+        if (!await context.Users.AnyAsync(u => u.Id == TestPatientId))
+        {
+            context.Users.Add(new ApplicationUser
+            {
+                Id = TestPatientId,
+                UserName = "patient.test@medicare.test",
+                NormalizedUserName = "PATIENT.TEST@MEDICARE.TEST",
+                Email = "patient.test@medicare.test",
+                NormalizedEmail = "PATIENT.TEST@MEDICARE.TEST",
+                EmailConfirmed = true,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                FullName = "Test Patient"
+            });
+            await context.SaveChangesAsync();
+        }
+
         if (await context.DoctorProfiles.AnyAsync())
             return;
 
