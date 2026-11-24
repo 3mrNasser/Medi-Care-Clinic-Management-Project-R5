@@ -131,6 +131,48 @@ public class AppointmentService : IAppointmentService
             });
     }
 
+    public async Task<ServiceResult> CancelAsync(string patientId, int appointmentId)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
+        if (appointment is null || appointment.PatientId != patientId)
+            return ServiceResult.Fail("Appointment not found.");
+
+        if (appointment.Status != AppointmentStatus.Pending
+            && appointment.Status != AppointmentStatus.Confirmed)
+            return ServiceResult.Fail("This appointment cannot be cancelled.");
+
+        if (HasPassed(appointment))
+            return ServiceResult.Fail("This appointment time has already passed.");
+
+        appointment.Status = AppointmentStatus.Cancelled;
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
+    public async Task<IEnumerable<AppointmentDto>> GetPatientAppointmentsAsync(string patientId)
+    {
+        var appointments = await _unitOfWork.Appointments.FindAsync(a => a.PatientId == patientId);
+
+        var doctorIds = appointments.Select(a => a.DoctorProfileId).Distinct().ToList();
+        var doctors = await _unitOfWork.Doctors.FindAsync(d => doctorIds.Contains(d.Id), d => d.User);
+        var doctorNames = doctors.ToDictionary(d => d.Id, d => d.User.FullName);
+
+        return appointments
+            .OrderBy(a => a.AppointmentDate)
+            .ThenBy(a => a.StartTime)
+            .Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                DoctorName = doctorNames.GetValueOrDefault(a.DoctorProfileId) ?? string.Empty,
+                Date = a.AppointmentDate,
+                StartTime = a.StartTime,
+                Status = a.Status,
+                Reason = a.ReasonForVisit
+            });
+    }
+
     private async Task<ServiceResult> RespondAsync(
         int doctorId, int appointmentId, AppointmentStatus newStatus)
     {

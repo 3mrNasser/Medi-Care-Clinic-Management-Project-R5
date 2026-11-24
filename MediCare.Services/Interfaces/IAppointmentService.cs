@@ -10,4 +10,6 @@ public interface IAppointmentService
     Task<ServiceResult> ConfirmAsync(int doctorId, int appointmentId);
     Task<ServiceResult> RejectAsync(int doctorId, int appointmentId);
     Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId);
+    Task<ServiceResult> CancelAsync(string patientId, int appointmentId);
+    Task<IEnumerable<AppointmentDto>> GetPatientAppointmentsAsync(string patientId);
 }
