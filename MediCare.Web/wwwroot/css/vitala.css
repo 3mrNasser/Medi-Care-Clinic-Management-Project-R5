@@ -213,6 +213,10 @@
 .vt-role-card:has(input:focus-visible) { outline: 3px solid var(--vt-sky); outline-offset: 3px; }
 .vt-role-grid { border: 0; margin: 0; padding: 0; min-width: 0; }
 .vt-role-submit { min-width: 279px; height: 56px; font-size: 15px; border-radius: 13px; }
+.vt-role-grid--3 { grid-template-columns: repeat(3, 191px); }
+.vt-role-page__login { margin-top: 28px; font-size: 15px; color: var(--vt-text-muted); }
+.vt-role-page__login a { font-weight: 700; color: var(--vt-primary); }
+.vt-role-page__login a:hover { text-decoration: underline; }
 
 /* =========================================================================
    03–06 — Auth (split screen)
@@ -274,6 +278,7 @@
   transition: border-color .15s, background-color .15s;
 }
 .vt-otp__input:focus { outline: none; background: #fff; border-color: var(--vt-primary-alt); }
+.vt-otp__input.is-invalid { border-color: #DC2626; }
 .vt-otp-timer { margin: 22px 0 22px; font-size: 13px; color: var(--vt-primary); }
 .vt-otp-timer button {
   margin-left: 6px; padding: 0; background: none; border: 0;
@@ -302,6 +307,9 @@
 }
 .vt-sidebar__link:hover { background: rgba(255, 255, 255, .1); color: #fff; }
 .vt-sidebar__link.is-active { background: #fff; color: var(--vt-primary); font-weight: 700; }
+.vt-sidebar__logout { margin: auto 0 0; }
+.vt-sidebar__logout .vt-sidebar__link { width: 100%; background: none; border: 0; font: inherit; font-size: 14px; cursor: pointer; text-align: left; }
+.vt-sidebar__logout .vt-sidebar__link:hover { background: rgba(255, 255, 255, .1); }
 .vt-sidebar__link svg { flex: 0 0 auto; }
 .vt-sidebar__close, .vt-menu-btn { display: none; }
 
@@ -457,6 +465,7 @@
   .vt-hero { grid-template-columns: 1fr; padding-bottom: 56px; }
   .vt-features { grid-template-columns: 1fr; gap: 56px; padding-top: 24px; }
   .vt-role-grid { grid-template-columns: repeat(2, 191px); }
+  .vt-role-grid--3 { grid-template-columns: repeat(3, 191px); }
   .vt-main--flush { grid-template-columns: 1fr; height: auto; overflow: visible; }
   .vt-chat { height: 100vh; border-right: 0; }
 }
@@ -510,6 +519,8 @@
   .vt-stat-grid { grid-template-columns: 1fr; }
   .vt-hero__cta .vt-btn { width: 100%; }
   .vt-role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; max-width: 400px; }
+  .vt-role-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .vt-role-grid--3 .vt-role-card { height: 130px; padding: 14px 8px; }
   .vt-role-card { width: 100%; height: 150px; }
   .vt-role-submit { min-width: 0; width: 100%; max-width: 400px; }
   .vt-specialties { grid-template-columns: repeat(2, 1fr); gap: 12px; }

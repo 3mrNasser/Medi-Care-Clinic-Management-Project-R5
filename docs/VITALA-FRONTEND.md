@@ -25,35 +25,45 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 ### Controllers
 `Controllers/AccountController.cs` and `Controllers/PatientController.cs` contain **GET actions only** (`return View();`)
 so the screens can be opened. The backend work goes into the same files:
-- `AccountController`: POST actions for `SelectRole`, `Login`, `Signup`, `ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword` (Identity task).
+- `AccountController`: POST actions for `Login`, `Signup`, `ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword`, `Logout` (Identity task).
 - `PatientController`: pass real data (patient name, upcoming appointment) to `Home`.
 
-Recovery flow: Login → "Forget Password?" → `ForgotPassword` (email) → `VerifyOtp` → `ResetPassword`.
-`ForgotPassword` isn't in the Figma file. It's built from the same components so the flow has no dead end.
+### Flows
+- **Sign up:** Landing "Get Started" / Login "sign up" → `SelectRole` → `GET Account/Signup?role=Patient|Doctor|Admin`.
+  The role is shown on the Sign up page and posted as a hidden `Role` field (unknown values fall back to `Patient`).
+- **Password recovery:** Login → "Forget Password?" → `ForgotPassword` (email) → `VerifyOtp` → `ResetPassword`.
+  `ForgotPassword` isn't in the Figma file. It's built from the same components so the flow has no dead end.
+- **Log out:** button at the bottom of the sidebar, `POST Account/Logout` with the anti-forgery token.
 
-Links that don't have a page yet (no design was provided): Labs, Pharmacy, Rewards, e-Consultation, Medical History,
-Cart, Notifications, Profile, Search, "See all". They point to `Patient/<Action>` and return 404 until those pages are built.
+> **Security:** `Role` comes from the browser, so it can be edited. The `Signup` POST must **not** create an `Admin`
+> from this value. Reject it, or require an existing admin to create/approve admin accounts.
 
-Links that already point to the team's existing pages:
-- "Find Specialist", the Doctor tile and the "Book ..." buttons go to `Doctors/Index` (with `?specialty=`).
-- Appointments in the sidebar and "View Details" go to `MyAppointments/Index`.
-
-Note: the Figma role screen has 4 roles (Patient, Doctor, Pharmacist, Admin), while the README lists 3. Remove the Pharmacist card from `SelectRole.cshtml` if it's not in scope.
+### Links
+Every link points to a page that exists. Links to pages that weren't built (Pharmacy, Labs, Cart, Rewards,
+e-Consultation, Medical History, Profile, Notifications) were removed.
+- "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the specialty tiles (`?specialty=`) go to `Doctors/Index`.
+  Specialty values must match `Doctor.Specialty` exactly (`Cardiology`, `Dermatology` and `Pediatrics` are seeded).
+- "My Appointments", sidebar "Appointments" and "View Details" go to `MyAppointments/Index`.
+- "AI Assistant" and "Get Connected" go to `Patient/AiAssistant`.
 
 ## Form field names (for the backend team's ViewModels)
 
-| Page | POST action | Fields |
+| Page | Request | Fields |
 |---|---|---|
-| SelectRole | `Account/SelectRole` | `Role` (Patient / Doctor / Pharmacist / Admin) |
-| Login | `Account/Login` | `Email`, `Password` |
-| ForgotPassword | `Account/ForgotPassword` | `Email` |
-| Signup | `Account/Signup` | `Email`, `Password`, `ConfirmPassword` |
-| VerifyOtp | `Account/VerifyOtp` (resend: `Account/ResendOtp`) | `Code` (4 digits) |
-| ResetPassword | `Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
+| SelectRole | `GET Account/Signup` | `role` (Patient / Doctor / Admin), query string |
+| Signup | `POST Account/Signup` | `Role` (hidden), `FullName`, `Email`, `Password`, `ConfirmPassword` |
+| Login | `POST Account/Login` | `Email`, `Password` |
+| ForgotPassword | `POST Account/ForgotPassword` | `Email` |
+| VerifyOtp | `POST Account/VerifyOtp` (resend: `POST Account/ResendOtp`) | `Code` (4 digits) |
+| ResetPassword | `POST Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
+| Sidebar | `POST Account/Logout` | anti-forgery token only |
 
-- Forms use `asp-controller` / `asp-action`, so the anti-forgery token is added automatically.
-- Every field has `<span data-valmsg-for="...">`, so jQuery unobtrusive validation and ModelState errors show up as-is.
-  You can also switch `name="Email"` to `asp-for="Email"` once a `@model` exists.
+- POST forms use `asp-controller` / `asp-action`, so the anti-forgery token is added automatically.
+- **Client-side validation:** `_AuthLayout` loads jQuery + `_ValidationScriptsPartial`, and the inputs carry `data-val-*` rules
+  (required, email, min length 6, max length 100, passwords match). Keep server-side validation too, since client rules can be bypassed.
+  The OTP code is checked by `vitala.js` (all 4 digits required). The "Resend code" button skips that check.
+- Every field has `<span data-valmsg-for="...">`, so ModelState errors from the server show up in the same place.
+  You can switch `name="Email"` to `asp-for="Email"` once a `@model` exists. The `data-val-*` attributes are then generated from the model.
 - Static text (Sara, Dr. Sarah Jenkins, the appointment, ...) is placeholder content to replace with Model data.
 
 ## AI chat hook

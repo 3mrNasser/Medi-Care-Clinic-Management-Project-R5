@@ -47,7 +47,7 @@
   $$('[data-vt-role-form]').forEach((form) => {
     const label = $('[data-vt-role-label]', form);
     const sync = () => {
-      const checked = $('input[name="Role"]:checked', form);
+      const checked = $('input[name="role"]:checked', form);
       $$('.vt-role-card', form).forEach((c) => c.classList.toggle('is-selected', c.contains(checked)));
       if (label && checked) label.textContent = checked.dataset.label || checked.value;
     };
@@ -81,6 +81,27 @@
         update();
       });
     });
+
+    // Block submit until every box has a digit (the hidden Code input is skipped by jQuery validation).
+    // Buttons with `formnovalidate` (e.g. "Resend code") are let through.
+    const form = group.closest('form');
+    const error = form && $('[data-valmsg-for="' + (hidden ? hidden.name : 'Code') + '"]', form);
+    if (form) {
+      form.addEventListener('submit', (e) => {
+        update();
+        if (e.submitter && e.submitter.hasAttribute('formnovalidate')) return;
+        if (hidden && hidden.value.length !== inputs.length) {
+          e.preventDefault();
+          if (error) error.textContent = 'Enter the ' + inputs.length + '-digit code.';
+          inputs.forEach((i) => i.classList.toggle('is-invalid', !i.value));
+          (inputs.find((i) => !i.value) || inputs[0]).focus();
+        }
+      });
+      inputs.forEach((i) => i.addEventListener('input', () => {
+        i.classList.remove('is-invalid');
+        if (error && hidden && hidden.value.length === inputs.length) error.textContent = '';
+      }));
+    }
   });
 
   /* ---------- Countdown  [data-vt-countdown="179"] ---------- */

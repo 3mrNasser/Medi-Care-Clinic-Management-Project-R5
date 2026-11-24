@@ -1,19 +1,21 @@
 @* 1.2 — Patient Home Dashboard
-   All data below is static placeholder text. Replace with model values, e.g. @Model.FirstName.
+   Name and appointment below are static placeholder text. Replace with model values when the service exists.
+   Specialty tiles link to Doctors/Index?specialty=... (exact match on Doctor.Specialty).
 *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Home";
     ViewData["ActiveNav"] = "Home";
 
+    // Values must match Doctor.Specialty in the database (Cardiology, Dermatology, Pediatrics are seeded).
     var specialties = new[]
     {
-        (Text: "Doctor",          Icon: "doctor",  Controller: "Doctors", Action: "Index"),
-        (Text: "Pharmacy",        Icon: "pharmacy", Controller: "Patient", Action: "Pharmacy"),
-        (Text: "Reward",          Icon: "reward",  Controller: "Patient", Action: "Rewards"),
-        (Text: "Labs",            Icon: "labs",    Controller: "Patient", Action: "Labs"),
-        (Text: "e-Consultation",  Icon: "consult", Controller: "Patient", Action: "Consultation"),
-        (Text: "Medical History", Icon: "history", Controller: "Patient", Action: "MedicalHistory"),
+        (Name: "Cardiology",    Icon: "heart"),
+        (Name: "Neurology",     Icon: "brain"),
+        (Name: "Dermatology",   Icon: "skin"),
+        (Name: "Pediatrics",    Icon: "baby"),
+        (Name: "Orthopedics",   Icon: "bone"),
+        (Name: "Ophthalmology", Icon: "eye-care"),
     };
 }
 
@@ -30,18 +32,12 @@
     </div>
 
     <div class="vt-topbar__actions">
-        <form class="vt-search" role="search" method="get" asp-controller="Patient" asp-action="Search">
-            <label for="vt-q" class="vt-sr-only">Search</label>
+        @* Searches doctors by name using the existing Doctors/Index?name=... filter *@
+        <form class="vt-search" role="search" method="get" asp-controller="Doctors" asp-action="Index">
+            <label for="vt-q" class="vt-sr-only">Search doctors by name</label>
             <partial name="_VtIcon" model='"search:20"' />
-            <input id="vt-q" name="q" type="search" placeholder="Search doctors, labs, medicines..." />
+            <input id="vt-q" name="name" type="search" placeholder="Search doctors by name..." />
         </form>
-        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Notifications" aria-label="Notifications">
-            <partial name="_VtIcon" model='"bell"' />
-            <span class="vt-icon-btn__dot"></span>
-        </a>
-        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Profile" aria-label="Profile">
-            <partial name="_VtIcon" model='"user"' />
-        </a>
     </div>
 </header>
 
@@ -49,7 +45,7 @@
     <div>
         <h2 class="vt-banner__title">Medical Checks!</h2>
         <p class="vt-banner__text">Check your health condition regularly to minimize the incidence of disease in the future.</p>
-        <a class="vt-btn vt-btn--white" asp-controller="Patient" asp-action="Labs">Check Now</a>
+        <a class="vt-btn vt-btn--white" asp-controller="Doctors" asp-action="Index">Check Now</a>
     </div>
     <div class="vt-banner__art" aria-hidden="true">
         @* <img src="~/images/dashboard/medical-checks.png" alt="" /> *@
@@ -60,14 +56,14 @@
 <section aria-labelledby="vt-specialties-title">
     <div class="vt-section-head">
         <h2 class="vt-section-title" id="vt-specialties-title">Top Specialties</h2>
-        <a class="vt-link-strong" asp-controller="Patient" asp-action="Specialties">See all</a>
+        <a class="vt-link-strong" asp-controller="Doctors" asp-action="Index">See all</a>
     </div>
     <div class="vt-specialties">
         @foreach (var s in specialties)
         {
-            <a class="vt-specialty" asp-controller="@s.Controller" asp-action="@s.Action">
+            <a class="vt-specialty" asp-controller="Doctors" asp-action="Index" asp-route-specialty="@s.Name">
                 <span class="vt-specialty__icon"><partial name="_VtIcon" model='s.Icon + ":36"' /></span>
-                @s.Text
+                @s.Name
             </a>
         }
     </div>
@@ -76,8 +72,8 @@
 <section class="vt-appointment" aria-label="Upcoming appointment">
     <div>
         <span class="vt-eyebrow">Upcoming Appointment</span>
-        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Neurologist</h3>
-        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • Mansoura Medical Center</span>
+        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Cardiologist</h3>
+        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • 12 Tahrir St, Cairo</span>
     </div>
     <a class="vt-chip-link" asp-controller="MyAppointments" asp-action="Index">View Details</a>
 </section>

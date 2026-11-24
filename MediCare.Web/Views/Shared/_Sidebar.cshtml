@@ -1,13 +1,11 @@
 @{
     var active = ViewData["ActiveNav"] as string ?? "";
-    // Controller/action names are suggestions — rename to match the team's controllers.
+    // Only pages that exist in the project. Add new items here as pages are built.
     var items = new[]
     {
-        (Key: "Home",          Text: "Home", Controller: "Patient", Action: "Home"),
-        (Key: "Appointments",  Text: "Appointments", Controller: "MyAppointments", Action: "Index"),
-        (Key: "AiAssistant",   Text: "AI Assistant", Controller: "Patient", Action: "AiAssistant"),
-        (Key: "Cart",          Text: "Cart", Controller: "Patient", Action: "Cart"),
-        (Key: "Notifications", Text: "Notifications", Controller: "Patient", Action: "Notifications"),
+        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home"),
+        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index"),
+        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant"),
     };
 }
 <aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
@@ -26,4 +24,12 @@
             </li>
         }
     </ul>
+
+    @* POST + anti-forgery token (added by the form tag helper). Backend adds [HttpPost] Account/Logout. *@
+    <form class="vt-sidebar__logout" method="post" asp-controller="Account" asp-action="Logout">
+        <button type="submit" class="vt-sidebar__link">
+            <partial name="_VtIcon" model='"logout:20"' />
+            Log out
+        </button>
+    </form>
 </aside>

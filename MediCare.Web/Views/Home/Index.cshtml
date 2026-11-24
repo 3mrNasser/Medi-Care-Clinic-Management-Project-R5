@@ -22,8 +22,8 @@
                     <ul class="vt-nav__links">
                         <li><a class="is-active" asp-controller="Home" asp-action="Index" aria-current="page">Home</a></li>
                         <li><a asp-controller="Doctors" asp-action="Index">Find Specialist</a></li>
-                        <li><a href="#search-pharmacy">Search Pharmacy</a></li>
-                        <li><a href="#get-connected">Get Connected</a></li>
+                        <li><a asp-controller="MyAppointments" asp-action="Index">My Appointments</a></li>
+                        <li><a asp-controller="Patient" asp-action="AiAssistant">AI Assistant</a></li>
                     </ul>
                 </nav>
                 <div class="vt-nav__actions">
@@ -61,7 +61,7 @@
                 </div>
                 <div class="vt-stat-grid">
                     <div class="vt-stat"><strong>500+ Doctors</strong><span>Instant Booking</span></div>
-                    <div class="vt-stat"><strong>24/7 Pharmacy</strong><span>Nearby Medicines</span></div>
+                    <div class="vt-stat"><strong>24/7 AI Assistant</strong><span>Symptom Guidance</span></div>
                 </div>
             </div>
         </section>
@@ -75,21 +75,21 @@
                 <h3 class="vt-feature__title">Find Your Specialist</h3>
                 <p class="vt-feature__text">Book appointments with top doctors easily.</p>
             </a>
-            <a class="vt-feature" id="search-pharmacy" href="#">
+            <a class="vt-feature" id="my-appointments" asp-controller="MyAppointments" asp-action="Index">
                 <span class="vt-feature__icon">
-                    @* <img src="~/images/landing/search-pharmacy.png" alt="" /> *@
-                    <partial name="_VtIcon" model='"pharmacy:42"' />
+                    @* <img src="~/images/landing/appointments.png" alt="" /> *@
+                    <partial name="_VtIcon" model='"calendar:42"' />
                 </span>
-                <h3 class="vt-feature__title">Search Pharmacy</h3>
-                <p class="vt-feature__text">Find nearby pharmacies and medicines.</p>
+                <h3 class="vt-feature__title">Manage Appointments</h3>
+                <p class="vt-feature__text">Track or cancel your bookings in one place.</p>
             </a>
-            <a class="vt-feature" id="get-connected" href="#">
+            <a class="vt-feature" id="ai-assistant" asp-controller="Patient" asp-action="AiAssistant">
                 <span class="vt-feature__icon">
                     @* <img src="~/images/landing/get-connected.png" alt="" /> *@
                     <partial name="_VtIcon" model='"connect:42"' />
                 </span>
                 <h3 class="vt-feature__title">Get Connected</h3>
-                <p class="vt-feature__text">Stay connected with healthcare providers.</p>
+                <p class="vt-feature__text">Describe your symptoms and find the right specialist.</p>
             </a>
         </section>
     </div>

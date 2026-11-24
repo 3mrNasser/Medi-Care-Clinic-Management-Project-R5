@@ -1,6 +1,7 @@
 @*
-    Split-screen layout for Login / Sign up / Verify OTP / Reset password.
+    Split-screen layout for Login / Sign up / Forgot password / Verify OTP / Reset password.
     Set the left panel text from the view:  ViewData["AuthPanelTitle"] = "Welcome Back to Vitala";
+    Loads jQuery + unobtrusive validation so the data-val-* rules on the inputs run before submit.
 *@
 @{
     Layout = "_VitalaLayout";
@@ -17,4 +18,8 @@
 </div>
 
 @section Styles { @await RenderSectionAsync("Styles", required: false) }
-@section Scripts { @await RenderSectionAsync("Scripts", required: false) }
+@section Scripts {
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <partial name="_ValidationScriptsPartial" />
+    @await RenderSectionAsync("Scripts", required: false)
+}

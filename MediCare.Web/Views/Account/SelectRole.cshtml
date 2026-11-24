@@ -1,29 +1,31 @@
 @* 02 — Select Role
-   Posts a single field: Role = Patient | Doctor | Pharmacist | Admin
+   Step 1 of sign up. Sends the chosen role to the Sign up page as a query string:
+   GET /Account/Signup?role=Patient | Doctor | Admin
 *@
 @{
     Layout = "_VitalaLayout";
     ViewData["Title"] = "Select your role";
     var roles = new[]
     {
-        (Value: "Patient",    Icon: "patient"),
-        (Value: "Doctor",     Icon: "doctor"),
-        (Value: "Pharmacist", Icon: "pharmacist"),
-        (Value: "Admin",      Icon: "admin"),
+        (Value: "Patient", Icon: "patient"),
+        (Value: "Doctor",  Icon: "doctor"),
+        (Value: "Admin",   Icon: "admin"),
     };
-    var selected = ViewData["SelectedRole"] as string ?? "Patient";
+    var selected = Context.Request.Query["role"].ToString();
+    if (!roles.Any(r => r.Value.Equals(selected, StringComparison.OrdinalIgnoreCase))) selected = "Patient";
 }
 <main class="vt-role-page">
     <h1 class="vt-role-page__title">Welcome</h1>
     <p class="vt-role-page__sub">Select your role to continue to your workspace</p>
 
-    <form class="vt-role-form" method="post" asp-controller="Account" asp-action="SelectRole" data-vt-role-form>
-        <fieldset class="vt-role-grid">
+    <form class="vt-role-form" method="get" asp-controller="Account" asp-action="Signup" data-vt-role-form>
+        <fieldset class="vt-role-grid vt-role-grid--3">
             <legend class="vt-sr-only">Role</legend>
             @foreach (var role in roles)
             {
                 <label class="vt-role-card">
-                    <input type="radio" name="Role" value="@role.Value" data-label="@role.Value" checked="@(role.Value == selected)" />
+                    <input type="radio" name="role" value="@role.Value" data-label="@role.Value"
+                           checked="@role.Value.Equals(selected, StringComparison.OrdinalIgnoreCase)" />
                     <span class="vt-role-card__icon"><partial name="_VtIcon" model='role.Icon + ":32"' /></span>
                     <span class="vt-role-card__label">@role.Value</span>
                 </label>
@@ -35,4 +37,8 @@
             <partial name="_VtIcon" model='"arrow-right:20"' />
         </button>
     </form>
+
+    <p class="vt-role-page__login">
+        Already have an Account? <a asp-controller="Account" asp-action="Login">Log in</a>
+    </p>
 </main>
