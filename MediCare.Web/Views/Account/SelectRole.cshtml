@@ -5,11 +5,12 @@
 @{
     Layout = "_VitalaLayout";
     ViewData["Title"] = "Select your role";
+    // Image = icon exported from the Figma role cards; null = inline SVG fallback (Admin card asset not exported yet).
     var roles = new[]
     {
-        (Value: "Patient", Icon: "patient"),
-        (Value: "Doctor",  Icon: "doctor"),
-        (Value: "Admin",   Icon: "admin"),
+        (Value: "Patient", Desc: "Health records",      Image: "~/images/vitala/role-patient.svg", W: 24, H: 24, Icon: "patient"),
+        (Value: "Doctor",  Desc: "Manage patients",     Image: "~/images/vitala/role-doctor.svg",  W: 64, H: 61, Icon: "doctor"),
+        (Value: "Admin",   Desc: "Manage the platform", Image: (string?)null,                      W: 24, H: 24, Icon: "admin"),
     };
     var selected = Context.Request.Query["role"].ToString();
     if (!roles.Any(r => r.Value.Equals(selected, StringComparison.OrdinalIgnoreCase))) selected = "Patient";
@@ -26,8 +27,28 @@
                 <label class="vt-role-card">
                     <input type="radio" name="role" value="@role.Value" data-label="@role.Value"
                            checked="@role.Value.Equals(selected, StringComparison.OrdinalIgnoreCase)" />
-                    <span class="vt-role-card__icon"><partial name="_VtIcon" model='role.Icon + ":32"' /></span>
-                    <span class="vt-role-card__label">@role.Value</span>
+                    @if (role.Image is not null && role.W == 64)
+                    {
+                        @* The Doctor icon SVG already contains its white circle *@
+                        <img src="@Url.Content(role.Image)" width="@role.W" height="@role.H" alt="" />
+                    }
+                    else
+                    {
+                        <span class="vt-role-card__icon">
+                            @if (role.Image is not null)
+                            {
+                                <img src="@Url.Content(role.Image)" width="@role.W" height="@role.H" alt="" />
+                            }
+                            else
+                            {
+                                <partial name="_VtIcon" model='role.Icon + ":26"' />
+                            }
+                        </span>
+                    }
+                    <span class="vt-role-card__text">
+                        <span class="vt-role-card__label">@role.Value</span>
+                        <span class="vt-role-card__desc">@role.Desc</span>
+                    </span>
                 </label>
             }
         </fieldset>

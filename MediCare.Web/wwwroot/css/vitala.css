@@ -34,6 +34,7 @@
 
   --vt-font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --vt-font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  --vt-font-alt: 'Lexend', 'Inter', system-ui, sans-serif;
 
   --vt-shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
   --vt-shadow: 0 7px 22px rgba(15, 23, 42, .08);
@@ -98,10 +99,10 @@
 }
 .vt-brand { display: flex; flex-direction: column; line-height: 1.1; color: #fff; }
 .vt-brand__name { font: 700 24px/1 var(--vt-font-display); letter-spacing: -.4px; }
-.vt-brand__tagline { font-size: 10px; opacity: .85; margin-top: 3px; }
+.vt-brand__tagline { font-size: 11px; color: #BFDBFE; margin-top: 3px; }
 
 .vt-nav__links { display: flex; gap: clamp(14px, 3.5vw, 40px); list-style: none; margin: 0; padding: 0; }
-.vt-nav__links a { font-size: 14px; color: rgba(255, 255, 255, .82); transition: color .15s; }
+.vt-nav__links a { font-size: 14px; color: #DBEAFE; transition: color .15s; }
 .vt-nav__links a:hover, .vt-nav__links a.is-active { color: #fff; }
 .vt-nav__links a.is-active { font-weight: 700; }
 .vt-nav__actions { display: flex; gap: 13px; }
@@ -115,16 +116,16 @@
 }
 .vt-pill {
   display: inline-block; padding: 9px 27px;
-  font-size: 10px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: #DBEAFE;
   background: rgba(255, 255, 255, .12); border-radius: 999px;
 }
 .vt-hero__title {
   margin: 24px 0 29px;
-  font: 700 clamp(38px, 4vw, 58px)/1.12 var(--vt-font-display);
+  font: 700 clamp(38px, 3.9vw, 56px)/1.12 var(--vt-font-display);
   letter-spacing: -1.5px;
 }
 .vt-hero__title span { color: var(--vt-sky); display: block; }
-.vt-hero__text { max-width: 547px; margin: 0 0 37px; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.6; color: rgba(255, 255, 255, .9); }
+.vt-hero__text { max-width: 547px; margin: 0 0 37px; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.6; color: #DBEAFE; }
 .vt-hero__cta { display: flex; flex-wrap: wrap; gap: 17px; }
 
 .vt-glass-card {
@@ -145,16 +146,16 @@
   background: var(--vt-blue) center/cover no-repeat;
   display: grid; place-items: center;
 }
-.vt-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--vt-sky); }
+.vt-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--vt-sky); }
 .vt-doctor-highlight__name { margin: 6px 0 7px; font: 700 22px/1.2 var(--vt-font-display); }
-.vt-doctor-highlight__meta { font-size: 13px; color: rgba(255, 255, 255, .85); }
+.vt-doctor-highlight__meta { font-size: 13px; color: #BFDBFE; }
 
 .vt-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; margin-top: 20px; }
 .vt-stat {
   background: #fff; color: var(--vt-text);
   border-radius: var(--vt-radius-lg); padding: 29px 23px 24px;
 }
-.vt-stat strong { display: block; font-size: 16px; margin-bottom: 7px; }
+.vt-stat strong { display: block; font-size: 15px; color: #0F172A; margin-bottom: 7px; }
 .vt-stat span { font-size: 12px; color: var(--vt-text-muted); }
 
 .vt-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -174,9 +175,9 @@
   background: radial-gradient(circle at 50% 40%, #2A3BB5, #121A6B);
   color: #fff; overflow: hidden;
 }
-.vt-feature__icon img { width: 100%; height: 100%; object-fit: cover; }
-.vt-feature__title { margin: 0 0 13px; font: 700 22px/1.2 var(--vt-font-display); }
-.vt-feature__text { margin: 0; font-size: 14px; color: rgba(255, 255, 255, .85); }
+.vt-feature__icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+.vt-feature__title { margin: 0 0 13px; font: 700 20px/1.2 var(--vt-font-display); }
+.vt-feature__text { margin: 0; font-size: 14px; color: #DBEAFE; }
 
 /* =========================================================================
    02 — Select role
@@ -185,35 +186,39 @@
   min-height: 100vh; display: flex; flex-direction: column; align-items: center;
   padding: clamp(35px, 9vh, 108px) 14px 43px; text-align: center;
 }
-.vt-role-page__title { margin: 0; font: 700 clamp(29px, 4.2vw, 43px)/1.2 var(--vt-font-display); color: var(--vt-primary); }
-.vt-role-page__sub { margin: 13px 0 0; font-size: clamp(15px, 1.2vw, 16px); color: var(--vt-text-muted); }
+.vt-role-page__title { margin: 0; font: 700 clamp(30px, 2.7vw, 38px)/1.2 var(--vt-font-display); color: var(--vt-primary); }
+.vt-role-page__sub { margin: 13px 0 0; font-size: clamp(15px, 1.25vw, 18px); color: var(--vt-text-muted); }
 .vt-role-form { display: flex; flex-direction: column; align-items: center; gap: clamp(35px, 10vh, 86px); margin-top: clamp(35px, 10vh, 86px); width: 100%; }
 .vt-role-grid { display: grid; grid-template-columns: repeat(4, 191px); gap: 23px; justify-content: center; }
+/* Role cards: navy cards from the Figma "Patient/Doctor/Admin Card" frames.
+   Selected card gets a sky ring + lift (the design shows all cards in the same navy state). */
 .vt-role-card {
   position: relative;
   display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 16px;
   width: 191px; height: 176px; padding: 24px;
-  background: #fff; color: var(--vt-primary-alt);
-  border: 2px solid var(--vt-border); border-radius: 9px;
-  cursor: pointer; box-shadow: var(--vt-shadow-sm);
-  transition: background-color .15s, color .15s, border-color .15s, transform .15s, box-shadow .15s;
+  background: var(--vt-primary-alt); color: #fff;
+  border: 0; border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, .1), 0 8px 10px -6px rgba(0, 0, 0, .1);
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
 }
-.vt-role-card:hover { border-color: var(--vt-primary-alt); transform: translateY(-2px); box-shadow: var(--vt-shadow); }
+.vt-role-card:hover { transform: translateY(-2px); }
 .vt-role-card input { position: absolute; opacity: 0; pointer-events: none; }
 .vt-role-card__icon {
-  width: 46px; height: 46px; border-radius: 50%;
+  width: 64px; height: 64px; border-radius: 9999px;
   display: grid; place-items: center;
-  background: #EEF0FF; color: var(--vt-primary-alt);
+  background: #fff; color: var(--vt-primary-alt);
 }
-.vt-role-card__label { font-size: 13px; font-weight: 700; }
+.vt-role-card__icon img { display: block; }
+.vt-role-card__text { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.vt-role-card__label { font: 700 18px/28px var(--vt-font-alt); }
+.vt-role-card__desc { font: 400 12px/16px var(--vt-font-alt); }
 .vt-role-card:has(input:checked),
-.vt-role-card.is-selected { background: var(--vt-primary-alt); color: #fff; border-color: var(--vt-primary-alt); }
-.vt-role-card:has(input:checked) .vt-role-card__icon,
-.vt-role-card.is-selected .vt-role-card__icon { background: rgba(255, 255, 255, .16); color: #fff; }
+.vt-role-card.is-selected { transform: translateY(-4px); box-shadow: 0 0 0 3px var(--vt-sky), 0 20px 25px -5px rgba(0, 0, 0, .15), 0 8px 10px -6px rgba(0, 0, 0, .1); }
 .vt-role-card:has(input:focus-visible) { outline: 3px solid var(--vt-sky); outline-offset: 3px; }
 .vt-role-grid { border: 0; margin: 0; padding: 0; min-width: 0; }
-.vt-role-submit { min-width: 279px; height: 56px; font-size: 15px; border-radius: 13px; }
-.vt-role-grid--3 { grid-template-columns: repeat(3, 191px); }
+.vt-role-submit { min-width: 280px; height: 56px; font-size: 16px; border-radius: 13px; }
+.vt-role-grid--3 { grid-template-columns: repeat(3, 191px); gap: 22px; }
 .vt-role-page__login { margin-top: 28px; font-size: 15px; color: var(--vt-text-muted); }
 .vt-role-page__login a { font-weight: 700; color: var(--vt-primary); }
 .vt-role-page__login a:hover { text-decoration: underline; }
@@ -227,10 +232,10 @@
   padding: 0 clamp(23px, 6.2vw, 65px);
   background: var(--vt-gradient-panel); color: #fff;
 }
-.vt-auth__panel-title { margin: 0; font: 700 clamp(23px, 4vw, 42px)/1.15 var(--vt-font-display); letter-spacing: -.4px; }
+.vt-auth__panel-title { margin: 0; font: 700 clamp(26px, 2.7vw, 38px)/1.15 var(--vt-font-display); letter-spacing: -.4px; }
 .vt-auth__main { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 43px 24px; }
 .vt-auth__inner { width: 100%; max-width: 441px; }
-.vt-auth__title { margin: 0 0 32px; font: 700 clamp(24px, 3.4vw, 35px)/1.2 var(--vt-font-display); color: var(--vt-primary); letter-spacing: -.4px; }
+.vt-auth__title { margin: 0 0 32px; font: 700 clamp(26px, 2.25vw, 32px)/1.2 var(--vt-font-display); color: var(--vt-primary); letter-spacing: -.4px; }
 .vt-auth__lead { margin: -16px 0 32px; font-size: 16px; line-height: 1.6; color: var(--vt-text-muted); }
 .vt-auth__footer { margin-top: clamp(43px, 18vh, 141px); text-align: center; font-size: 13px; font-weight: 700; color: var(--vt-primary); }
 .vt-auth__footer a:hover { text-decoration: underline; }
@@ -263,7 +268,7 @@
 .vt-eye[aria-pressed="true"] .vt-eye__off { display: block; }
 
 .vt-auth__row-end { display: flex; justify-content: flex-end; margin: 3px 6px 16px 0; }
-.vt-link-muted { font-size: 12px; color: var(--vt-text); }
+.vt-link-muted { font-size: 12px; font-weight: 300; color: #000; }
 .vt-link-muted:hover { color: var(--vt-primary); text-decoration: underline; }
 .vt-auth__submit { height: 52px; font-size: 15px; border-radius: var(--vt-radius); margin-top: 35px; }
 .vt-auth__row-end + .vt-auth__submit { margin-top: 0; }
@@ -272,14 +277,14 @@
 .vt-otp { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(9px, 2.2vw, 23px); margin-top: 52px; }
 .vt-otp__input {
   width: 100%; aspect-ratio: 130 / 118;
-  font: 700 29px/1 var(--vt-font); text-align: center; color: var(--vt-primary-alt);
+  font: 700 40px/1 var(--vt-font); text-align: center; color: var(--vt-primary-alt);
   background: var(--vt-bg); border: 2.5px solid var(--vt-border-strong); border-radius: 16px;
   caret-color: var(--vt-primary-alt);
   transition: border-color .15s, background-color .15s;
 }
 .vt-otp__input:focus { outline: none; background: #fff; border-color: var(--vt-primary-alt); }
 .vt-otp__input.is-invalid { border-color: #DC2626; }
-.vt-otp-timer { margin: 22px 0 22px; font-size: 13px; color: var(--vt-primary); }
+.vt-otp-timer { margin: 22px 0 22px; font-size: 15px; color: var(--vt-primary-alt); }
 .vt-otp-timer button {
   margin-left: 6px; padding: 0; background: none; border: 0;
   font: 700 12px var(--vt-font); color: var(--vt-primary); cursor: pointer; text-decoration: underline;
@@ -297,7 +302,7 @@
   padding: 36px 24px;
   background: var(--vt-gradient-panel); color: #fff;
 }
-.vt-sidebar__brand { padding-left: 55px; margin-bottom: 37px; font: 700 24px/1 var(--vt-font-display); color: #fff; }
+.vt-sidebar__brand { padding-left: 55px; margin-bottom: 37px; font: 700 20px/1 var(--vt-font-display); color: #fff; }
 .vt-sidebar__nav { display: flex; flex-direction: column; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .vt-sidebar__link {
   display: flex; align-items: center; gap: 10px;
@@ -328,7 +333,7 @@
 .vt-search { position: relative; width: min(441px, 40vw); }
 .vt-search input {
   width: 100%; height: 45px; padding: 0 17px 0 32px;
-  font: 400 12px var(--vt-font); background: #fff;
+  font: 400 13px var(--vt-font); background: #fff;
   border: 1.5px solid var(--vt-border); border-radius: 10px;
 }
 .vt-search input:focus { outline: none; border-color: var(--vt-primary); box-shadow: 0 0 0 3px rgba(20, 36, 138, .08); }
@@ -351,8 +356,8 @@
   padding: 35px 46px 45px 40px; margin-bottom: 40px;
   background: var(--vt-gradient); color: #fff; border-radius: 24px; overflow: hidden;
 }
-.vt-banner__title { margin: 0 0 14px; font: 700 clamp(23px, 3.3vw, 35px)/1.15 var(--vt-font-display); }
-.vt-banner__text { margin: 0 0 27px; font-size: clamp(14px, 1.1vw, 15px); color: rgba(255, 255, 255, .9); }
+.vt-banner__title { margin: 0 0 14px; font: 700 clamp(24px, 2.1vw, 30px)/1.15 var(--vt-font-display); }
+.vt-banner__text { margin: 0 0 27px; font-size: 14px; color: #DBEAFE; }
 .vt-banner .vt-btn { height: 45px; padding: 0 32px; font-size: 14px; }
 .vt-banner__art {
   flex: 0 0 137px; height: 137px; border-radius: 24px;
@@ -361,7 +366,7 @@
 }
 
 .vt-section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 17px; }
-.vt-section-title { margin: 0; font: 700 19px/1.3 var(--vt-font-display); }
+.vt-section-title { margin: 0; font: 700 18px/1.3 var(--vt-font-display); }
 .vt-link-strong { font-size: 13px; font-weight: 700; color: var(--vt-primary); }
 .vt-link-strong:hover { text-decoration: underline; }
 
@@ -370,7 +375,7 @@
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
   height: 160px; padding: 12px;
   background: #fff; border: 1.5px solid var(--vt-border); border-radius: 16px;
-  text-align: center; font-size: 14px; font-weight: 600; color: var(--vt-text);
+  text-align: center; font: 700 14px/1.3 var(--vt-font-display); color: var(--vt-text);
   transition: border-color .15s, transform .15s, box-shadow .15s;
 }
 .vt-specialty:hover { border-color: var(--vt-primary); transform: translateY(-3px); box-shadow: var(--vt-shadow); }
@@ -387,11 +392,11 @@
   background: #fff; border: 1.5px solid var(--vt-border); border-radius: 19px;
 }
 .vt-appointment .vt-eyebrow { font-size: 11px; color: var(--vt-blue); }
-.vt-appointment__doctor { margin: 10px 0 6px; font-size: 17px; font-weight: 600; }
-.vt-appointment__meta { font-size: 11px; color: var(--vt-text-muted); }
+.vt-appointment__doctor { margin: 10px 0 6px; font: 700 16px/1.3 var(--vt-font-display); }
+.vt-appointment__meta { font: 600 10px/1.2 var(--vt-font-alt); color: #000; }
 .vt-chip-link {
   flex: 0 0 auto; padding: 8px 20px;
-  font-size: 11px; font-weight: 600; color: var(--vt-primary-alt);
+  font-size: 14px; font-weight: 500; color: var(--vt-primary-alt);
   background: #E8EEFF; border-radius: 7px;
 }
 .vt-chip-link:hover { background: #D9E3FF; }
@@ -403,6 +408,10 @@
   box-shadow: 0 9px 20px rgba(20, 36, 138, .35);
   transition: transform .15s, background-color .15s;
 }
+.vt-fab__dot {
+  position: absolute; top: -6px; right: -6px; width: 15px; height: 15px;
+  border-radius: 50%; background: rgba(90, 208, 95, .9); border: 2px solid var(--vt-bg);
+}
 .vt-fab:hover { transform: translateY(-3px); background: #1B2EA8; }
 
 /* =========================================================================
@@ -411,14 +420,29 @@
 .vt-main--flush { padding: 0; display: grid; grid-template-columns: 1fr 321px; height: 100vh; overflow: hidden; }
 .vt-chat { display: flex; flex-direction: column; min-width: 0; background: #fff; border-right: 1.5px solid var(--vt-border); }
 .vt-chat__header { padding: 32px 81px 23px; border-bottom: 1.5px solid var(--vt-border); }
-.vt-chat__title { margin: 0; font: 700 20px/1.2 var(--vt-font-display); color: var(--vt-primary); }
+.vt-chat__title { margin: 0; font: 700 18px/1.2 var(--vt-font-display); color: var(--vt-primary); }
 .vt-chat__log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; padding: 46px 81px 29px; scroll-behavior: smooth; }
 .vt-msg {
   max-width: min(540px, 85%); padding: 20px 24px;
   font-size: 13px; line-height: 1.7; border-radius: 19px; color: #fff;
   animation: vt-msg-in .25s ease-out;
 }
+.vt-msg { position: relative; }
 .vt-msg--bot { align-self: flex-start; background: var(--vt-primary); }
+/* Avatars beside the bubbles (Figma "Ellipse 32" + bot/user icons), drawn with CSS so JS-added messages get them too */
+.vt-msg--bot::before, .vt-msg--user::before {
+  content: ""; position: absolute; top: 6px; width: 54px; height: 49px; border-radius: 50%;
+  background-repeat: no-repeat; background-position: center; background-size: 28px 28px;
+}
+.vt-msg--bot::before {
+  left: -67px; background-color: var(--vt-primary-alt); box-shadow: 0 -1px 4px rgba(0, 0, 0, .25);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='8' width='16' height='12' rx='3'/%3E%3Cpath d='M12 8V4.5'/%3E%3Ccircle cx='12' cy='3.5' r='1'/%3E%3Ccircle cx='9' cy='14' r='1.2' fill='white'/%3E%3Ccircle cx='15' cy='14' r='1.2' fill='white'/%3E%3Cpath d='M2 13v3M22 13v3'/%3E%3C/svg%3E");
+}
+.vt-msg--user::before {
+  right: -67px; background-color: #737D85; background-size: 26px 26px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 12c-1.65 0-3.06-.59-4.24-1.76C6.59 9.06 6 7.65 6 6s.59-3.06 1.76-4.24C8.94.59 10.35 0 12 0s3.06.59 4.24 1.76C17.41 2.94 18 4.35 18 6s-.59 3.06-1.76 4.24C15.06 11.41 13.65 12 12 12zM0 24v-4.2c0-.85.22-1.63.66-2.34.44-.71 1.02-1.26 1.74-1.63 1.55-.78 3.13-1.36 4.73-1.74 1.6-.39 3.22-.59 4.87-.59s3.28.2 4.88.59c1.6.38 3.17.96 4.72 1.74.73.37 1.31.92 1.75 1.63.44.71.65 1.49.65 2.34V24H0z'/%3E%3C/svg%3E");
+}
+.vt-msg--typing::before { display: none; }
 .vt-msg--user { align-self: flex-end; background: var(--vt-slate); padding-top: 26px; padding-bottom: 26px; }
 .vt-msg--typing { display: inline-flex; gap: 4px; padding: 19px 24px; }
 .vt-msg--typing span { width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .5; animation: vt-dot 1s infinite; }
@@ -445,9 +469,9 @@
 .vt-composer-row .vt-btn { height: 49px; padding: 0 29px; font-size: 14px; border-radius: 13px; }
 
 .vt-aside { overflow-y: auto; padding: 48px 29px 29px; background: var(--vt-bg); }
-.vt-aside__title { margin: 0 0 29px; font: 700 17px/1.3 var(--vt-font-display); }
+.vt-aside__title { margin: 0 0 29px; font: 700 16px/1.3 var(--vt-font-display); }
 .vt-doc-card { padding: 26px 20px 14px; margin-bottom: 19px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 16px; }
-.vt-doc-card__name { margin: 0 0 4px; font-size: 14px; font-weight: 600; }
+.vt-doc-card__name { margin: 0 0 4px; font: 700 14px/1.3 var(--vt-font-display); }
 .vt-doc-card__meta { margin: 0 0 16px; font-size: 12px; color: var(--vt-text-muted); }
 .vt-doc-card .vt-btn { height: 35px; font-size: 12px; border-radius: 7px; }
 
@@ -510,6 +534,7 @@
   .vt-chat__log { padding: 24px 16px; gap: 20px; }
   .vt-chat__composer { padding: 14px 16px 20px; }
   .vt-msg { max-width: 92%; padding: 14px 18px; font-size: 15px; }
+  .vt-msg--bot::before, .vt-msg--user::before { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -520,7 +545,9 @@
   .vt-hero__cta .vt-btn { width: 100%; }
   .vt-role-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; width: 100%; max-width: 400px; }
   .vt-role-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .vt-role-grid--3 .vt-role-card { height: 130px; padding: 14px 8px; }
+  .vt-role-grid--3 .vt-role-card { height: 150px; padding: 14px 6px; gap: 10px; }
+  .vt-role-card__icon { width: 52px; height: 52px; }
+  .vt-role-card__label { font-size: 16px; line-height: 22px; }
   .vt-role-card { width: 100%; height: 150px; }
   .vt-role-submit { min-width: 0; width: 100%; max-width: 400px; }
   .vt-specialties { grid-template-columns: repeat(2, 1fr); gap: 12px; }

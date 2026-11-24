@@ -71,5 +71,16 @@ e-Consultation, Medical History, Profile, Notifications) were removed.
 Remove `data-vt-chat-demo` from `AiAssistant.cshtml` once the real API is connected.
 
 ## Images
-The Figma PNGs (logo, doctor/feature illustrations, specialty icons) weren't sent, so inline SVG icons stand in for them.
-To use the real images, put them in `wwwroot/images/...` and uncomment the `<img>` lines left in the views.
+Exported from the Figma file into `wwwroot/images/vitala/`:
+`feature-find-specialist.png`, `feature-get-connected.png`, `feature-search-pharmacy.png` (unused, pharmacy is out of scope),
+`eye.png` (password toggle), `role-patient.svg`, `role-doctor.svg`.
+
+Still to export from Figma (they are separate layers on top of the web frames; the Figma MCP free-plan limit stopped the export).
+Inline SVG icons stand in for them until then:
+- Landing: `logo 2` (logo next to "vitala"), `User Profile` (Dr. Sarah Jenkins photo)
+- Select Role: icon of the `Admin Card`, and its subtitle text
+- Dashboard: `logo 5`, `person 1` (avatar), `images__1_-removebg-preview 2` (banner image), `10691265 2` (AI button icon)
+- AI Assistant: `logo 4`, `10691265 1` (bot avatar), `user-removebg-preview 1` (user avatar)
+
+The design's Top Specialties icons (Doctor, Pharmacy, Reward, Labs, e-Consultation, Medical History) belong to features that were removed
+in review, so the specialty tiles use inline SVG icons.
