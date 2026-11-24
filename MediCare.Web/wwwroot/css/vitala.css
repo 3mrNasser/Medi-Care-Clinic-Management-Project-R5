@@ -227,6 +227,7 @@
 .vt-auth__main { display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 43px 24px; }
 .vt-auth__inner { width: 100%; max-width: 441px; }
 .vt-auth__title { margin: 0 0 32px; font: 700 clamp(24px, 3.4vw, 35px)/1.2 var(--vt-font-display); color: var(--vt-primary); letter-spacing: -.4px; }
+.vt-auth__lead { margin: -16px 0 32px; font-size: 16px; line-height: 1.6; color: var(--vt-text-muted); }
 .vt-auth__footer { margin-top: clamp(43px, 18vh, 141px); text-align: center; font-size: 13px; font-weight: 700; color: var(--vt-primary); }
 .vt-auth__footer a:hover { text-decoration: underline; }
 

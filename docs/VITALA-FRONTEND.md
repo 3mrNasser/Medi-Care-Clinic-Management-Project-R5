@@ -15,16 +15,24 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 | `Views/Home/Index.cshtml` | 01 Landing |
 | `Views/Account/SelectRole.cshtml` | 02 Select role |
 | `Views/Account/Login.cshtml` | 03 Login |
+| `Views/Account/ForgotPassword.cshtml` | Forgot password (email step) |
 | `Views/Account/Signup.cshtml` | 04 Sign up |
 | `Views/Account/VerifyOtp.cshtml` | 05 Verify OTP |
 | `Views/Account/ResetPassword.cshtml` | 06 Reset password |
 | `Views/Patient/Home.cshtml` | 1.2 Patient dashboard |
 | `Views/Patient/AiAssistant.cshtml` | AI assistant |
 
-### Controllers still needed (backend)
-These views are ready, but they have no controller yet in this repo:
-- `AccountController`: `SelectRole`, `Login`, `Signup`, `VerifyOtp`, `ResendOtp`, `ResetPassword` (Identity task).
-- `PatientController`: `Home`, `AiAssistant` (each one only needs `return View();` to show the page).
+### Controllers
+`Controllers/AccountController.cs` and `Controllers/PatientController.cs` contain **GET actions only** (`return View();`)
+so the screens can be opened. The backend work goes into the same files:
+- `AccountController`: POST actions for `SelectRole`, `Login`, `Signup`, `ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword` (Identity task).
+- `PatientController`: pass real data (patient name, upcoming appointment) to `Home`.
+
+Recovery flow: Login → "Forget Password?" → `ForgotPassword` (email) → `VerifyOtp` → `ResetPassword`.
+`ForgotPassword` isn't in the Figma file. It's built from the same components so the flow has no dead end.
+
+Links that don't have a page yet (no design was provided): Labs, Pharmacy, Rewards, e-Consultation, Medical History,
+Cart, Notifications, Profile, Search, "See all". They point to `Patient/<Action>` and return 404 until those pages are built.
 
 Links that already point to the team's existing pages:
 - "Find Specialist", the Doctor tile and the "Book ..." buttons go to `Doctors/Index` (with `?specialty=`).
@@ -38,6 +46,7 @@ Note: the Figma role screen has 4 roles (Patient, Doctor, Pharmacist, Admin), wh
 |---|---|---|
 | SelectRole | `Account/SelectRole` | `Role` (Patient / Doctor / Pharmacist / Admin) |
 | Login | `Account/Login` | `Email`, `Password` |
+| ForgotPassword | `Account/ForgotPassword` | `Email` |
 | Signup | `Account/Signup` | `Email`, `Password`, `ConfirmPassword` |
 | VerifyOtp | `Account/VerifyOtp` (resend: `Account/ResendOtp`) | `Code` (4 digits) |
 | ResetPassword | `Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
