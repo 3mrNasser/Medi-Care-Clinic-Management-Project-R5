@@ -111,6 +111,32 @@ public class AppointmentService : IAppointmentService
     public Task<ServiceResult> RejectAsync(int doctorId, int appointmentId)
         => RespondAsync(doctorId, appointmentId, AppointmentStatus.Rejected);
 
+    public Task<ServiceResult> CompleteAsync(int doctorId, int appointmentId)
+    => FinishAsync(doctorId, appointmentId, AppointmentStatus.Completed);
+
+    public Task<ServiceResult> MarkNoShowAsync(int doctorId, int appointmentId)
+        => FinishAsync(doctorId, appointmentId, AppointmentStatus.NoShow);
+
+    private async Task<ServiceResult> FinishAsync(
+        int doctorId, int appointmentId, AppointmentStatus newStatus)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
+        if (appointment is null || appointment.DoctorProfileId != doctorId)
+            return ServiceResult.Fail("Appointment not found.");
+
+        if (appointment.Status != AppointmentStatus.Confirmed)
+            return ServiceResult.Fail("Only confirmed appointments can be completed or marked as no-show.");
+
+        if (!HasPassed(appointment))
+            return ServiceResult.Fail("The appointment time has not arrived yet.");
+
+        appointment.Status = newStatus;
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
     public async Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId)
     {
         var appointments = await _unitOfWork.Appointments.FindAsync(
