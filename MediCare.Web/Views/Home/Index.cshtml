@@ -8,8 +8,11 @@
 
         <header class="vt-nav">
             <a class="vt-brand" asp-controller="Home" asp-action="Index">
-                <span class="vt-brand__name">vitala</span>
-                <span class="vt-brand__tagline">Connecting You To Better Health</span>
+                <img class="vt-brand__logo" src="~/images/vitala/logo.png" width="29" height="31" alt="" />
+                <span class="vt-brand__text">
+                    <span class="vt-brand__name">vitala</span>
+                    <span class="vt-brand__tagline">Connecting You To Better Health</span>
+                </span>
             </a>
 
             <button type="button" class="vt-nav__toggle" data-vt-nav-toggle="#vt-nav-menu" aria-controls="vt-nav-menu" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,8 +53,8 @@
             <div class="vt-glass-card">
                 @* Featured doctor — static content, replace with model data when available *@
                 <div class="vt-doctor-highlight">
-                    <div class="vt-doctor-highlight__photo" role="img" aria-label="Doctor photo">
-                        @* <img src="~/images/doctors/sarah-jenkins.jpg" alt="Dr. Sarah Jenkins" /> *@
+                    <div class="vt-doctor-highlight__photo">
+                        <img src="~/images/vitala/doctor-sarah-jenkins.png" width="74" height="76" alt="Dr. Sarah Jenkins" />
                     </div>
                     <div>
                         <span class="vt-eyebrow">Verified Specialists</span>

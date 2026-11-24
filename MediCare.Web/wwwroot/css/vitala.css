@@ -91,13 +91,16 @@
   color: #fff;
   overflow-x: hidden;
 }
-.vt-landing__inner { max-width: 1440px; margin: 0 auto; padding: 0 clamp(20px, 3vw, 44px) 52px; }
+/* Figma frame: content runs from x=28 to x=1309 at 1440 wide */
+.vt-landing__inner { max-width: 1440px; margin: 0 auto; padding: 0 clamp(20px, 9.1vw, 131px) 52px clamp(20px, 1.95vw, 28px); }
 
 .vt-nav {
   display: flex; align-items: center; justify-content: space-between; gap: 17px;
   padding: 32px 0 17px;
 }
-.vt-brand { display: flex; flex-direction: column; line-height: 1.1; color: #fff; }
+.vt-brand { display: flex; align-items: center; gap: 24px; margin-left: 6px; line-height: 1.1; color: #fff; }
+.vt-brand__logo { display: block; flex: 0 0 auto; }
+.vt-brand__text { display: flex; flex-direction: column; }
 .vt-brand__name { font: 700 24px/1 var(--vt-font-display); letter-spacing: -.4px; }
 .vt-brand__tagline { font-size: 11px; color: #BFDBFE; margin-top: 3px; }
 
@@ -146,6 +149,7 @@
   background: var(--vt-blue) center/cover no-repeat;
   display: grid; place-items: center;
 }
+.vt-doctor-highlight__photo img { width: 74px; height: 76px; border-radius: 50%; object-fit: cover; }
 .vt-eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--vt-sky); }
 .vt-doctor-highlight__name { margin: 6px 0 7px; font: 700 22px/1.2 var(--vt-font-display); }
 .vt-doctor-highlight__meta { font-size: 13px; color: #BFDBFE; }
@@ -302,11 +306,11 @@
   padding: 36px 24px;
   background: var(--vt-gradient-panel); color: #fff;
 }
-.vt-sidebar__brand { padding-left: 55px; margin-bottom: 37px; font: 700 20px/1 var(--vt-font-display); color: #fff; }
+.vt-sidebar__brand { display: flex; align-items: center; gap: 14px; padding-left: 11px; margin-bottom: 37px; font: 700 20px/1 var(--vt-font-display); color: #fff; }
 .vt-sidebar__nav { display: flex; flex-direction: column; gap: 6px; list-style: none; margin: 0; padding: 0; }
 .vt-sidebar__link {
-  display: flex; align-items: center; gap: 10px;
-  height: 45px; padding: 0 35px;
+  display: flex; align-items: center; gap: 11px;
+  height: 45px; padding: 0 35px 0 7px;
   font-size: 14px; color: rgba(255, 255, 255, .85); border-radius: 9px;
   transition: background-color .15s, color .15s;
 }
@@ -316,14 +320,17 @@
 .vt-sidebar__logout .vt-sidebar__link { width: 100%; background: none; border: 0; font: inherit; font-size: 14px; cursor: pointer; text-align: left; }
 .vt-sidebar__logout .vt-sidebar__link:hover { background: rgba(255, 255, 255, .1); }
 .vt-sidebar__link svg { flex: 0 0 auto; }
+.vt-sidebar__icon { flex: 0 0 18px; display: grid; place-items: center; color: #2196F3; }
+.vt-sidebar__icon img { display: block; }
 .vt-sidebar__close, .vt-menu-btn { display: none; }
 
 .vt-main { min-width: 0; padding: 32px 29px 43px 40px; background: var(--vt-bg); }
 
 .vt-topbar { display: flex; align-items: center; justify-content: space-between; gap: 17px; margin-bottom: 35px; }
 .vt-user { display: flex; align-items: center; gap: 14px; }
+.vt-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .vt-avatar {
-  flex: 0 0 auto; width: 48px; height: 48px; border-radius: 50%;
+  flex: 0 0 auto; width: 53px; height: 53px; border-radius: 50%; overflow: hidden;
   display: grid; place-items: center;
   background: var(--vt-orange) center/cover no-repeat; color: #fff; font-size: 19px; font-weight: 700;
 }
@@ -354,16 +361,18 @@
   position: relative;
   display: flex; justify-content: space-between; align-items: center; gap: 23px;
   padding: 35px 46px 45px 40px; margin-bottom: 40px;
-  background: var(--vt-gradient); color: #fff; border-radius: 24px; overflow: hidden;
+  background: var(--vt-gradient); color: #fff; border-radius: 24px; overflow: visible;
 }
 .vt-banner__title { margin: 0 0 14px; font: 700 clamp(24px, 2.1vw, 30px)/1.15 var(--vt-font-display); }
 .vt-banner__text { margin: 0 0 27px; font-size: 14px; color: #DBEAFE; }
 .vt-banner .vt-btn { height: 45px; padding: 0 32px; font-size: 14px; }
 .vt-banner__art {
-  flex: 0 0 137px; height: 137px; border-radius: 24px;
-  display: grid; place-items: center;
-  background: var(--vt-blue) center/cover no-repeat; color: #fff;
+  position: relative;
+  flex: 0 0 135px; height: 135px; border-radius: 24px;
+  background: var(--vt-blue); color: #fff;
 }
+/* Doctor image is taller than the blue square and pokes out above it, as in the design */
+.vt-banner__art img { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 135px; height: 190px; object-fit: contain; }
 
 .vt-section-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 17px; }
 .vt-section-title { margin: 0; font: 700 18px/1.3 var(--vt-font-display); }
@@ -408,6 +417,7 @@
   box-shadow: 0 9px 20px rgba(20, 36, 138, .35);
   transition: transform .15s, background-color .15s;
 }
+.vt-fab img { display: block; width: 50px; height: 50px; }
 .vt-fab__dot {
   position: absolute; top: -6px; right: -6px; width: 15px; height: 15px;
   border-radius: 50%; background: rgba(90, 208, 95, .9); border: 2px solid var(--vt-bg);
@@ -432,15 +442,15 @@
 /* Avatars beside the bubbles (Figma "Ellipse 32" + bot/user icons), drawn with CSS so JS-added messages get them too */
 .vt-msg--bot::before, .vt-msg--user::before {
   content: ""; position: absolute; top: 6px; width: 54px; height: 49px; border-radius: 50%;
-  background-repeat: no-repeat; background-position: center; background-size: 28px 28px;
+  background-repeat: no-repeat; background-position: center;
 }
 .vt-msg--bot::before {
   left: -67px; background-color: var(--vt-primary-alt); box-shadow: 0 -1px 4px rgba(0, 0, 0, .25);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='8' width='16' height='12' rx='3'/%3E%3Cpath d='M12 8V4.5'/%3E%3Ccircle cx='12' cy='3.5' r='1'/%3E%3Ccircle cx='9' cy='14' r='1.2' fill='white'/%3E%3Ccircle cx='15' cy='14' r='1.2' fill='white'/%3E%3Cpath d='M2 13v3M22 13v3'/%3E%3C/svg%3E");
+  background-image: url("../images/vitala/bot.png"); background-size: 28px 28px;
 }
 .vt-msg--user::before {
-  right: -67px; background-color: #737D85; background-size: 26px 26px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M12 12c-1.65 0-3.06-.59-4.24-1.76C6.59 9.06 6 7.65 6 6s.59-3.06 1.76-4.24C8.94.59 10.35 0 12 0s3.06.59 4.24 1.76C17.41 2.94 18 4.35 18 6s-.59 3.06-1.76 4.24C15.06 11.41 13.65 12 12 12zM0 24v-4.2c0-.85.22-1.63.66-2.34.44-.71 1.02-1.26 1.74-1.63 1.55-.78 3.13-1.36 4.73-1.74 1.6-.39 3.22-.59 4.87-.59s3.28.2 4.88.59c1.6.38 3.17.96 4.72 1.74.73.37 1.31.92 1.75 1.63.44.71.65 1.49.65 2.34V24H0z'/%3E%3C/svg%3E");
+  right: -67px; background-color: #737D85;
+  background-image: url("../images/vitala/user-avatar.png"); background-size: 34px 34px;
 }
 .vt-msg--typing::before { display: none; }
 .vt-msg--user { align-self: flex-end; background: var(--vt-slate); padding-top: 26px; padding-bottom: 26px; }

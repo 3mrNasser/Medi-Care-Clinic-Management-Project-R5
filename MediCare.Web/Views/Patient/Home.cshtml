@@ -24,7 +24,7 @@
         <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
             <partial name="_VtIcon" model='"menu"' />
         </button>
-        <div class="vt-avatar" aria-hidden="true">S</div>
+        <div class="vt-avatar"><img src="~/images/vitala/patient-avatar.png" width="53" height="53" alt="" /></div>
         <div>
             <h1 class="vt-user__name">Hello, Sara</h1>
             <span class="vt-user__loc">Mansoura, EG</span>
@@ -48,8 +48,7 @@
         <a class="vt-btn vt-btn--white" asp-controller="Doctors" asp-action="Index">Check Now</a>
     </div>
     <div class="vt-banner__art" aria-hidden="true">
-        @* <img src="~/images/dashboard/medical-checks.png" alt="" /> *@
-        <partial name="_VtIcon" model='"heart:80"' />
+        <img src="~/images/vitala/banner-doctor.png" width="135" height="190" alt="" />
     </div>
 </section>
 
@@ -79,6 +78,6 @@
 </section>
 
 <a class="vt-fab" asp-controller="Patient" asp-action="AiAssistant" aria-label="Open AI Assistant" title="AI Assistant">
-    <partial name="_VtIcon" model='"bot:30"' />
+    <img src="~/images/vitala/bot.png" width="50" height="50" alt="" />
     <span class="vt-fab__dot" aria-hidden="true"></span>
 </a>

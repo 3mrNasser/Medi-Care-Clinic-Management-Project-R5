@@ -72,15 +72,20 @@ Remove `data-vt-chat-demo` from `AiAssistant.cshtml` once the real API is connec
 
 ## Images
 Exported from the Figma file into `wwwroot/images/vitala/`:
-`feature-find-specialist.png`, `feature-get-connected.png`, `feature-search-pharmacy.png` (unused, pharmacy is out of scope),
-`eye.png` (password toggle), `role-patient.svg`, `role-doctor.svg`.
 
-Still to export from Figma (they are separate layers on top of the web frames; the Figma MCP free-plan limit stopped the export).
-Inline SVG icons stand in for them until then:
-- Landing: `logo 2` (logo next to "vitala"), `User Profile` (Dr. Sarah Jenkins photo)
-- Select Role: icon of the `Admin Card`, and its subtitle text
-- Dashboard: `logo 5`, `person 1` (avatar), `images__1_-removebg-preview 2` (banner image), `10691265 2` (AI button icon)
-- AI Assistant: `logo 4`, `10691265 1` (bot avatar), `user-removebg-preview 1` (user avatar)
+| File | Used in |
+|---|---|
+| `logo.png` | Landing header, sidebar |
+| `doctor-sarah-jenkins.png` | Landing featured doctor |
+| `feature-find-specialist.png`, `feature-get-connected.png` | Landing feature cards |
+| `feature-search-pharmacy.png` | Not used (pharmacy is out of scope) |
+| `role-patient.svg`, `role-doctor.svg`, `role-admin.png` | Select Role cards |
+| `eye.png` | Password show/hide button |
+| `patient-avatar.png` | Dashboard avatar |
+| `banner-doctor.png` | Dashboard "Medical Checks" banner |
+| `bot.png` | AI button on the dashboard, bot avatar in the chat |
+| `user-avatar.png` | User avatar in the chat |
+| `icon-home.png` | Sidebar "Home" |
 
-The design's Top Specialties icons (Doctor, Pharmacy, Reward, Labs, e-Consultation, Medical History) belong to features that were removed
-in review, so the specialty tiles use inline SVG icons.
+The sidebar Appointments / AI Assistant icons and the Top Specialties icons are inline SVG (`_VtIcon.cshtml`),
+because the Figma icons belong to items removed in review (Cart, Notifications, Pharmacy, Labs, ...).

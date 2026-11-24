@@ -5,12 +5,12 @@
 @{
     Layout = "_VitalaLayout";
     ViewData["Title"] = "Select your role";
-    // Image = icon exported from the Figma role cards; null = inline SVG fallback (Admin card asset not exported yet).
+    // Icons exported from the Figma role cards. W == 64 means the image already includes its white circle.
     var roles = new[]
     {
-        (Value: "Patient", Desc: "Health records",      Image: "~/images/vitala/role-patient.svg", W: 24, H: 24, Icon: "patient"),
-        (Value: "Doctor",  Desc: "Manage patients",     Image: "~/images/vitala/role-doctor.svg",  W: 64, H: 61, Icon: "doctor"),
-        (Value: "Admin",   Desc: "Manage the platform", Image: (string?)null,                      W: 24, H: 24, Icon: "admin"),
+        (Value: "Patient", Desc: "Health records",  Image: (string?)"~/images/vitala/role-patient.svg", W: 24, H: 24, Icon: "patient"),
+        (Value: "Doctor",  Desc: "Manage patients", Image: (string?)"~/images/vitala/role-doctor.svg",  W: 64, H: 61, Icon: "doctor"),
+        (Value: "Admin",   Desc: "Management",      Image: (string?)"~/images/vitala/role-admin.png",   W: 64, H: 64, Icon: "admin"),
     };
     var selected = Context.Request.Query["role"].ToString();
     if (!roles.Any(r => r.Value.Equals(selected, StringComparison.OrdinalIgnoreCase))) selected = "Patient";

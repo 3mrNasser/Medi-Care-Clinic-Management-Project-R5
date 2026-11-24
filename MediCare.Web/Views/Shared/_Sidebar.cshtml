@@ -1,15 +1,19 @@
 @{
     var active = ViewData["ActiveNav"] as string ?? "";
     // Only pages that exist in the project. Add new items here as pages are built.
+    // Image = icon exported from Figma; otherwise an inline SVG icon in the same blue.
     var items = new[]
     {
-        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home"),
-        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index"),
-        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant"),
+        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home",        Image: (string?)"~/images/vitala/icon-home.png", Icon: "home"),
+        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index",       Image: (string?)null,                            Icon: "calendar"),
+        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant", Image: (string?)null,                            Icon: "bot"),
     };
 }
 <aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
-    <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">vitala</a>
+    <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">
+        <img class="vt-brand__logo" src="~/images/vitala/logo.png" width="29" height="31" alt="" />
+        vitala
+    </a>
     <button type="button" class="vt-sidebar__close" data-vt-sidebar-close aria-label="Close menu">
         <partial name="_VtIcon" model='"close"' />
     </button>
@@ -20,7 +24,19 @@
             <li>
                 <a class="vt-sidebar__link @(isActive ? "is-active" : "")"
                    asp-controller="@item.Controller" asp-action="@item.Action"
-                   aria-current="@(isActive ? "page" : null)">@item.Text</a>
+                   aria-current="@(isActive ? "page" : null)">
+                    <span class="vt-sidebar__icon">
+                        @if (item.Image is not null)
+                        {
+                            <img src="@Url.Content(item.Image)" width="16" height="18" alt="" />
+                        }
+                        else
+                        {
+                            <partial name="_VtIcon" model='item.Icon + ":18"' />
+                        }
+                    </span>
+                    @item.Text
+                </a>
             </li>
         }
     </ul>
