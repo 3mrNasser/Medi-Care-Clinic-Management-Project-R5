@@ -2,9 +2,9 @@
 using MediCare.Data.Enums;
 using MediCare.Data.Repositories.Interfaces;
 using MediCare.Services.Common;
+using MediCare.Services.DTOs;
 using MediCare.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace MediCare.Services.Implementations;
 
@@ -103,5 +103,61 @@ public class AppointmentService : IAppointmentService
         }
 
         return ServiceResult.Ok();
+    }
+
+    public Task<ServiceResult> ConfirmAsync(int doctorId, int appointmentId)
+    => RespondAsync(doctorId, appointmentId, AppointmentStatus.Confirmed);
+
+    public Task<ServiceResult> RejectAsync(int doctorId, int appointmentId)
+        => RespondAsync(doctorId, appointmentId, AppointmentStatus.Rejected);
+
+    public async Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId)
+    {
+        var appointments = await _unitOfWork.Appointments.FindAsync(
+            a => a.DoctorProfileId == doctorId,
+            a => a.Patient);
+
+        return appointments
+            .OrderBy(a => a.AppointmentDate)
+            .ThenBy(a => a.StartTime)
+            .Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                PatientName = a.Patient.FullName,
+                Date = a.AppointmentDate,
+                StartTime = a.StartTime,
+                Status = a.Status,
+                Reason = a.ReasonForVisit
+            });
+    }
+
+    private async Task<ServiceResult> RespondAsync(
+        int doctorId, int appointmentId, AppointmentStatus newStatus)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
+        if (appointment is null || appointment.DoctorProfileId != doctorId)
+            return ServiceResult.Fail("Appointment not found.");
+
+        if (appointment.Status != AppointmentStatus.Pending)
+            return ServiceResult.Fail("Only pending appointments can be confirmed or rejected.");
+
+        if (newStatus == AppointmentStatus.Confirmed && HasPassed(appointment))
+            return ServiceResult.Fail("This appointment time has already passed.");
+
+        appointment.Status = newStatus;
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
+    private static bool HasPassed(Appointment appointment)
+    {
+        var now = DateTime.Now;
+        var today = DateOnly.FromDateTime(now);
+
+        return appointment.AppointmentDate < today
+            || (appointment.AppointmentDate == today
+                && appointment.StartTime <= TimeOnly.FromDateTime(now));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediCare.Services.Common;
+using MediCare.Services.DTOs;
 
 namespace MediCare.Services.Interfaces;
 
@@ -6,4 +7,7 @@ public interface IAppointmentService
 {
     Task<IEnumerable<TimeOnly>> GetAvailableTimesAsync(int doctorId, DateOnly date);
     Task<ServiceResult> BookAsync(string patientId, int doctorId, DateOnly date, TimeOnly time, string? reason);
+    Task<ServiceResult> ConfirmAsync(int doctorId, int appointmentId);
+    Task<ServiceResult> RejectAsync(int doctorId, int appointmentId);
+    Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId);
 }
