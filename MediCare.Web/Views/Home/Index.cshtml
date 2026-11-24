@@ -1,8 +1,96 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@* 01 — Web Landing Hero *@
+@{
+    Layout = "_VitalaLayout";
+    ViewData["Title"] = "";
 }
+<div class="vt-landing">
+    <div class="vt-landing__inner">
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        <header class="vt-nav">
+            <a class="vt-brand" asp-controller="Home" asp-action="Index">
+                <span class="vt-brand__name">vitala</span>
+                <span class="vt-brand__tagline">Connecting You To Better Health</span>
+            </a>
+
+            <button type="button" class="vt-nav__toggle" data-vt-nav-toggle="#vt-nav-menu" aria-controls="vt-nav-menu" aria-expanded="false" aria-label="Toggle navigation">
+                <partial name="_VtIcon" model='"menu:28"' />
+            </button>
+
+            @* The menu is split from the brand only so it can collapse on mobile *@
+            <div class="vt-nav__menu" id="vt-nav-menu">
+                <nav aria-label="Primary">
+                    <ul class="vt-nav__links">
+                        <li><a class="is-active" asp-controller="Home" asp-action="Index" aria-current="page">Home</a></li>
+                        <li><a asp-controller="Doctors" asp-action="Index">Find Specialist</a></li>
+                        <li><a asp-controller="MyAppointments" asp-action="Index">My Appointments</a></li>
+                        <li><a asp-controller="Patient" asp-action="AiAssistant">AI Assistant</a></li>
+                    </ul>
+                </nav>
+                <div class="vt-nav__actions">
+                    <a class="vt-btn vt-btn--outline-light" asp-controller="Account" asp-action="Login">Log In</a>
+                    <a class="vt-btn vt-btn--white" asp-controller="Account" asp-action="SelectRole">Get Started</a>
+                </div>
+            </div>
+        </header>
+
+        <section class="vt-hero">
+            <div>
+                <span class="vt-pill">All-in-one healthcare web platform</span>
+                <h1 class="vt-hero__title">Connecting You To <span>Better Health.</span></h1>
+                <p class="vt-hero__text">
+                    Book appointments with top specialists, locate nearby pharmacies,
+                    and stay connected with trusted healthcare providers.
+                </p>
+                <div class="vt-hero__cta">
+                    <a class="vt-btn vt-btn--white vt-btn--lg" asp-controller="Account" asp-action="SelectRole">Get Started Free</a>
+                    <a class="vt-btn vt-btn--glass vt-btn--lg" asp-controller="Account" asp-action="Login">Sign In to Portal</a>
+                </div>
+            </div>
+
+            <div class="vt-glass-card">
+                @* Featured doctor — static content, replace with model data when available *@
+                <div class="vt-doctor-highlight">
+                    <div class="vt-doctor-highlight__photo" role="img" aria-label="Doctor photo">
+                        @* <img src="~/images/doctors/sarah-jenkins.jpg" alt="Dr. Sarah Jenkins" /> *@
+                    </div>
+                    <div>
+                        <span class="vt-eyebrow">Verified Specialists</span>
+                        <h2 class="vt-doctor-highlight__name">Dr. Sarah Jenkins</h2>
+                        <p class="vt-doctor-highlight__meta">Cardiology &amp; Internal Medicine • 4.9 ★</p>
+                    </div>
+                </div>
+                <div class="vt-stat-grid">
+                    <div class="vt-stat"><strong>500+ Doctors</strong><span>Instant Booking</span></div>
+                    <div class="vt-stat"><strong>24/7 AI Assistant</strong><span>Symptom Guidance</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="vt-features" aria-label="Features">
+            <a class="vt-feature" id="find-specialist" asp-controller="Doctors" asp-action="Index">
+                <span class="vt-feature__icon">
+                    @* <img src="~/images/landing/find-specialist.png" alt="" /> *@
+                    <partial name="_VtIcon" model='"doctor:42"' />
+                </span>
+                <h3 class="vt-feature__title">Find Your Specialist</h3>
+                <p class="vt-feature__text">Book appointments with top doctors easily.</p>
+            </a>
+            <a class="vt-feature" id="my-appointments" asp-controller="MyAppointments" asp-action="Index">
+                <span class="vt-feature__icon">
+                    @* <img src="~/images/landing/appointments.png" alt="" /> *@
+                    <partial name="_VtIcon" model='"calendar:42"' />
+                </span>
+                <h3 class="vt-feature__title">Manage Appointments</h3>
+                <p class="vt-feature__text">Track or cancel your bookings in one place.</p>
+            </a>
+            <a class="vt-feature" id="ai-assistant" asp-controller="Patient" asp-action="AiAssistant">
+                <span class="vt-feature__icon">
+                    @* <img src="~/images/landing/get-connected.png" alt="" /> *@
+                    <partial name="_VtIcon" model='"connect:42"' />
+                </span>
+                <h3 class="vt-feature__title">Get Connected</h3>
+                <p class="vt-feature__text">Describe your symptoms and find the right specialist.</p>
+            </a>
+        </section>
+    </div>
 </div>
