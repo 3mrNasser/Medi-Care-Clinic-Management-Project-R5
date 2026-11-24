@@ -18,6 +18,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
+builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

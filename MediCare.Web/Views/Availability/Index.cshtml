@@ -1,0 +1,56 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.AvailabilitySlotDto>
+
+@{
+    ViewData["Title"] = "Availability";
+    var doctorId = (int)ViewBag.DoctorId;
+}
+
+<h2>Working hours</h2>
+
+@if (TempData["Error"] is string error)
+{
+    <p style="color:red">@error</p>
+}
+
+<form method="post" asp-action="Add">
+    <input type="hidden" name="doctorId" value="@doctorId" />
+
+    <select name="day">
+        @foreach (var day in Enum.GetValues<DayOfWeek>())
+        {
+            <option value="@day">@day</option>
+        }
+    </select>
+
+    <input type="time" name="start" required />
+    <input type="time" name="end" required />
+    <button type="submit">Add</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Day</th>
+            <th>From</th>
+            <th>To</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var s in Model)
+        {
+            <tr>
+                <td>@s.DayOfWeek</td>
+                <td>@s.StartTime.ToString("HH:mm")</td>
+                <td>@s.EndTime.ToString("HH:mm")</td>
+                <td>
+                    <form method="post" asp-action="Remove">
+                        <input type="hidden" name="doctorId" value="@doctorId" />
+                        <input type="hidden" name="slotId" value="@s.Id" />
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
