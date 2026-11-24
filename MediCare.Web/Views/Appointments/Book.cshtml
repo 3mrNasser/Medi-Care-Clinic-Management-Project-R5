@@ -1,0 +1,46 @@
+﻿@model IEnumerable<TimeOnly>
+
+@{
+    ViewData["Title"] = "Book";
+    var doctorId = (int)ViewBag.DoctorId;
+    var date = (DateOnly)ViewBag.Date;
+}
+
+<h2>Book an appointment</h2>
+
+@if (TempData["Error"] is string error)
+{
+    <p style="color:red">@error</p>
+}
+@if (TempData["Success"] is string success)
+{
+    <p style="color:green">@success</p>
+}
+
+<form method="get">
+    <input type="hidden" name="doctorId" value="@doctorId" />
+    <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" />
+    <button type="submit">Show times</button>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No available times on this day.</p>
+}
+else
+{
+    <form method="post" asp-action="Book">
+        <input type="hidden" name="doctorId" value="@doctorId" />
+        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+
+        <select name="time">
+            @foreach (var t in Model)
+            {
+                <option value="@t.ToString("HH:mm")">@t.ToString("HH:mm")</option>
+            }
+        </select>
+
+        <input type="text" name="reason" placeholder="Reason (optional)" maxlength="500" />
+        <button type="submit">Book</button>
+    </form>
+}
