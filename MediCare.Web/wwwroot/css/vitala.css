@@ -223,6 +223,8 @@
 .vt-role-grid { border: 0; margin: 0; padding: 0; min-width: 0; }
 .vt-role-submit { min-width: 280px; height: 56px; font-size: 16px; border-radius: 13px; }
 .vt-role-grid--3 { grid-template-columns: repeat(3, 191px); gap: 22px; }
+/* Figma Select Role: 2x2 grid (Patient, Doctor / Pharmacist, Admin), 22px apart */
+.vt-role-grid--2x2 { grid-template-columns: repeat(2, 191px); gap: 22px; }
 .vt-role-page__login { margin-top: 28px; font-size: 15px; color: var(--vt-text-muted); }
 .vt-role-page__login a { font-weight: 700; color: var(--vt-primary); }
 .vt-role-page__login a:hover { text-decoration: underline; }
@@ -418,6 +420,16 @@
   transition: transform .15s, background-color .15s;
 }
 .vt-fab img { display: block; width: 50px; height: 50px; }
+/* Empty state (Cart / Notifications until they are designed) */
+.vt-page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+.vt-empty {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px;
+  max-width: 640px; padding: 56px 24px;
+  background: #fff; border: 1.5px solid var(--vt-border); border-radius: 19px;
+}
+.vt-empty__icon { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: #EEF2FF; margin-bottom: 6px; }
+.vt-empty__title { margin: 0; font: 700 18px/1.3 var(--vt-font-display); color: var(--vt-text); }
+.vt-empty__text { margin: 0 0 12px; font-size: 14px; color: var(--vt-text-muted); }
 .vt-fab__dot {
   position: absolute; top: -6px; right: -6px; width: 15px; height: 15px;
   border-radius: 50%; background: rgba(90, 208, 95, .9); border: 2px solid var(--vt-bg);

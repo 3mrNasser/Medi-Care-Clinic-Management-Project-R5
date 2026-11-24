@@ -26,10 +26,10 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 `Controllers/AccountController.cs` and `Controllers/PatientController.cs` contain **GET actions only** (`return View();`)
 so the screens can be opened. The backend work goes into the same files:
 - `AccountController`: POST actions for `Login`, `Signup`, `ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword`, `Logout` (Identity task).
-- `PatientController`: pass real data (patient name, upcoming appointment) to `Home`.
+- `PatientController`: pass real data (patient name, upcoming appointment) to `Home`. `Cart` and `Notifications` show an empty state until they are designed.
 
 ### Flows
-- **Sign up:** Landing "Get Started" / Login "sign up" → `SelectRole` → `GET Account/Signup?role=Patient|Doctor|Admin`.
+- **Sign up:** Landing "Get Started" / Login "sign up" → `SelectRole` → `GET Account/Signup?role=Patient|Doctor|Pharmacist|Admin`.
   The role is shown on the Sign up page and posted as a hidden `Role` field (unknown values fall back to `Patient`).
 - **Password recovery:** Login → "Forget Password?" → `ForgotPassword` (email) → `VerifyOtp` → `ResetPassword`.
   `ForgotPassword` isn't in the Figma file. It's built from the same components so the flow has no dead end.
@@ -39,8 +39,12 @@ so the screens can be opened. The backend work goes into the same files:
 > from this value. Reject it, or require an existing admin to create/approve admin accounts.
 
 ### Links
-Every link points to a page that exists. Links to pages that weren't built (Pharmacy, Labs, Cart, Rewards,
-e-Consultation, Medical History, Profile, Notifications) were removed.
+Every link points to a page that exists. Links to pages that weren't built (Pharmacy, Labs, Rewards,
+e-Consultation, Medical History, Profile) were removed. Cart and Notifications are back in the sidebar (as in Figma)
+and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
+
+> **Roles:** the Figma Select Role screen has 4 roles, including **Pharmacist**, so the card is back.
+> The README currently lists 3 roles (Patient, Doctor, Admin). The Identity setup needs a `Pharmacist` role, or the card should be removed again.
 - "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the specialty tiles (`?specialty=`) go to `Doctors/Index`.
   Specialty values must match `Doctor.Specialty` exactly (`Cardiology`, `Dermatology` and `Pediatrics` are seeded).
 - "My Appointments", sidebar "Appointments" and "View Details" go to `MyAppointments/Index`.
@@ -50,7 +54,7 @@ e-Consultation, Medical History, Profile, Notifications) were removed.
 
 | Page | Request | Fields |
 |---|---|---|
-| SelectRole | `GET Account/Signup` | `role` (Patient / Doctor / Admin), query string |
+| SelectRole | `GET Account/Signup` | `role` (Patient / Doctor / Pharmacist / Admin), query string |
 | Signup | `POST Account/Signup` | `Role` (hidden), `FullName`, `Email`, `Password`, `ConfirmPassword` |
 | Login | `POST Account/Login` | `Email`, `Password` |
 | ForgotPassword | `POST Account/ForgotPassword` | `Email` |
@@ -79,13 +83,13 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 | `doctor-sarah-jenkins.png` | Landing featured doctor |
 | `feature-find-specialist.png`, `feature-get-connected.png` | Landing feature cards |
 | `feature-search-pharmacy.png` | Not used (pharmacy is out of scope) |
-| `role-patient.svg`, `role-doctor.svg`, `role-admin.png` | Select Role cards |
+| `role-patient.svg`, `role-doctor.svg`, `role-pharmacist.png`, `role-admin.png` | Select Role cards |
 | `eye.png` | Password show/hide button |
 | `patient-avatar.png` | Dashboard avatar |
 | `banner-doctor.png` | Dashboard "Medical Checks" banner |
 | `bot.png` | AI button on the dashboard, bot avatar in the chat |
 | `user-avatar.png` | User avatar in the chat |
-| `icon-home.png` | Sidebar "Home" |
+| `icon-home.png`, `icon-cart.png`, `icon-notifications.png` | Sidebar items |
 
-The sidebar Appointments / AI Assistant icons and the Top Specialties icons are inline SVG (`_VtIcon.cshtml`),
-because the Figma icons belong to items removed in review (Cart, Notifications, Pharmacy, Labs, ...).
+The sidebar Appointments / AI Assistant icons and the Top Specialties icons are inline SVG (`_VtIcon.cshtml`):
+Figma has no icon for those two sidebar items, and its specialty icons belong to features removed in review.

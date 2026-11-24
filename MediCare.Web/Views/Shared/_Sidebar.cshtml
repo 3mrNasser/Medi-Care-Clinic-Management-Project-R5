@@ -6,6 +6,8 @@
     {
         (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home",        Image: (string?)"~/images/vitala/icon-home.png", Icon: "home"),
         (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index",       Image: (string?)null,                            Icon: "calendar"),
+        (Key: "Cart",          Text: "Cart",          Controller: "Patient", Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart"),
+        (Key: "Notifications", Text: "Notifications", Controller: "Patient", Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell"),
         (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant", Image: (string?)null,                            Icon: "bot"),
     };
 }
@@ -28,7 +30,8 @@
                     <span class="vt-sidebar__icon">
                         @if (item.Image is not null)
                         {
-                            <img src="@Url.Content(item.Image)" width="16" height="18" alt="" />
+                            var isHome = item.Key == "Home";
+                            <img src="@Url.Content(item.Image)" width="@(isHome ? 16 : 20)" height="@(isHome ? 18 : 20)" alt="" />
                         }
                         else
                         {

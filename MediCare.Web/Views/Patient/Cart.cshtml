@@ -1,0 +1,19 @@
+@* Cart — no screen design in Figma yet. Empty state in the dashboard style until the real page is designed. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Cart";
+    ViewData["ActiveNav"] = "Cart";
+}
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <h1 class="vt-section-title">Cart</h1>
+</header>
+
+<section class="vt-empty">
+    <span class="vt-empty__icon"><img src="~/images/vitala/icon-cart.png" width="40" height="40" alt="" /></span>
+    <h2 class="vt-empty__title">Your cart is empty</h2>
+    <p class="vt-empty__text">Items you add will show up here.</p>
+    <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Patient" asp-action="Home">Back to Home</a>
+</section>
