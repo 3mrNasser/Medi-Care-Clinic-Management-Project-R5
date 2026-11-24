@@ -1,0 +1,72 @@
+@* 04 — Sign up (step 2, after Select Role)
+   Reached as /Account/Signup?role=Patient|Doctor|Admin (defaults to Patient).
+   Fields posted: Role (hidden), FullName, Email, Password, ConfirmPassword
+   Security: the backend must not trust Role=Admin from this form (see docs/VITALA-FRONTEND.md).
+*@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Sign up";
+    ViewData["AuthPanelTitle"] = "Create Your Account";
+
+    var allowedRoles = new[] { "Patient", "Doctor", "Admin" };
+    var requested = Context.Request.Query["role"].ToString();
+    var role = allowedRoles.FirstOrDefault(r => r.Equals(requested, StringComparison.OrdinalIgnoreCase)) ?? "Patient";
+}
+<h1 class="vt-auth__title">Sign up</h1>
+<p class="vt-auth__lead">
+    Signing up as <strong>@role</strong> ·
+    <a class="vt-link-strong" asp-controller="Account" asp-action="SelectRole" asp-route-role="@role">Change</a>
+</p>
+
+<form method="post" asp-controller="Account" asp-action="Signup" novalidate>
+    <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>
+    <input type="hidden" name="Role" value="@role" />
+
+    <div class="vt-field">
+        <label class="vt-label" for="FullName">Full Name</label>
+        <input class="vt-input" id="FullName" name="FullName" type="text" autocomplete="name" required
+               data-val="true"
+               data-val-required="Full name is required."
+               data-val-maxlength="Full name must be 100 characters or fewer." data-val-maxlength-max="100" />
+        <span class="vt-field-error" data-valmsg-for="FullName" data-valmsg-replace="true"></span>
+    </div>
+
+    <div class="vt-field">
+        <label class="vt-label" for="Email">Email Address</label>
+        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" required
+               data-val="true"
+               data-val-required="Email is required."
+               data-val-email="Enter a valid email address." />
+        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+    </div>
+
+    <div class="vt-field">
+        <label class="vt-label" for="Password">Password</label>
+        <div class="vt-input-wrap">
+            <input class="vt-input vt-input--with-icon" id="Password" name="Password" type="password" autocomplete="new-password" required
+                   data-val="true"
+                   data-val-required="Password is required."
+                   data-val-minlength="Password must be at least 6 characters." data-val-minlength-min="6" />
+            <partial name="_PasswordToggle" model='"#Password"' />
+        </div>
+        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+    </div>
+
+    <div class="vt-field">
+        <label class="vt-label" for="ConfirmPassword">Confirm Password</label>
+        <div class="vt-input-wrap">
+            <input class="vt-input vt-input--with-icon" id="ConfirmPassword" name="ConfirmPassword" type="password" autocomplete="new-password" required
+                   data-val="true"
+                   data-val-required="Please confirm your password."
+                   data-val-equalto="Passwords do not match." data-val-equalto-other="*.Password" />
+            <partial name="_PasswordToggle" model='"#ConfirmPassword"' />
+        </div>
+        <span class="vt-field-error" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
+    </div>
+
+    <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-auth__submit">Sign up</button>
+</form>
+
+<p class="vt-auth__footer">
+    <a asp-controller="Account" asp-action="Login">Already have an Account? login</a>
+</p>

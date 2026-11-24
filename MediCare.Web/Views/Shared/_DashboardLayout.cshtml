@@ -1,0 +1,18 @@
+@*
+    Patient workspace layout: gradient sidebar + content area.
+    From the view set:
+        ViewData["ActiveNav"] = "Home" | "Appointments" | "AiAssistant" | "Cart" | "Notifications"
+        ViewData["MainClass"] = "vt-main--flush"   (optional, full-height pages like the AI chat)
+*@
+@{
+    Layout = "_VitalaLayout";
+}
+<div class="vt-app">
+    <partial name="_Sidebar" />
+    <main class="vt-main @ViewData["MainClass"]" id="main">
+        @RenderBody()
+    </main>
+</div>
+
+@section Styles { @await RenderSectionAsync("Styles", required: false) }
+@section Scripts { @await RenderSectionAsync("Scripts", required: false) }

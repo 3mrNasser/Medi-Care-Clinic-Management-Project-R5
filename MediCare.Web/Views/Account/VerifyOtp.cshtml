@@ -1,0 +1,31 @@
+@* 05 — Verify OTP
+   Fields posted: Code (4 digits, joined by vitala.js from the 4 boxes)
+   Countdown length in seconds: data-vt-countdown (179 = 02:59 as in the design)
+*@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Verify account";
+    ViewData["AuthPanelTitle"] = "Account Verification";
+}
+<h1 class="vt-auth__title">Verify Account</h1>
+
+<form method="post" asp-controller="Account" asp-action="VerifyOtp" novalidate>
+    <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>
+    <input type="hidden" id="Code" name="Code" />
+
+    <div class="vt-otp" data-vt-otp="#Code" role="group" aria-label="Verification code">
+        @for (var i = 1; i <= 4; i++)
+        {
+            <input class="vt-otp__input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1"
+                   autocomplete="@(i == 1 ? "one-time-code" : "off")" aria-label="Digit @i" autofocus="@(i == 1)" />
+        }
+    </div>
+    <span class="vt-field-error" data-valmsg-for="Code" data-valmsg-replace="true"></span>
+
+    <p class="vt-otp-timer" data-vt-countdown="179">
+        <span data-vt-countdown-text aria-live="polite">02:59</span>
+        <button type="submit" formaction="@Url.Action("ResendOtp", "Account")" formnovalidate data-vt-resend hidden>Resend code</button>
+    </p>
+
+    <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-auth__submit">Verify</button>
+</form>

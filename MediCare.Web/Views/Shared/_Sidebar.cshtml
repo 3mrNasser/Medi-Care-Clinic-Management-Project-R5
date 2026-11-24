@@ -1,0 +1,35 @@
+@{
+    var active = ViewData["ActiveNav"] as string ?? "";
+    // Only pages that exist in the project. Add new items here as pages are built.
+    var items = new[]
+    {
+        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home"),
+        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index"),
+        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant"),
+    };
+}
+<aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
+    <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">vitala</a>
+    <button type="button" class="vt-sidebar__close" data-vt-sidebar-close aria-label="Close menu">
+        <partial name="_VtIcon" model='"close"' />
+    </button>
+    <ul class="vt-sidebar__nav">
+        @foreach (var item in items)
+        {
+            var isActive = item.Key == active;
+            <li>
+                <a class="vt-sidebar__link @(isActive ? "is-active" : "")"
+                   asp-controller="@item.Controller" asp-action="@item.Action"
+                   aria-current="@(isActive ? "page" : null)">@item.Text</a>
+            </li>
+        }
+    </ul>
+
+    @* POST + anti-forgery token (added by the form tag helper). Backend adds [HttpPost] Account/Logout. *@
+    <form class="vt-sidebar__logout" method="post" asp-controller="Account" asp-action="Logout">
+        <button type="submit" class="vt-sidebar__link">
+            <partial name="_VtIcon" model='"logout:20"' />
+            Log out
+        </button>
+    </form>
+</aside>
