@@ -1,0 +1,87 @@
+@* 1.2 — Patient Home Dashboard
+   All data below is static placeholder text. Replace with model values, e.g. @Model.FirstName.
+*@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Home";
+    ViewData["ActiveNav"] = "Home";
+
+    var specialties = new[]
+    {
+        (Text: "Doctor",          Icon: "doctor",  Controller: "Doctors", Action: "Index"),
+        (Text: "Pharmacy",        Icon: "pharmacy", Controller: "Patient", Action: "Pharmacy"),
+        (Text: "Reward",          Icon: "reward",  Controller: "Patient", Action: "Rewards"),
+        (Text: "Labs",            Icon: "labs",    Controller: "Patient", Action: "Labs"),
+        (Text: "e-Consultation",  Icon: "consult", Controller: "Patient", Action: "Consultation"),
+        (Text: "Medical History", Icon: "history", Controller: "Patient", Action: "MedicalHistory"),
+    };
+}
+
+<header class="vt-topbar">
+    <div class="vt-user">
+        <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+            <partial name="_VtIcon" model='"menu"' />
+        </button>
+        <div class="vt-avatar" aria-hidden="true">S</div>
+        <div>
+            <h1 class="vt-user__name">Hello, Sara</h1>
+            <span class="vt-user__loc">Mansoura, EG</span>
+        </div>
+    </div>
+
+    <div class="vt-topbar__actions">
+        <form class="vt-search" role="search" method="get" asp-controller="Patient" asp-action="Search">
+            <label for="vt-q" class="vt-sr-only">Search</label>
+            <partial name="_VtIcon" model='"search:20"' />
+            <input id="vt-q" name="q" type="search" placeholder="Search doctors, labs, medicines..." />
+        </form>
+        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Notifications" aria-label="Notifications">
+            <partial name="_VtIcon" model='"bell"' />
+            <span class="vt-icon-btn__dot"></span>
+        </a>
+        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Profile" aria-label="Profile">
+            <partial name="_VtIcon" model='"user"' />
+        </a>
+    </div>
+</header>
+
+<section class="vt-banner">
+    <div>
+        <h2 class="vt-banner__title">Medical Checks!</h2>
+        <p class="vt-banner__text">Check your health condition regularly to minimize the incidence of disease in the future.</p>
+        <a class="vt-btn vt-btn--white" asp-controller="Patient" asp-action="Labs">Check Now</a>
+    </div>
+    <div class="vt-banner__art" aria-hidden="true">
+        @* <img src="~/images/dashboard/medical-checks.png" alt="" /> *@
+        <partial name="_VtIcon" model='"heart:80"' />
+    </div>
+</section>
+
+<section aria-labelledby="vt-specialties-title">
+    <div class="vt-section-head">
+        <h2 class="vt-section-title" id="vt-specialties-title">Top Specialties</h2>
+        <a class="vt-link-strong" asp-controller="Patient" asp-action="Specialties">See all</a>
+    </div>
+    <div class="vt-specialties">
+        @foreach (var s in specialties)
+        {
+            <a class="vt-specialty" asp-controller="@s.Controller" asp-action="@s.Action">
+                <span class="vt-specialty__icon"><partial name="_VtIcon" model='s.Icon + ":36"' /></span>
+                @s.Text
+            </a>
+        }
+    </div>
+</section>
+
+<section class="vt-appointment" aria-label="Upcoming appointment">
+    <div>
+        <span class="vt-eyebrow">Upcoming Appointment</span>
+        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Neurologist</h3>
+        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • Mansoura Medical Center</span>
+    </div>
+    <a class="vt-chip-link" asp-controller="MyAppointments" asp-action="Index">View Details</a>
+</section>
+
+<a class="vt-fab" asp-controller="Patient" asp-action="AiAssistant" aria-label="Open AI Assistant" title="AI Assistant">
+    <partial name="_VtIcon" model='"bot:34"' />
+</a>

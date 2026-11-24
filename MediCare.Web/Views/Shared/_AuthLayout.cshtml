@@ -1,0 +1,20 @@
+@*
+    Split-screen layout for Login / Sign up / Verify OTP / Reset password.
+    Set the left panel text from the view:  ViewData["AuthPanelTitle"] = "Welcome Back to Vitala";
+*@
+@{
+    Layout = "_VitalaLayout";
+}
+<div class="vt-auth">
+    <aside class="vt-auth__panel">
+        <h2 class="vt-auth__panel-title">@ViewData["AuthPanelTitle"]</h2>
+    </aside>
+    <main class="vt-auth__main">
+        <div class="vt-auth__inner">
+            @RenderBody()
+        </div>
+    </main>
+</div>
+
+@section Styles { @await RenderSectionAsync("Styles", required: false) }
+@section Scripts { @await RenderSectionAsync("Scripts", required: false) }

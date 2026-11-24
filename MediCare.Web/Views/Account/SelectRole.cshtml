@@ -1,0 +1,38 @@
+@* 02 — Select Role
+   Posts a single field: Role = Patient | Doctor | Pharmacist | Admin
+*@
+@{
+    Layout = "_VitalaLayout";
+    ViewData["Title"] = "Select your role";
+    var roles = new[]
+    {
+        (Value: "Patient",    Icon: "patient"),
+        (Value: "Doctor",     Icon: "doctor"),
+        (Value: "Pharmacist", Icon: "pharmacist"),
+        (Value: "Admin",      Icon: "admin"),
+    };
+    var selected = ViewData["SelectedRole"] as string ?? "Patient";
+}
+<main class="vt-role-page">
+    <h1 class="vt-role-page__title">Welcome</h1>
+    <p class="vt-role-page__sub">Select your role to continue to your workspace</p>
+
+    <form class="vt-role-form" method="post" asp-controller="Account" asp-action="SelectRole" data-vt-role-form>
+        <fieldset class="vt-role-grid">
+            <legend class="vt-sr-only">Role</legend>
+            @foreach (var role in roles)
+            {
+                <label class="vt-role-card">
+                    <input type="radio" name="Role" value="@role.Value" data-label="@role.Value" checked="@(role.Value == selected)" />
+                    <span class="vt-role-card__icon"><partial name="_VtIcon" model='role.Icon + ":32"' /></span>
+                    <span class="vt-role-card__label">@role.Value</span>
+                </label>
+            }
+        </fieldset>
+
+        <button type="submit" class="vt-btn vt-btn--primary vt-role-submit">
+            Continue as <span data-vt-role-label>@selected</span>
+            <partial name="_VtIcon" model='"arrow-right:20"' />
+        </button>
+    </form>
+</main>

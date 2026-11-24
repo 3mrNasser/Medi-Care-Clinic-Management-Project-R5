@@ -1,0 +1,55 @@
+@* AI Bot Web Workspace
+   UI only. vitala.js appends the user's message and fires `vitala:chat-send`;
+   the team hooks the real API there (see the comment in wwwroot/js/vitala.js).
+   Remove `data-vt-chat-demo` once the real handler exists.
+*@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "AI Assistant";
+    ViewData["ActiveNav"] = "AiAssistant";
+    ViewData["MainClass"] = "vt-main--flush";
+}
+
+<section class="vt-chat" data-vt-chat data-vt-chat-demo aria-label="AI medical assistant">
+    <header class="vt-chat__header">
+        <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+            <partial name="_VtIcon" model='"menu"' />
+        </button>
+        <h1 class="vt-chat__title">Vitala AI Assistant</h1>
+    </header>
+
+    <div class="vt-chat__log" data-vt-chat-log role="log" aria-live="polite">
+        <div class="vt-msg vt-msg--bot">Hello! I'm your AI medical assistant. I can help you understand your symptoms or find the right doctor. How can I help you today?</div>
+        <div class="vt-msg vt-msg--user">I've been having a headache for two days and feeling a bit dizzy.</div>
+        <div class="vt-msg vt-msg--bot">Try to rest and drink water. If symptoms continue, consider visiting a neurologist or a general physician.</div>
+    </div>
+
+    <div class="vt-chat__composer">
+        <div class="vt-chips">
+            <button type="button" class="vt-chip" data-vt-chip="I'd like to describe my symptoms: ">Describe symptoms</button>
+            <button type="button" class="vt-chip" data-vt-chip="Help me find a specialist for ">Find a specialist</button>
+            <button type="button" class="vt-chip" data-vt-chip="Can you check this medication: ">Check medication</button>
+        </div>
+        <form class="vt-composer-row" data-vt-chat-form autocomplete="off">
+            <label for="vt-chat-input" class="vt-sr-only">Message</label>
+            <input id="vt-chat-input" name="Message" type="text" placeholder="Type your health concern here..." />
+            <button type="submit" class="vt-btn vt-btn--primary">Send</button>
+        </form>
+    </div>
+</section>
+
+<aside class="vt-aside" aria-labelledby="vt-rec-title">
+    <h2 class="vt-aside__title" id="vt-rec-title">Recommended Specialists</h2>
+
+    <article class="vt-doc-card">
+        <h3 class="vt-doc-card__name">Dr. Tariq Mansour</h3>
+        <p class="vt-doc-card__meta">Neurologist • 4.9 ★</p>
+        <a class="vt-btn vt-btn--primary vt-btn--block" asp-controller="Doctors" asp-action="Index" asp-route-specialty="Neurology">Book Neurologist</a>
+    </article>
+
+    <article class="vt-doc-card">
+        <h3 class="vt-doc-card__name">Dr. Nadia Salem</h3>
+        <p class="vt-doc-card__meta">General Physician • 4.8 ★</p>
+        <a class="vt-btn vt-btn--outline vt-btn--block" asp-controller="Doctors" asp-action="Index" asp-route-specialty="General Medicine">Book General Physician</a>
+    </article>
+</aside>

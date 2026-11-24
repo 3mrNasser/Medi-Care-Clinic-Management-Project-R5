@@ -1,0 +1,38 @@
+@* 03 — Login
+   Fields posted: Email, Password  (match these to the team's LoginViewModel, or switch to asp-for)
+*@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Log in";
+    ViewData["AuthPanelTitle"] = "Welcome Back to Vitala";
+}
+<h1 class="vt-auth__title">Log in</h1>
+
+<form method="post" asp-controller="Account" asp-action="Login" novalidate>
+    <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>
+
+    <div class="vt-field">
+        <label class="vt-label" for="Email">Email Address</label>
+        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" required />
+        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+    </div>
+
+    <div class="vt-field">
+        <label class="vt-label" for="Password">Password</label>
+        <div class="vt-input-wrap">
+            <input class="vt-input vt-input--with-icon" id="Password" name="Password" type="password" autocomplete="current-password" required />
+            <partial name="_PasswordToggle" model='"#Password"' />
+        </div>
+        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+    </div>
+
+    <div class="vt-auth__row-end">
+        <a class="vt-link-muted" asp-controller="Account" asp-action="ForgotPassword">Forget Password?</a>
+    </div>
+
+    <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-auth__submit">Log in</button>
+</form>
+
+<p class="vt-auth__footer">
+    <a asp-controller="Account" asp-action="Signup">Don’t have an Account? sign up</a>
+</p>
