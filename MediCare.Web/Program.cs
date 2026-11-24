@@ -20,6 +20,8 @@ builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
 
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
