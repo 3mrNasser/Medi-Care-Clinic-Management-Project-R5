@@ -1,15 +1,17 @@
 @{
     var active = ViewData["ActiveNav"] as string ?? "";
-    // Only pages that exist in the project. Add new items here as pages are built.
-    // Image = icon exported from Figma; otherwise an inline SVG icon in the same blue.
-    var items = new[]
-    {
-        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home",        Image: (string?)"~/images/vitala/icon-home.png", Icon: "home"),
-        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index",       Image: (string?)null,                            Icon: "calendar"),
-        (Key: "Cart",          Text: "Cart",          Controller: "Patient", Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart"),
-        (Key: "Notifications", Text: "Notifications", Controller: "Patient", Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell"),
-        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant", Image: (string?)null,                            Icon: "bot"),
-    };
+    // Image = icon exported from Figma; otherwise an inline SVG icon.
+    var home          = (Key: "Home",          Text: "Home",          Controller: "Patient",        Action: "Home",          Image: (string?)"~/images/vitala/icon-home.png",          Icon: "home");
+    var appointments  = (Key: "Appointments",  Text: "Appointments",  Controller: "MyAppointments", Action: "Index",         Image: (string?)null,                                     Icon: "calendar");
+    var cart          = (Key: "Cart",          Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
+    var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Patient",        Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
+    var aiAssistant   = (Key: "AiAssistant",   Text: "AI Assistant",  Controller: "Patient",        Action: "AiAssistant",   Image: (string?)null,                                     Icon: "bot");
+
+    // As in Figma: the AI workspace sidebar shows Home + AI Assistant; every other screen shows the dashboard menu.
+    // (The dashboard reaches the AI Assistant through the floating robot button.)
+    var items = active == "AiAssistant"
+        ? new[] { home, aiAssistant }
+        : new[] { home, appointments, cart, notifications };
 }
 <aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
     <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">

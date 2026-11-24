@@ -45,8 +45,12 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 
 > **Roles:** the Figma Select Role screen has 4 roles, including **Pharmacist**, so the card is back.
 > The README currently lists 3 roles (Patient, Doctor, Admin). The Identity setup needs a `Pharmacist` role, or the card should be removed again.
-- "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the specialty tiles (`?specialty=`) go to `Doctors/Index`.
-  Specialty values must match `Doctor.Specialty` exactly (`Cardiology`, `Dermatology` and `Pediatrics` are seeded).
+- "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the **Doctor** tile go to `Doctors/Index`.
+- The other dashboard tiles from Figma (Pharmacy, Reward, Labs, e-Consultation, Medical History) open `Patient/Pharmacy`, `Patient/Rewards`,
+  `Patient/Labs`, `Patient/Consultation`, `Patient/MedicalHistory`: a shared "Coming soon" page (`Views/Patient/ComingSoon.cshtml`) until they are designed.
+- Topbar (as in Figma): bell → `Patient/Notifications`; the "indent" button collapses the sidebar (opens it on mobile).
+- Sidebar (as in Figma): the AI Assistant screen shows Home + AI Assistant; every other screen shows Home, Appointments, Cart, Notifications.
+  The dashboard reaches the AI Assistant through the floating robot button.
 - "My Appointments", sidebar "Appointments" and "View Details" go to `MyAppointments/Index`.
 - "AI Assistant" and "Get Connected" go to `Patient/AiAssistant`.
 
@@ -90,6 +94,8 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 | `bot.png` | AI button on the dashboard, bot avatar in the chat |
 | `user-avatar.png` | User avatar in the chat |
 | `icon-home.png`, `icon-cart.png`, `icon-notifications.png` | Sidebar items |
+| `svc-doctor.png`, `svc-pharmacy.png`, `svc-labs.png`, `svc-econsultation.png`, `svc-medical-history.png` | Dashboard service tiles |
+| `svc-reward.png` | Not used yet: the export only has the badge background (re-export `reward-svgrepo-com 1` with its children) |
 
-The sidebar Appointments / AI Assistant icons and the Top Specialties icons are inline SVG (`_VtIcon.cshtml`):
-Figma has no icon for those two sidebar items, and its specialty icons belong to features removed in review.
+Inline SVG (`_VtIcon.cshtml`) is used where Figma has no exported icon: sidebar Appointments / AI Assistant,
+the Reward tile, and the topbar bell / indent buttons.
