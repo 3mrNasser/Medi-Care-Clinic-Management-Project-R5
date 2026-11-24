@@ -245,6 +245,12 @@
 .vt-auth__lead { margin: -16px 0 32px; font-size: 16px; line-height: 1.6; color: var(--vt-text-muted); }
 .vt-auth__footer { margin-top: clamp(43px, 18vh, 141px); text-align: center; font-size: 13px; font-weight: 700; color: var(--vt-primary); }
 .vt-auth__footer a:hover { text-decoration: underline; }
+/* Google sign-in (Figma: 34x35 logo centered under the main button) */
+.vt-social { display: flex; justify-content: center; margin-top: 36px; }
+.vt-social__btn { display: grid; place-items: center; padding: 6px; background: none; border: 0; border-radius: 50%; cursor: pointer; transition: background-color .15s; }
+.vt-social__btn:hover { background: #F1F5F9; }
+.vt-social__btn:focus-visible { outline: 2px solid var(--vt-primary); outline-offset: 2px; }
+.vt-social + .vt-auth__footer { margin-top: 48px; }
 
 .vt-field { margin-bottom: 13px; }
 .vt-label { display: block; margin-bottom: 10px; font-size: 12px; font-weight: 700; color: var(--vt-primary); }

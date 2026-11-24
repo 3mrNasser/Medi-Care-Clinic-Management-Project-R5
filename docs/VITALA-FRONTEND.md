@@ -65,6 +65,7 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 | VerifyOtp | `POST Account/VerifyOtp` (resend: `POST Account/ResendOtp`) | `Code` (4 digits) |
 | ResetPassword | `POST Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
 | Sidebar | `POST Account/Logout` | anti-forgery token only |
+| Login / Sign up (Google button) | `POST Account/ExternalLogin` | `provider` = `Google` (standard Identity external login) |
 
 - POST forms use `asp-controller` / `asp-action`, so the anti-forgery token is added automatically.
 - **Client-side validation:** `_AuthLayout` loads jQuery + `_ValidationScriptsPartial`, and the inputs carry `data-val-*` rules
@@ -94,6 +95,7 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 | `bot.png` | AI button on the dashboard, bot avatar in the chat |
 | `user-avatar.png` | User avatar in the chat |
 | `icon-home.png`, `icon-cart.png`, `icon-notifications.png` | Sidebar items |
+| `google.png` | Google sign-in button on Login / Sign up |
 | `svc-doctor.png`, `svc-pharmacy.png`, `svc-labs.png`, `svc-econsultation.png`, `svc-medical-history.png` | Dashboard service tiles |
 | `svc-reward.png` | Not used yet: the export only has the badge background (re-export `reward-svgrepo-com 1` with its children) |
 

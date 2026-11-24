@@ -1,0 +1,9 @@
+@* "Continue with Google" button from the Figma Login / Sign up screens.
+   Posts provider=Google to Account/ExternalLogin (the standard ASP.NET Core Identity external-login pattern).
+   Backend: add [HttpPost] ExternalLogin(string provider, string? returnUrl) + Google authentication in Program.cs. *@
+<form class="vt-social" method="post" asp-controller="Account" asp-action="ExternalLogin">
+    <input type="hidden" name="provider" value="Google" />
+    <button type="submit" class="vt-social__btn" aria-label="Continue with Google" title="Continue with Google">
+        <img src="~/images/vitala/google.png" width="34" height="35" alt="" />
+    </button>
+</form>
