@@ -3,6 +3,8 @@ using MediCare.Data.Enums;
 using MediCare.Data.Repositories.Interfaces;
 using MediCare.Services.Common;
 using MediCare.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace MediCare.Services.Implementations;
 
@@ -87,7 +89,18 @@ public class AppointmentService : IAppointmentService
             Status = AppointmentStatus.Pending,
             ReasonForVisit = reason
         });
-        await _unitOfWork.SaveChangesAsync();
+        try
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            var stillAvailable = await GetAvailableTimesAsync(doctorId, date);
+            if (!stillAvailable.Contains(time))
+                return ServiceResult.Fail("This time was just booked by someone else.");
+
+            throw;
+        }
 
         return ServiceResult.Ok();
     }
