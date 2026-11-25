@@ -1,0 +1,55 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.PrescriptionDto>
+
+@{
+    ViewData["Title"] = "Prescription";
+    var doctorId = (int)ViewBag.DoctorId;
+    var appointmentId = (int)ViewBag.AppointmentId;
+}
+
+<h2>Prescription</h2>
+
+<p>
+    <a asp-controller="DoctorAppointments" asp-action="Index" asp-route-doctorId="@doctorId">Back to appointments</a>
+</p>
+
+@if (TempData["Error"] is string error)
+{
+    <p style="color:red">@error</p>
+}
+@if (TempData["Success"] is string success)
+{
+    <p style="color:green">@success</p>
+}
+
+<form method="post" asp-action="Add">
+    <input type="hidden" name="doctorId" value="@doctorId" />
+    <input type="hidden" name="appointmentId" value="@appointmentId" />
+
+    <input type="text" name="medicationName" placeholder="Medication" maxlength="150" required />
+    <input type="text" name="dosage" placeholder="Dosage (e.g. 500 mg)" maxlength="100" required />
+    <input type="text" name="frequency" placeholder="Frequency (e.g. twice a day)" maxlength="100" required />
+    <input type="number" name="durationDays" placeholder="Days" min="1" required />
+    <button type="submit">Add</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Medication</th>
+            <th>Dosage</th>
+            <th>Frequency</th>
+            <th>Days</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.MedicationName</td>
+                <td>@p.Dosage</td>
+                <td>@p.Frequency</td>
+                <td>@p.DurationDays</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -60,6 +60,11 @@
                             <button type="submit">No-show</button>
                         </form>
                     }
+                    else if (a.Status == AppointmentStatus.Completed)
+                    {
+                        <a asp-controller="Prescriptions" asp-action="Index"
+                           asp-route-doctorId="@doctorId" asp-route-appointmentId="@a.Id">Prescription</a>
+                    }
                 </td>
             </tr>
         }
