@@ -40,4 +40,26 @@ public class DoctorAppointmentsController : Controller
 
         return RedirectToAction(nameof(Index), new { doctorId });
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Complete(int doctorId, int appointmentId)
+    {
+        var result = await _appointmentService.CompleteAsync(doctorId, appointmentId);
+        if (!result.Success)
+            TempData["Error"] = result.Error;
+
+        return RedirectToAction(nameof(Index), new { doctorId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NoShow(int doctorId, int appointmentId)
+    {
+        var result = await _appointmentService.MarkNoShowAsync(doctorId, appointmentId);
+        if (!result.Success)
+            TempData["Error"] = result.Error;
+
+        return RedirectToAction(nameof(Index), new { doctorId });
+    }
 }
