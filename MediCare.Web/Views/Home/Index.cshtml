@@ -8,8 +8,11 @@
 
         <header class="vt-nav">
             <a class="vt-brand" asp-controller="Home" asp-action="Index">
-                <span class="vt-brand__name">vitala</span>
-                <span class="vt-brand__tagline">Connecting You To Better Health</span>
+                <img class="vt-brand__logo" src="~/images/vitala/logo.png" width="29" height="31" alt="" />
+                <span class="vt-brand__text">
+                    <span class="vt-brand__name">vitala</span>
+                    <span class="vt-brand__tagline">Connecting You To Better Health</span>
+                </span>
             </a>
 
             <button type="button" class="vt-nav__toggle" data-vt-nav-toggle="#vt-nav-menu" aria-controls="vt-nav-menu" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,8 +53,8 @@
             <div class="vt-glass-card">
                 @* Featured doctor — static content, replace with model data when available *@
                 <div class="vt-doctor-highlight">
-                    <div class="vt-doctor-highlight__photo" role="img" aria-label="Doctor photo">
-                        @* <img src="~/images/doctors/sarah-jenkins.jpg" alt="Dr. Sarah Jenkins" /> *@
+                    <div class="vt-doctor-highlight__photo">
+                        <img src="~/images/vitala/doctor-sarah-jenkins.png" width="74" height="76" alt="Dr. Sarah Jenkins" />
                     </div>
                     <div>
                         <span class="vt-eyebrow">Verified Specialists</span>
@@ -61,7 +64,7 @@
                 </div>
                 <div class="vt-stat-grid">
                     <div class="vt-stat"><strong>500+ Doctors</strong><span>Instant Booking</span></div>
-                    <div class="vt-stat"><strong>24/7 AI Assistant</strong><span>Symptom Guidance</span></div>
+                    <div class="vt-stat"><strong>24/7 Pharmacy</strong><span>Nearby Medicines</span></div>
                 </div>
             </div>
         </section>
@@ -69,27 +72,25 @@
         <section class="vt-features" aria-label="Features">
             <a class="vt-feature" id="find-specialist" asp-controller="Doctors" asp-action="Index">
                 <span class="vt-feature__icon">
-                    @* <img src="~/images/landing/find-specialist.png" alt="" /> *@
-                    <partial name="_VtIcon" model='"doctor:42"' />
+                    <img src="~/images/vitala/feature-find-specialist.png" alt="" width="65" height="67" />
                 </span>
                 <h3 class="vt-feature__title">Find Your Specialist</h3>
                 <p class="vt-feature__text">Book appointments with top doctors easily.</p>
             </a>
             <a class="vt-feature" id="my-appointments" asp-controller="MyAppointments" asp-action="Index">
                 <span class="vt-feature__icon">
-                    @* <img src="~/images/landing/appointments.png" alt="" /> *@
-                    <partial name="_VtIcon" model='"calendar:42"' />
+                    @* Figma card was "Search Pharmacy" (removed from scope); its image is ~/images/vitala/feature-search-pharmacy.png *@
+                    <partial name="_VtIcon" model='"calendar:34"' />
                 </span>
                 <h3 class="vt-feature__title">Manage Appointments</h3>
                 <p class="vt-feature__text">Track or cancel your bookings in one place.</p>
             </a>
             <a class="vt-feature" id="ai-assistant" asp-controller="Patient" asp-action="AiAssistant">
                 <span class="vt-feature__icon">
-                    @* <img src="~/images/landing/get-connected.png" alt="" /> *@
-                    <partial name="_VtIcon" model='"connect:42"' />
+                    <img src="~/images/vitala/feature-get-connected.png" alt="" width="70" height="68" />
                 </span>
                 <h3 class="vt-feature__title">Get Connected</h3>
-                <p class="vt-feature__text">Describe your symptoms and find the right specialist.</p>
+                <p class="vt-feature__text">Stay connected with healthcare providers.</p>
             </a>
         </section>
     </div>

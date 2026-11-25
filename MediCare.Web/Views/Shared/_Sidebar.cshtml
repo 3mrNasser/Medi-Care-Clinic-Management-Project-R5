@@ -1,15 +1,23 @@
 @{
     var active = ViewData["ActiveNav"] as string ?? "";
-    // Only pages that exist in the project. Add new items here as pages are built.
-    var items = new[]
-    {
-        (Key: "Home",         Text: "Home",         Controller: "Patient",        Action: "Home"),
-        (Key: "Appointments", Text: "Appointments", Controller: "MyAppointments", Action: "Index"),
-        (Key: "AiAssistant",  Text: "AI Assistant", Controller: "Patient",        Action: "AiAssistant"),
-    };
+    // Image = icon exported from Figma; otherwise an inline SVG icon.
+    var home          = (Key: "Home",          Text: "Home",          Controller: "Patient",        Action: "Home",          Image: (string?)"~/images/vitala/icon-home.png",          Icon: "home");
+    var appointments  = (Key: "Appointments",  Text: "Appointments",  Controller: "MyAppointments", Action: "Index",         Image: (string?)null,                                     Icon: "calendar");
+    var cart          = (Key: "Cart",          Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
+    var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Patient",        Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
+    var aiAssistant   = (Key: "AiAssistant",   Text: "AI Assistant",  Controller: "Patient",        Action: "AiAssistant",   Image: (string?)null,                                     Icon: "bot");
+
+    // As in Figma: the AI workspace sidebar shows Home + AI Assistant; every other screen shows the dashboard menu.
+    // (The dashboard reaches the AI Assistant through the floating robot button.)
+    var items = active == "AiAssistant"
+        ? new[] { home, aiAssistant }
+        : new[] { home, appointments, cart, notifications };
 }
 <aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
-    <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">vitala</a>
+    <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">
+        <img class="vt-brand__logo" src="~/images/vitala/logo.png" width="29" height="31" alt="" />
+        vitala
+    </a>
     <button type="button" class="vt-sidebar__close" data-vt-sidebar-close aria-label="Close menu">
         <partial name="_VtIcon" model='"close"' />
     </button>
@@ -20,7 +28,20 @@
             <li>
                 <a class="vt-sidebar__link @(isActive ? "is-active" : "")"
                    asp-controller="@item.Controller" asp-action="@item.Action"
-                   aria-current="@(isActive ? "page" : null)">@item.Text</a>
+                   aria-current="@(isActive ? "page" : null)">
+                    <span class="vt-sidebar__icon">
+                        @if (item.Image is not null)
+                        {
+                            var isHome = item.Key == "Home";
+                            <img src="@Url.Content(item.Image)" width="@(isHome ? 16 : 20)" height="@(isHome ? 18 : 20)" alt="" />
+                        }
+                        else
+                        {
+                            <partial name="_VtIcon" model='item.Icon + ":18"' />
+                        }
+                    </span>
+                    @item.Text
+                </a>
             </li>
         }
     </ul>

@@ -37,6 +37,12 @@
     const setOpen = (open) => sidebar.classList.toggle('is-open', open);
     $$('[data-vt-sidebar-open]').forEach((b) => b.addEventListener('click', () => setOpen(true)));
     $$('[data-vt-sidebar-close]').forEach((b) => b.addEventListener('click', () => setOpen(false)));
+    // Topbar "indent" button: collapses the sidebar on desktop, opens it on small screens.
+    $$('[data-vt-sidebar-toggle]').forEach((b) => b.addEventListener('click', () => {
+      if (window.matchMedia('(max-width: 960px)').matches) { setOpen(true); return; }
+      const app = sidebar.closest('.vt-app');
+      if (app) b.setAttribute('aria-expanded', String(!app.classList.toggle('is-collapsed')));
+    }));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
     document.addEventListener('click', (e) => {
       if (sidebar.classList.contains('is-open') && !sidebar.contains(e.target) && !e.target.closest('[data-vt-sidebar-open]')) setOpen(false);

@@ -1,15 +1,17 @@
 @* 02 — Select Role
    Step 1 of sign up. Sends the chosen role to the Sign up page as a query string:
-   GET /Account/Signup?role=Patient | Doctor | Admin
+   GET /Account/Signup?role=Patient | Doctor | Pharmacist | Admin
 *@
 @{
     Layout = "_VitalaLayout";
     ViewData["Title"] = "Select your role";
+    // Icons exported from the Figma role cards. W == 64 means the image already includes its white circle.
     var roles = new[]
     {
-        (Value: "Patient", Icon: "patient"),
-        (Value: "Doctor",  Icon: "doctor"),
-        (Value: "Admin",   Icon: "admin"),
+        (Value: "Patient", Desc: "Health records",  Image: (string?)"~/images/vitala/role-patient.svg", W: 24, H: 24, Icon: "patient"),
+        (Value: "Doctor",     Desc: "Manage patients", Image: (string?)"~/images/vitala/role-doctor.svg",     W: 64, H: 61, Icon: "doctor"),
+        (Value: "Pharmacist", Desc: "Dispense meds",   Image: (string?)"~/images/vitala/role-pharmacist.png", W: 64, H: 64, Icon: "pharmacist"),
+        (Value: "Admin",      Desc: "Management",      Image: (string?)"~/images/vitala/role-admin.png",      W: 64, H: 64, Icon: "admin"),
     };
     var selected = Context.Request.Query["role"].ToString();
     if (!roles.Any(r => r.Value.Equals(selected, StringComparison.OrdinalIgnoreCase))) selected = "Patient";
@@ -19,15 +21,35 @@
     <p class="vt-role-page__sub">Select your role to continue to your workspace</p>
 
     <form class="vt-role-form" method="get" asp-controller="Account" asp-action="Signup" data-vt-role-form>
-        <fieldset class="vt-role-grid vt-role-grid--3">
+        <fieldset class="vt-role-grid vt-role-grid--2x2">
             <legend class="vt-sr-only">Role</legend>
             @foreach (var role in roles)
             {
                 <label class="vt-role-card">
                     <input type="radio" name="role" value="@role.Value" data-label="@role.Value"
                            checked="@role.Value.Equals(selected, StringComparison.OrdinalIgnoreCase)" />
-                    <span class="vt-role-card__icon"><partial name="_VtIcon" model='role.Icon + ":32"' /></span>
-                    <span class="vt-role-card__label">@role.Value</span>
+                    @if (role.Image is not null && role.W == 64)
+                    {
+                        @* The Doctor icon SVG already contains its white circle *@
+                        <img src="@Url.Content(role.Image)" width="@role.W" height="@role.H" alt="" />
+                    }
+                    else
+                    {
+                        <span class="vt-role-card__icon">
+                            @if (role.Image is not null)
+                            {
+                                <img src="@Url.Content(role.Image)" width="@role.W" height="@role.H" alt="" />
+                            }
+                            else
+                            {
+                                <partial name="_VtIcon" model='role.Icon + ":26"' />
+                            }
+                        </span>
+                    }
+                    <span class="vt-role-card__text">
+                        <span class="vt-role-card__label">@role.Value</span>
+                        <span class="vt-role-card__desc">@role.Desc</span>
+                    </span>
                 </label>
             }
         </fieldset>
