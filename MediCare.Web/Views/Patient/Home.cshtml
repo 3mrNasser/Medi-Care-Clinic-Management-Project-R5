@@ -1,43 +1,51 @@
-@* 1.2 — Patient Home Dashboard
+@* 1.2 — Patient Home Dashboard (Figma "1.2-Home-Web-Dashboard")
    Name and appointment below are static placeholder text. Replace with model values when the service exists.
-   Specialty tiles link to Doctors/Index?specialty=... (exact match on Doctor.Specialty).
+   Service tiles: Doctor → Doctors/Index; the others open an empty-state page until their screens are designed.
 *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Home";
     ViewData["ActiveNav"] = "Home";
 
-    // Values must match Doctor.Specialty in the database (Cardiology, Dermatology, Pediatrics are seeded).
-    var specialties = new[]
+    // Icons exported from Figma (null = inline SVG fallback: the Reward export only contained its badge background).
+    var services = new[]
     {
-        (Name: "Cardiology",    Icon: "heart"),
-        (Name: "Neurology",     Icon: "brain"),
-        (Name: "Dermatology",   Icon: "skin"),
-        (Name: "Pediatrics",    Icon: "baby"),
-        (Name: "Orthopedics",   Icon: "bone"),
-        (Name: "Ophthalmology", Icon: "eye-care"),
+        (Name: "Doctor",          Image: (string?)"~/images/vitala/svc-doctor.png",          Icon: "doctor",  Controller: "Doctors", Action: "Index"),
+        (Name: "Pharmacy",        Image: (string?)"~/images/vitala/svc-pharmacy.png",        Icon: "pharmacy", Controller: "Patient", Action: "Pharmacy"),
+        (Name: "Reward",          Image: (string?)null,                                      Icon: "reward",  Controller: "Patient", Action: "Rewards"),
+        (Name: "Labs",            Image: (string?)"~/images/vitala/svc-labs.png",            Icon: "labs",    Controller: "Patient", Action: "Labs"),
+        (Name: "e-Consultation",  Image: (string?)"~/images/vitala/svc-econsultation.png",   Icon: "consult", Controller: "Patient", Action: "Consultation"),
+        (Name: "Medical History", Image: (string?)"~/images/vitala/svc-medical-history.png", Icon: "history", Controller: "Patient", Action: "MedicalHistory"),
     };
 }
 
 <header class="vt-topbar">
     <div class="vt-user">
-        <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
-            <partial name="_VtIcon" model='"menu"' />
-        </button>
-        <div class="vt-avatar" aria-hidden="true">S</div>
+        <div class="vt-avatar"><img src="~/images/vitala/patient-avatar.png" width="53" height="53" alt="" /></div>
         <div>
-            <h1 class="vt-user__name">Hello, Sara</h1>
-            <span class="vt-user__loc">Mansoura, EG</span>
+            <h1 class="vt-user__name">Hello,Sara</h1>
+            <span class="vt-user__loc">
+                <svg class="vt-user__pin" width="7" height="10" viewBox="0 0 10 14" aria-hidden="true"><path fill="#E53935" d="M5 0a5 5 0 0 0-5 5c0 3.75 5 9 5 9s5-5.25 5-9a5 5 0 0 0-5-5Zm0 6.8A1.8 1.8 0 1 1 5 3.2a1.8 1.8 0 0 1 0 3.6Z"/></svg>
+                Mansoura, EG
+            </span>
         </div>
     </div>
 
     <div class="vt-topbar__actions">
         @* Searches doctors by name using the existing Doctors/Index?name=... filter *@
         <form class="vt-search" role="search" method="get" asp-controller="Doctors" asp-action="Index">
-            <label for="vt-q" class="vt-sr-only">Search doctors by name</label>
+            <label for="vt-q" class="vt-sr-only">Search doctors</label>
             <partial name="_VtIcon" model='"search:20"' />
-            <input id="vt-q" name="name" type="search" placeholder="Search doctors by name..." />
+            <input id="vt-q" name="name" type="search" placeholder="Search doctors, labs, medicines..." />
         </form>
+        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Notifications" aria-label="Notifications">
+            <partial name="_VtIcon" model='"bell:24"' />
+            <span class="vt-icon-btn__dot"></span>
+        </a>
+        @* Figma "foundation:indent-more": collapses the sidebar (opens it on small screens) *@
+        <button type="button" class="vt-icon-btn" data-vt-sidebar-toggle aria-controls="vt-sidebar" aria-label="Toggle menu">
+            <partial name="_VtIcon" model='"indent:26"' />
+        </button>
     </div>
 </header>
 
@@ -48,8 +56,7 @@
         <a class="vt-btn vt-btn--white" asp-controller="Doctors" asp-action="Index">Check Now</a>
     </div>
     <div class="vt-banner__art" aria-hidden="true">
-        @* <img src="~/images/dashboard/medical-checks.png" alt="" /> *@
-        <partial name="_VtIcon" model='"heart:80"' />
+        <img src="~/images/vitala/banner-doctor.png" width="135" height="190" alt="" />
     </div>
 </section>
 
@@ -59,10 +66,19 @@
         <a class="vt-link-strong" asp-controller="Doctors" asp-action="Index">See all</a>
     </div>
     <div class="vt-specialties">
-        @foreach (var s in specialties)
+        @foreach (var s in services)
         {
-            <a class="vt-specialty" asp-controller="Doctors" asp-action="Index" asp-route-specialty="@s.Name">
-                <span class="vt-specialty__icon"><partial name="_VtIcon" model='s.Icon + ":36"' /></span>
+            <a class="vt-specialty" asp-controller="@s.Controller" asp-action="@s.Action">
+                <span class="vt-specialty__icon">
+                    @if (s.Image is not null)
+                    {
+                        <img src="@Url.Content(s.Image)" width="50" height="50" alt="" />
+                    }
+                    else
+                    {
+                        <partial name="_VtIcon" model='s.Icon + ":34"' />
+                    }
+                </span>
                 @s.Name
             </a>
         }
@@ -72,12 +88,13 @@
 <section class="vt-appointment" aria-label="Upcoming appointment">
     <div>
         <span class="vt-eyebrow">Upcoming Appointment</span>
-        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Cardiologist</h3>
-        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • 12 Tahrir St, Cairo</span>
+        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Neurologist</h3>
+        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • Mansoura Medical Center</span>
     </div>
     <a class="vt-chip-link" asp-controller="MyAppointments" asp-action="Index">View Details</a>
 </section>
 
 <a class="vt-fab" asp-controller="Patient" asp-action="AiAssistant" aria-label="Open AI Assistant" title="AI Assistant">
-    <partial name="_VtIcon" model='"bot:34"' />
+    <img src="~/images/vitala/bot.png" width="50" height="50" alt="" />
+    <span class="vt-fab__dot" aria-hidden="true"></span>
 </a>
