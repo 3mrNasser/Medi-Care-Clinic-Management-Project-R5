@@ -15,6 +15,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<AvailabilitySlot> AvailabilitySlots => Set<AvailabilitySlot>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Prescription> Prescriptions => Set<Prescription>();
+    public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -57,6 +58,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(p => p.Dosage).HasMaxLength(100);
             e.Property(p => p.Frequency).HasMaxLength(100);
             e.ToTable(t => t.HasCheckConstraint("CK_Prescription_Duration", "[DurationDays] > 0"));
+        });
+
+        builder.Entity<MedicalRecord>(e =>
+        {
+            e.Property(m => m.Diagnosis).HasMaxLength(500);
+            e.Property(m => m.Notes).HasMaxLength(2000);
+
+            e.HasIndex(m => m.AppointmentId).IsUnique();
+
+            e.HasOne(m => m.Appointment).WithMany()
+                .HasForeignKey(m => m.AppointmentId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
