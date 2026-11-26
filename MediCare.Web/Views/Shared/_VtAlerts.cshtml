@@ -1,0 +1,15 @@
+@* Success / error messages from the backend (TempData["Success"] / TempData["Error"]). Include on every page with a form. *@
+@if (TempData["Success"] is string success)
+{
+    <div class="vt-alert vt-alert--success" role="status">
+        <partial name="_VtIcon" model='"check-circle:20"' />
+        <span>@success</span>
+    </div>
+}
+@if (TempData["Error"] is string error)
+{
+    <div class="vt-alert vt-alert--error" role="alert">
+        <partial name="_VtIcon" model='"alert:20"' />
+        <span>@error</span>
+    </div>
+}

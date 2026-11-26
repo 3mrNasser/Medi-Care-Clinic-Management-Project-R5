@@ -1,47 +1,66 @@
 ﻿@using MediCare.Data.Enums
 @model IEnumerable<MediCare.Services.DTOs.AppointmentDto>
-
+@* Patient appointments — GET /MyAppointments, POST MyAppointments/Cancel (appointmentId). Vitala style. *@
 @{
-    ViewData["Title"] = "My appointments";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Appointments";
+    ViewData["ActiveNav"] = "Appointments";
+    var today = DateOnly.FromDateTime(DateTime.Now);
+    bool IsActive(AppointmentStatus s) => s == AppointmentStatus.Pending || s == AppointmentStatus.Confirmed;
+    var all = Model.ToList(); // enumerate once: a deferred sequence would create new objects and break Except
+    var upcoming = all.Where(a => IsActive(a.Status) && a.Date >= today).OrderBy(a => a.Date).ThenBy(a => a.StartTime).ToList();
+    var others = all.Except(upcoming).OrderByDescending(a => a.Date).ThenByDescending(a => a.StartTime).ToList();
 }
 
-<h2>My appointments</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">My Appointments</h1>
+        <p class="vt-page-sub">Your bookings and their status.</p>
+    </div>
+    <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="MyPrescriptions" asp-action="Index">
+            <partial name="_VtIcon" model='"pill:18"' /> My prescriptions
+        </a>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Doctors" asp-action="Index">
+            <partial name="_VtIcon" model='"plus:18"' /> Book new
+        </a>
+    </div>
+</header>
 
-@if (TempData["Error"] is string error)
+<partial name="_VtAlerts" />
+
+@if (!all.Any())
 {
-    <p style="color:red">@error</p>
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"calendar:30"' /></span>
+        <h2 class="vt-empty__title">No appointments yet</h2>
+        <p class="vt-empty__text">Find a specialist and book your first appointment.</p>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Doctors" asp-action="Index">Find a doctor</a>
+    </section>
 }
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Doctor</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var a in Model)
-        {
-            <tr>
-                <td>@a.Date.ToString("yyyy-MM-dd")</td>
-                <td>@a.StartTime.ToString("HH:mm")</td>
-                <td>@a.DoctorName</td>
-                <td>@a.Reason</td>
-                <td>@a.Status</td>
-                <td>
-                    @if (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Confirmed)
-                    {
-                        <form method="post" asp-action="Cancel" style="display:inline">
-                            <input type="hidden" name="appointmentId" value="@a.Id" />
-                            <button type="submit">Cancel</button>
-                        </form>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+else
+{
+    @if (upcoming.Any())
+    {
+        <h2 class="vt-section-label">Upcoming</h2>
+        <div class="vt-list">
+            @foreach (var a in upcoming)
+            {
+                <partial name="_PatientAppointmentRow" model="a" />
+            }
+        </div>
+    }
+    @if (others.Any())
+    {
+        <h2 class="vt-section-label">Past &amp; other</h2>
+        <div class="vt-list">
+            @foreach (var a in others)
+            {
+                <partial name="_PatientAppointmentRow" model="a" />
+            }
+        </div>
+    }
+}

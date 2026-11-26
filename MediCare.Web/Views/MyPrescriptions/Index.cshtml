@@ -1,60 +1,68 @@
 ﻿@model IEnumerable<MediCare.Services.DTOs.PrescriptionGroupDto>
-
+@* Patient prescriptions — GET /MyPrescriptions. Printable: the sidebar, buttons and alerts are hidden when printing. *@
 @{
-    ViewData["Title"] = "My prescriptions";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Prescriptions";
+    ViewData["ActiveNav"] = "Appointments";
 }
 
-<style>
-    .prescription { margin-bottom: 2rem; }
-
-    @@media print {
-        header, footer, nav, .no-print { display: none !important; }
-        .prescription { page-break-inside: avoid; }
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">My Prescriptions</h1>
+        <p class="vt-page-sub">Medications from your completed appointments.</p>
+    </div>
+    @if (Model.Any())
+    {
+        <div class="vt-page-actions vt-no-print">
+            <button type="button" class="vt-btn vt-btn--primary vt-btn--sm" onclick="window.print()">
+                <partial name="_VtIcon" model='"print:18"' /> Print
+            </button>
+        </div>
     }
-</style>
+</header>
 
-<h2>My prescriptions</h2>
+<p class="vt-print-only vt-muted">vitala · Printed @DateTime.Now.ToString("d MMM yyyy")</p>
 
-<p class="no-print">
-    <button type="button" onclick="window.print()">Print</button>
-</p>
-
-@if (Model.Any())
+@if (!Model.Any())
 {
-    <p class="no-print">
-        <button type="button" onclick="window.print()">Print</button>
-    </p>
-}
-else
-{
-    <p>No prescriptions yet.</p>
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"pill:30"' /></span>
+        <h2 class="vt-empty__title">No prescriptions yet</h2>
+        <p class="vt-empty__text">When a doctor writes you a prescription after a visit, it shows up here.</p>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="MyAppointments" asp-action="Index">My appointments</a>
+    </section>
 }
 
 @foreach (var group in Model)
 {
-    <div class="prescription">
-        <h4>@group.DoctorName - @group.Date.ToString("yyyy-MM-dd")</h4>
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Medication</th>
-                    <th>Dosage</th>
-                    <th>Frequency</th>
-                    <th>Days</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in group.Items)
-                {
-                    <tr>
-                        <td>@p.MedicationName</td>
-                        <td>@p.Dosage</td>
-                        <td>@p.Frequency</td>
-                        <td>@p.DurationDays</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <section class="vt-card vt-rx">
+        <div class="vt-rx__head">
+            <div>
+                <span class="vt-eyebrow">Prescription</span>
+                <h2 class="vt-rx__doctor">@group.DoctorName</h2>
+            </div>
+            <span class="vt-muted"><partial name="_VtIcon" model='"calendar:15"' /> @group.Date.ToString("d MMM yyyy")</span>
+        </div>
+        <div class="vt-table-wrap">
+            <table class="vt-table">
+                <thead>
+                    <tr><th>Medication</th><th>Dosage</th><th>Frequency</th><th>Days</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in group.Items)
+                    {
+                        <tr>
+                            <td><strong>@p.MedicationName</strong></td>
+                            <td>@p.Dosage</td>
+                            <td>@p.Frequency</td>
+                            <td>@p.DurationDays</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
 }

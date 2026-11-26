@@ -101,3 +101,18 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 
 Inline SVG (`_VtIcon.cshtml`) is used where Figma has no exported icon: sidebar Appointments / AI Assistant,
 the Reward tile, and the topbar bell / indent buttons.
+
+## App pages (backend endpoints)
+Restyled in the Vitala look; controller actions, form field names and `@model` types are unchanged:
+`Doctors/Index`, `Appointments/Book`, `MyAppointments/Index`, `MyPrescriptions/Index` (patient),
+`DoctorAppointments/Index`, `Availability/Index`, `Prescriptions/Index` (doctor). No Figma frames exist for these screens.
+- `_VtAlerts.cshtml` shows `TempData["Success"]` / `TempData["Error"]` on every page with a form.
+- `_VtStatusBadge.cshtml` colors an `AppointmentStatus`.
+- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). The sidebar keeps the
+  temporary `doctorId` from the URL; remove that when login is ready.
+- Booking: changing the date reloads times from `GET /Appointments/AvailableTimes` (JSON) without a page reload.
+- Doctor calendar: FullCalendar 6 (CDN) reads `GET /DoctorAppointments/Events`, colored by status.
+- Cancel / Reject / No-show / Remove ask for confirmation (`<form data-vt-confirm="...">`).
+- My Prescriptions is printable (sidebar, buttons and alerts are hidden when printing). The dashboard "Medical History" tile opens it.
+- Request for the backend: the Book page only receives free times; a `DoctorDto` (name, specialty, fee) in `ViewBag` would let it show which doctor is being booked.
+
