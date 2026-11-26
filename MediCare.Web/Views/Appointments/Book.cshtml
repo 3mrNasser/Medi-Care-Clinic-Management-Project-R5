@@ -1,46 +1,79 @@
 ﻿@model IEnumerable<TimeOnly>
-
+@* Booking — GET /Appointments/Book?doctorId=&date=yyyy-MM-dd, POST Appointments/Book (doctorId, date, time, reason).
+   Changing the date reloads the free times from GET /Appointments/AvailableTimes (JSON) without a page reload;
+   without JavaScript the date form falls back to a normal GET. *@
 @{
-    ViewData["Title"] = "Book";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Book an appointment";
     var doctorId = (int)ViewBag.DoctorId;
     var date = (DateOnly)ViewBag.Date;
+    var today = DateOnly.FromDateTime(DateTime.Now);
 }
 
-<h2>Book an appointment</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Book an appointment</h1>
+        <p class="vt-page-sub">Pick a day, choose a free time and tell the doctor why you're coming.</p>
+    </div>
+    <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="Doctors" asp-action="Index">
+            <partial name="_VtIcon" model='"back:18"' /> Back to doctors
+        </a>
+    </div>
+</header>
 
-@if (TempData["Error"] is string error)
-{
-    <p style="color:red">@error</p>
-}
-@if (TempData["Success"] is string success)
-{
-    <p style="color:green">@success</p>
-}
+<partial name="_VtAlerts" />
 
-<form method="get">
-    <input type="hidden" name="doctorId" value="@doctorId" />
-    <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" />
-    <button type="submit">Show times</button>
-</form>
+<div class="vt-booking" data-vt-booking data-times-url="@Url.Action("AvailableTimes", "Appointments")" data-doctor-id="@doctorId">
+    <section class="vt-card">
+        <form method="get" asp-controller="Appointments" asp-action="Book" class="vt-form-grid" data-vt-booking-date-form>
+            <input type="hidden" name="doctorId" value="@doctorId" />
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="vt-date">Date</label>
+                <input class="vt-input vt-input--sm" id="vt-date" type="date" name="date"
+                       value="@date.ToString("yyyy-MM-dd")" min="@today.ToString("yyyy-MM-dd")" data-vt-booking-date />
+            </div>
+            <noscript><button type="submit" class="vt-btn vt-btn--outline vt-btn--sm">Show times</button></noscript>
+        </form>
 
-@if (!Model.Any())
-{
-    <p>No available times on this day.</p>
-}
-else
-{
-    <form method="post" asp-action="Book">
-        <input type="hidden" name="doctorId" value="@doctorId" />
-        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+        <form method="post" asp-controller="Appointments" asp-action="Book" data-vt-booking-form class="vt-mt-lg">
+            <input type="hidden" name="doctorId" value="@doctorId" />
+            <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" data-vt-booking-date-hidden />
 
-        <select name="time">
-            @foreach (var t in Model)
-            {
-                <option value="@t.ToString("HH:mm")">@t.ToString("HH:mm")</option>
-            }
-        </select>
+            <h2 class="vt-card__title">Available times</h2>
+            <div class="vt-slots" role="radiogroup" aria-label="Available times" data-vt-slots>
+                @{ var first = true; }
+                @foreach (var t in Model)
+                {
+                    <label class="vt-slot">
+                        <input type="radio" name="time" value="@t.ToString("HH:mm")" checked="@first" required />
+                        <span>@t.ToString("HH:mm")</span>
+                    </label>
+                    first = false;
+                }
+            </div>
+            <p class="vt-muted" data-vt-slots-empty hidden="@(Model.Any())">No available times on this day. Try another date.</p>
 
-        <input type="text" name="reason" placeholder="Reason (optional)" maxlength="500" />
-        <button type="submit">Book</button>
-    </form>
-}
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="reason">Reason for visit <span class="vt-muted">(optional)</span></label>
+                <textarea class="vt-input" id="reason" name="reason" maxlength="500" placeholder="e.g. Headache for two days"></textarea>
+            </div>
+
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-btn--submit vt-mt-md" data-vt-booking-submit disabled="@(!Model.Any())">
+                Book appointment
+            </button>
+        </form>
+    </section>
+
+    <aside class="vt-card">
+        <h2 class="vt-card__title">Before you book</h2>
+        <div class="vt-list">
+            <div class="vt-note"><partial name="_VtIcon" model='"clock:18"' /><span>Each appointment is 30 minutes.</span></div>
+            <div class="vt-note"><partial name="_VtIcon" model='"check-circle:18"' /><span>Your request stays <strong>Pending</strong> until the doctor confirms it.</span></div>
+            <div class="vt-note"><partial name="_VtIcon" model='"calendar:18"' /><span>You can cancel a pending or confirmed appointment from <a asp-controller="MyAppointments" asp-action="Index"><strong>My Appointments</strong></a>.</span></div>
+        </div>
+    </aside>
+</div>

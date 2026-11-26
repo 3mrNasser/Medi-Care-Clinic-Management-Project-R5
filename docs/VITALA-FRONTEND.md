@@ -46,8 +46,9 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 > **Roles:** the Figma Select Role screen has 4 roles, including **Pharmacist**, so the card is back.
 > The README currently lists 3 roles (Patient, Doctor, Admin). The Identity setup needs a `Pharmacist` role, or the card should be removed again.
 - "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the **Doctor** tile go to `Doctors/Index`.
-- The other dashboard tiles from Figma (Pharmacy, Reward, Labs, e-Consultation, Medical History) open `Patient/Pharmacy`, `Patient/Rewards`,
-  `Patient/Labs`, `Patient/Consultation`, `Patient/MedicalHistory`: a shared "Coming soon" page (`Views/Patient/ComingSoon.cshtml`) until they are designed.
+- **Medical History** opens `MyPrescriptions/Index`. The other dashboard tiles from Figma (Pharmacy, Reward, Labs, e-Consultation) open
+  `Patient/Pharmacy`, `Patient/Rewards`, `Patient/Labs`, `Patient/Consultation`: a shared "Coming soon" page (`Views/Patient/ComingSoon.cshtml`)
+  until they are designed. (`Patient/MedicalHistory` still exists but nothing links to it.)
 - Topbar (as in Figma): bell → `Patient/Notifications`; the "indent" button collapses the sidebar (opens it on mobile).
 - Sidebar (as in Figma): the AI Assistant screen shows Home + AI Assistant; every other screen shows Home, Appointments, Cart, Notifications.
   The dashboard reaches the AI Assistant through the floating robot button.
@@ -101,3 +102,18 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 
 Inline SVG (`_VtIcon.cshtml`) is used where Figma has no exported icon: sidebar Appointments / AI Assistant,
 the Reward tile, and the topbar bell / indent buttons.
+
+## App pages (backend endpoints)
+Restyled in the Vitala look; controller actions, form field names and `@model` types are unchanged:
+`Doctors/Index`, `Appointments/Book`, `MyAppointments/Index`, `MyPrescriptions/Index` (patient),
+`DoctorAppointments/Index`, `Availability/Index`, `Prescriptions/Index` (doctor). No Figma frames exist for these screens.
+- `_VtAlerts.cshtml` shows `TempData["Success"]` / `TempData["Error"]` on every page with a form.
+- `_VtStatusBadge.cshtml` colors an `AppointmentStatus`.
+- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). The sidebar keeps the
+  temporary `doctorId` from the URL; remove that when login is ready.
+- Booking: changing the date reloads times from `GET /Appointments/AvailableTimes` (JSON) without a page reload.
+- Doctor calendar: FullCalendar 6 (CDN) reads `GET /DoctorAppointments/Events`, colored by status.
+- Cancel / Reject / No-show / Remove ask for confirmation (`<form data-vt-confirm="...">`).
+- My Prescriptions is printable (sidebar, buttons and alerts are hidden when printing). The dashboard "Medical History" tile opens it.
+- Request for the backend: the Book page only receives free times; a `DoctorDto` (name, specialty, fee) in `ViewBag` would let it show which doctor is being booked.
+

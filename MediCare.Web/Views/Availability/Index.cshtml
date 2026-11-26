@@ -1,56 +1,87 @@
 ﻿@model IEnumerable<MediCare.Services.DTOs.AvailabilitySlotDto>
-
+@* Doctor working hours — GET /Availability?doctorId=, POST Availability/Add (doctorId, day, start, end),
+   POST Availability/Remove (doctorId, slotId). Vitala style. *@
 @{
-    ViewData["Title"] = "Availability";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Working Hours";
+    ViewData["ActiveNav"] = "Availability";
+    ViewData["SidebarRole"] = "Doctor";
     var doctorId = (int)ViewBag.DoctorId;
+    // Week starting Saturday (Egypt); values posted are the DayOfWeek names the backend expects.
+    var week = new[] { DayOfWeek.Saturday, DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
+    var byDay = Model.GroupBy(s => s.DayOfWeek).ToDictionary(g => g.Key, g => g.OrderBy(s => s.StartTime).ToList());
 }
 
-<h2>Working hours</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Working Hours</h1>
+        <p class="vt-page-sub">Patients can only book inside these hours, in 30-minute slots.</p>
+    </div>
+</header>
 
-@if (TempData["Error"] is string error)
-{
-    <p style="color:red">@error</p>
-}
+<partial name="_VtAlerts" />
 
-<form method="post" asp-action="Add">
-    <input type="hidden" name="doctorId" value="@doctorId" />
+<section class="vt-card">
+    <h2 class="vt-card__title">Add working hours</h2>
+    <form method="post" asp-controller="Availability" asp-action="Add" class="vt-form-grid">
+        <input type="hidden" name="doctorId" value="@doctorId" />
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="day">Day</label>
+            <select class="vt-input vt-input--sm" id="day" name="day">
+                @foreach (var day in week)
+                {
+                    <option value="@day">@day</option>
+                }
+            </select>
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="start">From</label>
+            <input class="vt-input vt-input--sm" id="start" type="time" name="start" required />
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="end">To</label>
+            <input class="vt-input vt-input--sm" id="end" type="time" name="end" required />
+        </div>
+        <div class="vt-field">
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm vt-btn--block">
+                <partial name="_VtIcon" model='"plus:18"' /> Add
+            </button>
+        </div>
+    </form>
+</section>
 
-    <select name="day">
-        @foreach (var day in Enum.GetValues<DayOfWeek>())
-        {
-            <option value="@day">@day</option>
-        }
-    </select>
-
-    <input type="time" name="start" required />
-    <input type="time" name="end" required />
-    <button type="submit">Add</button>
-</form>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Day</th>
-            <th>From</th>
-            <th>To</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var s in Model)
-        {
-            <tr>
-                <td>@s.DayOfWeek</td>
-                <td>@s.StartTime.ToString("HH:mm")</td>
-                <td>@s.EndTime.ToString("HH:mm")</td>
-                <td>
-                    <form method="post" asp-action="Remove">
-                        <input type="hidden" name="doctorId" value="@doctorId" />
-                        <input type="hidden" name="slotId" value="@s.Id" />
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<section class="vt-card">
+    <h2 class="vt-card__title">Weekly schedule</h2>
+    @foreach (var day in week)
+    {
+        <div class="vt-day">
+            <span class="vt-day__name">@day</span>
+            <div class="vt-day__slots">
+                @if (byDay.TryGetValue(day, out var slots))
+                {
+                    foreach (var s in slots)
+                    {
+                        <span class="vt-chip-slot">
+                            @s.StartTime.ToString("HH:mm") – @s.EndTime.ToString("HH:mm")
+                            <form method="post" asp-controller="Availability" asp-action="Remove" class="vt-inline-form"
+                                  data-vt-confirm="Remove @day @s.StartTime.ToString("HH:mm")–@s.EndTime.ToString("HH:mm")?">
+                                <input type="hidden" name="doctorId" value="@doctorId" />
+                                <input type="hidden" name="slotId" value="@s.Id" />
+                                <button type="submit" aria-label="Remove @day @s.StartTime.ToString("HH:mm") to @s.EndTime.ToString("HH:mm")">
+                                    <partial name="_VtIcon" model='"close:14"' />
+                                </button>
+                            </form>
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="vt-muted">Day off</span>
+                }
+            </div>
+        </div>
+    }
+</section>

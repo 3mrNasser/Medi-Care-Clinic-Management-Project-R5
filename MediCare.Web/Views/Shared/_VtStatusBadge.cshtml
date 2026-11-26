@@ -1,0 +1,15 @@
+@model MediCare.Data.Enums.AppointmentStatus
+@* Colored badge for an appointment status. *@
+@{
+    var (css, text) = Model switch
+    {
+        MediCare.Data.Enums.AppointmentStatus.Pending   => ("pending",   "Pending"),
+        MediCare.Data.Enums.AppointmentStatus.Confirmed => ("confirmed", "Confirmed"),
+        MediCare.Data.Enums.AppointmentStatus.Rejected  => ("rejected",  "Rejected"),
+        MediCare.Data.Enums.AppointmentStatus.Cancelled => ("cancelled", "Cancelled"),
+        MediCare.Data.Enums.AppointmentStatus.Completed => ("completed", "Completed"),
+        MediCare.Data.Enums.AppointmentStatus.NoShow    => ("noshow",    "No-show"),
+        _ => ("cancelled", Model.ToString())
+    };
+}
+<span class="vt-badge vt-badge--@css">@text</span>

@@ -190,4 +190,110 @@
     }));
     log.scrollTop = log.scrollHeight;
   });
+
+  /* ---------- Submit a GET form when one of its fields changes  <form data-vt-autosubmit> ---------- */
+  $$('form[data-vt-autosubmit]').forEach((form) => {
+    form.addEventListener('change', () => form.requestSubmit ? form.requestSubmit() : form.submit());
+  });
+
+  /* ---------- Confirm before submitting  <form data-vt-confirm="Question?"> ---------- */
+  $$('form[data-vt-confirm]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      if (!window.confirm(form.getAttribute('data-vt-confirm'))) e.preventDefault();
+    });
+  });
+
+  /* ---------- Tabs  [data-vt-tabs] (buttons with aria-controls) ---------- */
+  $$('[data-vt-tabs]').forEach((list) => {
+    const tabs = $$('[role="tab"]', list);
+    const select = (tab) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        const panel = document.getElementById(t.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !on;
+        if (on && panel) panel.dispatchEvent(new CustomEvent('vitala:tab-shown', { bubbles: true }));
+      });
+    };
+    tabs.forEach((t) => t.addEventListener('click', () => select(t)));
+  });
+
+  /* ---------- Doctor calendar  [data-vt-calendar data-events-url] (FullCalendar, loaded on the page) ----------
+     Rendered the first time its tab is shown, so FullCalendar measures a visible element. */
+  $$('[data-vt-calendar]').forEach((el) => {
+    let calendar;
+    const colors = { Pending: '#F59E0B', Confirmed: '#16A34A', Completed: '#2563EB', NoShow: '#64748B' };
+    const render = () => {
+      if (calendar) { calendar.updateSize(); return; }
+      if (!window.FullCalendar) { el.textContent = 'The calendar could not be loaded.'; return; }
+      calendar = new window.FullCalendar.Calendar(el, {
+        initialView: 'timeGridWeek',
+        firstDay: 6,
+        slotMinTime: '07:00:00',
+        slotMaxTime: '23:00:00',
+        allDaySlot: false,
+        height: 'auto',
+        headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay,dayGridMonth' },
+        events: el.getAttribute('data-events-url'),
+        eventDataTransform: (ev) => {
+          const c = colors[ev.status] || '#14248A';
+          return Object.assign({}, ev, { backgroundColor: c, borderColor: c, title: ev.title + ' · ' + ev.status });
+        },
+      });
+      calendar.render();
+    };
+    const panel = el.closest('[role="tabpanel"]');
+    if (panel && panel.hidden) panel.addEventListener('vitala:tab-shown', render);
+    else window.addEventListener('load', render);
+  });
+
+  /* ---------- Booking time picker  [data-vt-booking data-times-url data-doctor-id] ----------
+     Changing the date loads GET {times-url}?doctorId=&date=yyyy-MM-dd (array like "10:00:00")
+     and redraws the time radios. Without JS the date form submits normally. */
+  $$('[data-vt-booking]').forEach((root) => {
+    const url = root.getAttribute('data-times-url');
+    const doctorId = root.getAttribute('data-doctor-id');
+    const dateInput = $('[data-vt-booking-date]', root);
+    const hiddenDate = $('[data-vt-booking-date-hidden]', root);
+    const slots = $('[data-vt-slots]', root);
+    const empty = $('[data-vt-slots-empty]', root);
+    const submit = $('[data-vt-booking-submit]', root);
+    if (!dateInput || !slots) return;
+
+    const draw = (times) => {
+      slots.innerHTML = '';
+      times.forEach((t, i) => {
+        const hhmm = String(t).slice(0, 5);
+        const label = document.createElement('label');
+        label.className = 'vt-slot';
+        const input = document.createElement('input');
+        input.type = 'radio'; input.name = 'time'; input.value = hhmm; input.required = true; input.checked = i === 0;
+        const span = document.createElement('span');
+        span.textContent = hhmm;
+        label.append(input, span);
+        slots.appendChild(label);
+      });
+      if (empty) empty.hidden = times.length > 0;
+      if (submit) submit.disabled = times.length === 0;
+    };
+
+    dateInput.addEventListener('change', async () => {
+      const date = dateInput.value;
+      if (!date) return;
+      if (hiddenDate) hiddenDate.value = date;
+      root.classList.add('vt-loading');
+      try {
+        const res = await fetch(url + '?doctorId=' + encodeURIComponent(doctorId) + '&date=' + encodeURIComponent(date), { headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error(res.status);
+        draw(await res.json());
+        const u = new URL(window.location.href);
+        u.searchParams.set('date', date);
+        window.history.replaceState(null, '', u);
+      } catch (err) {
+        dateInput.form.submit(); // fall back to the server-rendered page
+      } finally {
+        root.classList.remove('vt-loading');
+      }
+    });
+  });
 })();

@@ -1,47 +1,84 @@
 ﻿@model IEnumerable<TimeOnly>
-
+@* Reschedule — GET /MyAppointments/Reschedule?appointmentId=&date=yyyy-MM-dd,
+   POST MyAppointments/Reschedule (appointmentId, date, time). Vitala style.
+   The view doesn't receive the doctorId, so changing the date reloads the page (auto-submitted GET form). *@
 @{
-    ViewData["Title"] = "Reschedule";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Reschedule appointment";
+    ViewData["ActiveNav"] = "Appointments";
     var appointmentId = (int)ViewBag.AppointmentId;
     var date = (DateOnly)ViewBag.Date;
+    var current = ViewBag.Current as string;
+    var today = DateOnly.FromDateTime(DateTime.Now);
 }
 
-<h2>Reschedule appointment</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Reschedule appointment</h1>
+        <p class="vt-page-sub">Choose a new day and time with the same doctor.</p>
+    </div>
+    <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="MyAppointments" asp-action="Index">
+            <partial name="_VtIcon" model='"back:18"' /> Back to my appointments
+        </a>
+    </div>
+</header>
 
-<p>Current time: @ViewBag.Current</p>
+<partial name="_VtAlerts" />
 
-<p>
-    <a asp-action="Index">Back to my appointments</a>
-</p>
+<div class="vt-booking">
+    <section class="vt-card">
+        <form method="get" asp-controller="MyAppointments" asp-action="Reschedule" class="vt-form-grid" data-vt-autosubmit>
+            <input type="hidden" name="appointmentId" value="@appointmentId" />
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="vt-date">New date</label>
+                <input class="vt-input vt-input--sm" id="vt-date" type="date" name="date"
+                       value="@date.ToString("yyyy-MM-dd")" min="@today.ToString("yyyy-MM-dd")" />
+            </div>
+            <noscript><button type="submit" class="vt-btn vt-btn--outline vt-btn--sm">Show times</button></noscript>
+        </form>
 
-@if (TempData["Error"] is string error)
-{
-    <p style="color:red">@error</p>
-}
+        <form method="post" asp-controller="MyAppointments" asp-action="Reschedule" class="vt-mt-lg">
+            <input type="hidden" name="appointmentId" value="@appointmentId" />
+            <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
 
-<form method="get">
-    <input type="hidden" name="appointmentId" value="@appointmentId" />
-    <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" />
-    <button type="submit">Show times</button>
-</form>
-
-@if (!Model.Any())
-{
-    <p>No available times on this day.</p>
-}
-else
-{
-    <form method="post" asp-action="Reschedule">
-        <input type="hidden" name="appointmentId" value="@appointmentId" />
-        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
-
-        <select name="time">
-            @foreach (var t in Model)
+            <h2 class="vt-card__title">Available times</h2>
+            @if (!Model.Any())
             {
-                <option value="@t.ToString("HH:mm")">@t.ToString("HH:mm")</option>
+                <p class="vt-muted">No available times on this day. Try another date.</p>
             }
-        </select>
+            else
+            {
+                <div class="vt-slots" role="radiogroup" aria-label="Available times">
+                    @{ var first = true; }
+                    @foreach (var t in Model)
+                    {
+                        <label class="vt-slot">
+                            <input type="radio" name="time" value="@t.ToString("HH:mm")" checked="@first" required />
+                            <span>@t.ToString("HH:mm")</span>
+                        </label>
+                        first = false;
+                    }
+                </div>
+            }
 
-        <button type="submit">Reschedule</button>
-    </form>
-}
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-btn--submit vt-mt-md" disabled="@(!Model.Any())">
+                Reschedule
+            </button>
+        </form>
+    </section>
+
+    <aside class="vt-card">
+        <h2 class="vt-card__title">Current appointment</h2>
+        <div class="vt-list">
+            @if (!string.IsNullOrEmpty(current))
+            {
+                <div class="vt-note"><partial name="_VtIcon" model='"calendar:18"' /><span><strong>@current</strong></span></div>
+            }
+            <div class="vt-note"><partial name="_VtIcon" model='"check-circle:18"' /><span>After rescheduling, the request goes back to <strong>Pending</strong> until the doctor confirms it.</span></div>
+        </div>
+    </aside>
+</div>

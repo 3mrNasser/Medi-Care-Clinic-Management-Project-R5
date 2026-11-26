@@ -1,36 +1,96 @@
 ﻿@model IEnumerable<MediCare.Services.DTOs.DoctorDto>
-
+@* Doctor search — GET /Doctors?specialty=&name=&location= (backend: DoctorsController.Index). Vitala style. *@
 @{
-    ViewData["Title"] = "Doctors";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Find a Specialist";
+    var q = Context.Request.Query;
+    var specialty = q["specialty"].ToString();
+    var name = q["name"].ToString();
+    var location = q["location"].ToString();
+    var count = Model.Count();
+    var hasFilter = !string.IsNullOrWhiteSpace(specialty) || !string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(location);
+
+    static string Initials(string fullName)
+    {
+        var parts = fullName.Replace("Dr.", "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return string.Concat(parts.Take(2).Select(p => char.ToUpperInvariant(p[0])));
+    }
 }
 
-<h2>Doctors</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Find a Specialist</h1>
+        <p class="vt-page-sub">Search by specialty, doctor name or location, then book a time that suits you.</p>
+    </div>
+</header>
 
-<form method="get">
-    <input type="text" name="specialty" placeholder="Specialty" />
-    <input type="text" name="name" placeholder="Doctor name" />
-    <input type="text" name="location" placeholder="Location" />
-    <button type="submit">Search</button>
-</form>
+<section class="vt-card vt-search-card" aria-label="Search doctors">
+    <form method="get" asp-controller="Doctors" asp-action="Index" class="vt-form-grid">
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="specialty">Specialty</label>
+            <input class="vt-input vt-input--sm" id="specialty" name="specialty" value="@specialty" list="vt-specialties" placeholder="e.g. Cardiology" />
+            <datalist id="vt-specialties">
+                <option value="Cardiology"></option>
+                <option value="Dermatology"></option>
+                <option value="Pediatrics"></option>
+                <option value="Neurology"></option>
+                <option value="Orthopedics"></option>
+                <option value="Ophthalmology"></option>
+            </datalist>
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="name">Doctor name</label>
+            <input class="vt-input vt-input--sm" id="name" name="name" value="@name" placeholder="e.g. Ahmed" />
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="location">Location</label>
+            <input class="vt-input vt-input--sm" id="location" name="location" value="@location" placeholder="e.g. Cairo" />
+        </div>
+        <div class="vt-field vt-field--actions">
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm">
+                <partial name="_VtIcon" model='"search:18"' /> Search
+            </button>
+            @if (hasFilter)
+            {
+                <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="Doctors" asp-action="Index">Clear</a>
+            }
+        </div>
+    </form>
+</section>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Specialty</th>
-            <th>Address</th>
-            <th>Fee</th>
-        </tr>
-    </thead>
-    <tbody>
+<p class="vt-results-meta">@count @(count == 1 ? "doctor" : "doctors") found</p>
+
+@if (count == 0)
+{
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"search:30"' /></span>
+        <h2 class="vt-empty__title">No doctors match your search</h2>
+        <p class="vt-empty__text">Try another specialty or location, or clear the filters.</p>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Doctors" asp-action="Index">Show all doctors</a>
+    </section>
+}
+else
+{
+    <div class="vt-doctor-grid">
         @foreach (var d in Model)
         {
-            <tr>
-                <td>@d.FullName</td>
-                <td>@d.Specialty</td>
-                <td>@d.ClinicAddress</td>
-                <td>@d.ConsultationFee</td>
-            </tr>
+            <article class="vt-doctor-card">
+                <div class="vt-doctor-card__top">
+                    <span class="vt-initials" aria-hidden="true">@Initials(d.FullName)</span>
+                    <div>
+                        <span class="vt-eyebrow">@d.Specialty</span>
+                        <h2 class="vt-doctor-card__name">@d.FullName</h2>
+                    </div>
+                </div>
+                <span class="vt-doctor-card__meta"><partial name="_VtIcon" model='"pin:16"' /> @d.ClinicAddress</span>
+                <div class="vt-doctor-card__foot">
+                    <span class="vt-fee">Consultation fee<strong>EGP @d.ConsultationFee.ToString("0.##")</strong></span>
+                    <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Appointments" asp-action="Book" asp-route-doctorId="@d.Id">Book</a>
+                </div>
+            </article>
         }
-    </tbody>
-</table>
+    </div>
+}

@@ -1,72 +1,82 @@
 ﻿@using MediCare.Data.Enums
 @model IEnumerable<MediCare.Services.DTOs.AppointmentDto>
-
+@* Doctor appointments — GET /DoctorAppointments?doctorId=, JSON GET /DoctorAppointments/Events?doctorId= (FullCalendar),
+   POST DoctorAppointments/Confirm | Reject | Complete | NoShow (doctorId, appointmentId). Vitala style. *@
 @{
-    ViewData["Title"] = "My appointments";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Appointments";
+    ViewData["ActiveNav"] = "DoctorAppointments";
+    ViewData["SidebarRole"] = "Doctor";
     var doctorId = (int)ViewBag.DoctorId;
+    var today = DateOnly.FromDateTime(DateTime.Now);
+    var list = Model.ToList();
+    var todayCount = list.Count(a => a.Date == today && a.Status is AppointmentStatus.Pending or AppointmentStatus.Confirmed);
+    var pending = list.Count(a => a.Status == AppointmentStatus.Pending);
+    var confirmed = list.Count(a => a.Status == AppointmentStatus.Confirmed && a.Date >= today);
+    var active = list.Where(a => a.Status is AppointmentStatus.Pending or AppointmentStatus.Confirmed)
+                     .OrderBy(a => a.Date).ThenBy(a => a.StartTime).ToList();
+    var history = list.Except(active).OrderByDescending(a => a.Date).ThenByDescending(a => a.StartTime).ToList();
 }
 
-<h2>My appointments</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Appointments</h1>
+        <p class="vt-page-sub">Confirm new requests and manage today's schedule.</p>
+    </div>
+</header>
 
-@if (TempData["Error"] is string error)
-{
-    <p style="color:red">@error</p>
+<partial name="_VtAlerts" />
+
+<div class="vt-stats">
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@todayCount</span><span class="vt-stat-tile__label">Today</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@pending</span><span class="vt-stat-tile__label">Pending requests</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@confirmed</span><span class="vt-stat-tile__label">Confirmed upcoming</span></div>
+</div>
+
+<div class="vt-tabs" role="tablist" data-vt-tabs>
+    <button type="button" class="vt-tab" role="tab" aria-selected="true" aria-controls="vt-tab-list" id="vt-tab-list-btn">
+        <partial name="_VtIcon" model='"list:16"' /> List
+    </button>
+    <button type="button" class="vt-tab" role="tab" aria-selected="false" aria-controls="vt-tab-calendar" id="vt-tab-calendar-btn">
+        <partial name="_VtIcon" model='"calendar:16"' /> Calendar
+    </button>
+</div>
+
+<section class="vt-tabpanel" id="vt-tab-list" role="tabpanel" aria-labelledby="vt-tab-list-btn">
+    @if (!list.Any())
+    {
+        <section class="vt-empty">
+            <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"calendar:30"' /></span>
+            <h2 class="vt-empty__title">No appointments yet</h2>
+            <p class="vt-empty__text">New booking requests from patients will appear here.</p>
+            <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Availability" asp-action="Index" asp-route-doctorId="@doctorId">Set working hours</a>
+        </section>
+    }
+    @if (active.Any())
+    {
+        <h2 class="vt-section-label">Upcoming</h2>
+        <div class="vt-list">
+            @foreach (var a in active) { <partial name="_DoctorAppointmentRow" model="a" view-data="ViewData" /> }
+        </div>
+    }
+    @if (history.Any())
+    {
+        <h2 class="vt-section-label">History</h2>
+        <div class="vt-list">
+            @foreach (var a in history) { <partial name="_DoctorAppointmentRow" model="a" view-data="ViewData" /> }
+        </div>
+    }
+</section>
+
+<section class="vt-tabpanel" id="vt-tab-calendar" role="tabpanel" aria-labelledby="vt-tab-calendar-btn" hidden>
+    <div class="vt-calendar" data-vt-calendar data-events-url="@Url.Action("Events", "DoctorAppointments", new { doctorId })"></div>
+</section>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"
+            integrity="sha384-B1OFx8Gy9GjPu8UbUyXbGQpzll9ubAUQ9agInFJ8NnD7nYG1u/CLR+Sqr5yifl4q"
+            crossorigin="anonymous"></script>
 }
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Date</th>
-            <th>Time</th>
-            <th>Patient</th>
-            <th>Reason</th>
-            <th>Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var a in Model)
-        {
-            <tr>
-                <td>@a.Date.ToString("yyyy-MM-dd")</td>
-                <td>@a.StartTime.ToString("HH:mm")</td>
-                <td>@a.PatientName</td>
-                <td>@a.Reason</td>
-                <td>@a.Status</td>
-                <td>
-                    @if (a.Status == AppointmentStatus.Pending)
-                    {
-                        <form method="post" asp-action="Confirm" style="display:inline">
-                            <input type="hidden" name="doctorId" value="@doctorId" />
-                            <input type="hidden" name="appointmentId" value="@a.Id" />
-                            <button type="submit">Confirm</button>
-                        </form>
-                        <form method="post" asp-action="Reject" style="display:inline">
-                            <input type="hidden" name="doctorId" value="@doctorId" />
-                            <input type="hidden" name="appointmentId" value="@a.Id" />
-                            <button type="submit">Reject</button>
-                        </form>
-                    }
-                    else if (a.Status == AppointmentStatus.Confirmed)
-                    {
-                        <form method="post" asp-action="Complete" style="display:inline">
-                            <input type="hidden" name="doctorId" value="@doctorId" />
-                            <input type="hidden" name="appointmentId" value="@a.Id" />
-                            <button type="submit">Completed</button>
-                        </form>
-                        <form method="post" asp-action="NoShow" style="display:inline">
-                            <input type="hidden" name="doctorId" value="@doctorId" />
-                            <input type="hidden" name="appointmentId" value="@a.Id" />
-                            <button type="submit">No-show</button>
-                        </form>
-                    }
-                    else if (a.Status == AppointmentStatus.Completed)
-                    {
-                        <a asp-controller="Prescriptions" asp-action="Index"
-                           asp-route-doctorId="@doctorId" asp-route-appointmentId="@a.Id">Prescription</a>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

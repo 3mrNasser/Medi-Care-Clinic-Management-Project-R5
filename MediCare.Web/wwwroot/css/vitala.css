@@ -59,8 +59,8 @@
 /* ---------- Buttons ---------- */
 .vt-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  height: 37px; padding: 0 20px;
-  font: 700 12px/1 var(--vt-font);
+  height: 44px; padding: 0 20px;
+  font: 700 14px/1 var(--vt-font);
   border: 1px solid transparent; border-radius: var(--vt-radius);
   cursor: pointer; white-space: nowrap;
   transition: background-color .15s, color .15s, border-color .15s, transform .1s, box-shadow .15s;
@@ -79,7 +79,7 @@
 .vt-btn--outline { background: #fff; color: var(--vt-primary); border-color: var(--vt-primary); }
 .vt-btn--outline:hover { background: #EEF2FF; }
 .vt-btn--block { width: 100%; }
-.vt-btn--sm { height: 32px; padding: 0 14px; font-size: 11px; border-radius: 9px; }
+.vt-btn--sm { height: 40px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
 .vt-btn--lg { height: 55px; padding: 0 37px; font-size: 16px; border-radius: 12px; }
 
 /* =========================================================================
@@ -512,6 +512,163 @@
 .vt-app.is-collapsed .vt-sidebar { width: 0; overflow: hidden; padding-left: 0; padding-right: 0; visibility: hidden; }
 .vt-empty__icon--navy { background: var(--vt-primary); color: #8EC5FF; }
 .vt-empty__icon--navy img { width: 44px; height: 44px; }
+
+
+/* =========================================================================
+   App pages (doctor search, booking, appointments, prescriptions, working hours)
+   Built in the Vitala style; no Figma frames exist for these screens.
+   ========================================================================= */
+.vt-page-head { flex-wrap: wrap; }
+.vt-page-head__text { flex: 1; min-width: 200px; }
+.vt-page-title { margin: 0; font: 700 26px/1.25 var(--vt-font-display); color: var(--vt-text); }
+.vt-page-sub { margin: 4px 0 0; font-size: 14px; color: var(--vt-text-muted); }
+.vt-page-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+.vt-card { background: #fff; border: 1.5px solid var(--vt-border); border-radius: 19px; padding: 24px; }
+.vt-card + .vt-card { margin-top: 20px; }
+.vt-card__title { margin: 0 0 16px; font: 700 17px/1.3 var(--vt-font-display); color: var(--vt-text); }
+
+/* Alerts (TempData) */
+.vt-alert { display: flex; align-items: center; gap: 10px; padding: 13px 16px; margin-bottom: 20px; border-radius: 12px; font-size: 14px; font-weight: 500; }
+.vt-alert svg { flex: 0 0 auto; }
+.vt-alert--success { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+.vt-alert--error { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+
+/* Compact form controls for app pages */
+.vt-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; align-items: end; }
+.vt-form-grid .vt-field { margin: 0; }
+.vt-label--sm { margin-bottom: 8px; font-size: 13px; }
+.vt-input--sm { height: 46px; padding: 0 14px; font-size: 14px; border-radius: 11px; }
+select.vt-input { appearance: none; padding-right: 36px; cursor: pointer;
+  background: var(--vt-bg) url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2212%22 height=%228%22 viewBox=%220 0 12 8%22%3E%3Cpath d=%22M1 1l5 5 5-5%22 fill=%22none%22 stroke=%22%2364748B%22 stroke-width=%221.8%22 stroke-linecap=%22round%22/%3E%3C/svg%3E") no-repeat right 14px center; }
+textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: vertical; font-family: var(--vt-font); }
+.vt-btn--danger { background: #fff; color: #B91C1C; border-color: #FECACA; }
+.vt-btn--danger:hover { background: #FEF2F2; }
+.vt-btn--success { background: #059669; color: #fff; }
+.vt-btn--success:hover { background: #047857; }
+.vt-btn--xs { height: 34px; padding: 0 14px; font-size: 13px; border-radius: 9px; }
+.vt-inline-form { display: inline; margin: 0; }
+.vt-field--actions { display: flex; gap: 8px; }
+.vt-form-grid .vt-btn { height: 46px; }
+.vt-btn--submit { height: 50px; font-size: 15px; }
+.vt-field--actions .vt-btn--primary { flex: 1; }
+.vt-mt-md { margin-top: 16px; }
+.vt-mt-lg { margin-top: 22px; }
+
+/* Badges */
+.vt-badge { display: inline-flex; align-items: center; height: 26px; padding: 0 11px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.vt-badge--pending { background: #FEF3C7; color: #92400E; }
+.vt-badge--confirmed { background: #DCFCE7; color: #166534; }
+.vt-badge--completed { background: #DBEAFE; color: #1E40AF; }
+.vt-badge--rejected { background: #FEE2E2; color: #991B1B; }
+.vt-badge--cancelled { background: #F1F5F9; color: #475569; }
+.vt-badge--noshow { background: #E2E8F0; color: #334155; }
+
+/* Doctor search */
+.vt-search-card { margin-bottom: 24px; }
+.vt-results-meta { margin: 0 0 14px; font-size: 14px; color: var(--vt-text-muted); }
+.vt-doctor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+.vt-doctor-card { display: flex; flex-direction: column; gap: 14px; padding: 22px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 19px; transition: border-color .15s, box-shadow .15s, transform .15s; }
+.vt-doctor-card:hover { border-color: var(--vt-primary); box-shadow: var(--vt-shadow); transform: translateY(-2px); }
+.vt-doctor-card__top { display: flex; gap: 14px; align-items: center; }
+.vt-initials { flex: 0 0 auto; width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; background: var(--vt-primary); color: #fff; font: 700 18px/1 var(--vt-font-display); }
+.vt-doctor-card__name { margin: 4px 0 0; font: 700 17px/1.3 var(--vt-font-display); color: var(--vt-text); }
+.vt-doctor-card__meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--vt-text-muted); }
+.vt-doctor-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 14px; border-top: 1px solid var(--vt-border); }
+.vt-fee { font-size: 13px; color: var(--vt-text-muted); }
+.vt-fee strong { display: block; font: 700 17px/1.2 var(--vt-font-display); color: var(--vt-text); }
+
+/* Booking */
+.vt-booking { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; }
+.vt-slots { display: flex; flex-wrap: wrap; gap: 10px; margin: 4px 0 20px; }
+.vt-slot { position: relative; }
+.vt-slot input { position: absolute; opacity: 0; pointer-events: none; }
+.vt-slot span { display: inline-flex; align-items: center; height: 42px; padding: 0 18px; border: 1.5px solid var(--vt-border-strong); border-radius: 11px; background: #fff; font-size: 14px; font-weight: 600; color: var(--vt-text); cursor: pointer; transition: all .15s; }
+.vt-slot span:hover { border-color: var(--vt-primary); }
+.vt-slot input:checked + span { background: var(--vt-primary); border-color: var(--vt-primary); color: #fff; }
+.vt-slot input:focus-visible + span { outline: 3px solid var(--vt-sky); outline-offset: 2px; }
+.vt-note { display: flex; gap: 10px; padding: 14px; border-radius: 12px; background: #EEF2FF; color: var(--vt-primary); font-size: 13px; line-height: 1.55; }
+.vt-note svg { flex: 0 0 auto; margin-top: 1px; }
+.vt-muted { color: var(--vt-text-muted); font-size: 14px; }
+.vt-loading { opacity: .5; pointer-events: none; }
+
+/* Appointment list */
+.vt-list { display: flex; flex-direction: column; gap: 12px; }
+.vt-row { display: grid; grid-template-columns: 70px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 16px 18px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 16px; }
+.vt-date { width: 70px; padding: 8px 0; border-radius: 12px; background: #EEF2FF; color: var(--vt-primary); text-align: center; }
+.vt-date__day { display: block; font: 700 22px/1 var(--vt-font-display); }
+.vt-date__mon { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+.vt-row__title { margin: 0 0 4px; font: 700 15px/1.3 var(--vt-font-display); color: var(--vt-text); }
+.vt-row__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; font-size: 13px; color: var(--vt-text-muted); }
+.vt-row__meta span { display: inline-flex; align-items: center; gap: 5px; }
+.vt-row__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.vt-section-label { margin: 26px 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--vt-text-muted); }
+.vt-section-label:first-child { margin-top: 0; }
+
+/* Stats */
+.vt-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 22px; }
+.vt-stat-tile { padding: 18px 20px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 16px; }
+.vt-stat-tile__num { display: block; font: 700 26px/1.1 var(--vt-font-display); color: var(--vt-primary); }
+.vt-stat-tile__label { font-size: 13px; color: var(--vt-text-muted); }
+
+/* Tabs (list / calendar) */
+.vt-tabs { display: inline-flex; gap: 4px; padding: 4px; margin-bottom: 18px; background: #EEF2FF; border-radius: 12px; }
+.vt-tab { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 0; border-radius: 9px; background: transparent; color: var(--vt-primary); font: 600 14px var(--vt-font); cursor: pointer; }
+.vt-tab[aria-selected="true"] { background: #fff; box-shadow: var(--vt-shadow-sm); }
+.vt-tabpanel[hidden] { display: none; }
+.vt-calendar { padding: 16px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 19px; }
+.vt-calendar {
+  --fc-button-bg-color: #14248A; --fc-button-border-color: #14248A;
+  --fc-button-hover-bg-color: #1B2EA8; --fc-button-hover-border-color: #1B2EA8;
+  --fc-button-active-bg-color: #0D1550; --fc-button-active-border-color: #0D1550;
+  --fc-today-bg-color: rgba(103, 198, 245, .12); --fc-border-color: #E2E8F0;
+}
+.vt-calendar .fc { font-family: var(--vt-font); font-size: 13px; }
+.vt-calendar .fc .fc-button-primary { background: var(--vt-primary); border-color: var(--vt-primary); }
+.vt-calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
+.vt-calendar .fc .fc-button-primary:not(:disabled):active { background: var(--vt-primary-dark); border-color: var(--vt-primary-dark); }
+.vt-calendar .fc .fc-toolbar-title { font: 700 18px var(--vt-font-display); color: var(--vt-text); }
+
+/* Tables */
+.vt-table-wrap { overflow-x: auto; }
+.vt-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.vt-table th { padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; letter-spacing: .4px; text-transform: uppercase; color: var(--vt-text-muted); border-bottom: 1.5px solid var(--vt-border); }
+.vt-table td { padding: 12px; border-bottom: 1px solid var(--vt-border); color: var(--vt-text); }
+.vt-table tr:last-child td { border-bottom: 0; }
+
+/* Working hours */
+.vt-day { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--vt-border); }
+.vt-day:last-child { border-bottom: 0; }
+.vt-day__name { font-weight: 700; color: var(--vt-text); }
+.vt-day__slots { display: flex; flex-wrap: wrap; gap: 8px; }
+.vt-chip-slot { display: inline-flex; align-items: center; gap: 4px; height: 34px; padding: 0 4px 0 12px; border-radius: 999px; background: #EEF2FF; color: var(--vt-primary); font-size: 13px; font-weight: 600; }
+.vt-chip-slot button { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 50%; background: transparent; color: #B91C1C; cursor: pointer; }
+.vt-chip-slot button:hover { background: #FEE2E2; }
+
+/* Prescriptions */
+.vt-rx { break-inside: avoid; }
+.vt-rx__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
+.vt-rx__doctor { margin: 0; font: 700 17px/1.3 var(--vt-font-display); }
+.vt-print-only { display: none; }
+
+@media (max-width: 960px) {
+  .vt-booking { grid-template-columns: 1fr; }
+  .vt-row { grid-template-columns: 60px minmax(0, 1fr); }
+  .vt-row__actions { grid-column: 1 / -1; justify-content: flex-start; }
+  .vt-date { width: 60px; }
+  .vt-day { grid-template-columns: 1fr; gap: 8px; }
+}
+
+@media print {
+  .vt-sidebar, .vt-fab, .vt-no-print, .vt-menu-btn, .vt-alert { display: none !important; }
+  .vt-app, .vt-app.is-collapsed { display: block; }
+  .vt-body, .vt-main { background: #fff !important; }
+  .vt-main { padding: 0; }
+  .vt-app { min-height: 0; }
+  .vt-print-only { display: block; }
+  .vt-card { border: 1px solid #CBD5E1; box-shadow: none; }
+  .vt-card + .vt-card { margin-top: 14px; }
+}
 
 /* =========================================================================
    Responsive
