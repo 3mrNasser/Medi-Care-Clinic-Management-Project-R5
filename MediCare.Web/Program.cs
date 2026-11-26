@@ -55,8 +55,8 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await DbSeeder.SeedAsync(context);
+    await IdentitySeeder.SeedAsync(scope.ServiceProvider);   
 }
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
