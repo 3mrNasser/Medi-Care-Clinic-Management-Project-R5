@@ -191,6 +191,11 @@
     log.scrollTop = log.scrollHeight;
   });
 
+  /* ---------- Submit a GET form when one of its fields changes  <form data-vt-autosubmit> ---------- */
+  $$('form[data-vt-autosubmit]').forEach((form) => {
+    form.addEventListener('change', () => form.requestSubmit ? form.requestSubmit() : form.submit());
+  });
+
   /* ---------- Confirm before submitting  <form data-vt-confirm="Question?"> ---------- */
   $$('form[data-vt-confirm]').forEach((form) => {
     form.addEventListener('submit', (e) => {

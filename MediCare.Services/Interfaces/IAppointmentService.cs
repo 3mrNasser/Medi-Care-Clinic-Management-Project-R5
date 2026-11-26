@@ -13,5 +13,6 @@ public interface IAppointmentService
     Task<ServiceResult> MarkNoShowAsync(int doctorId, int appointmentId);
     Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId);
     Task<ServiceResult> CancelAsync(string patientId, int appointmentId);
+    Task<ServiceResult> RescheduleAsync(string patientId, int appointmentId, DateOnly newDate, TimeOnly newTime);
     Task<IEnumerable<AppointmentDto>> GetPatientAppointmentsAsync(string patientId);
 }
