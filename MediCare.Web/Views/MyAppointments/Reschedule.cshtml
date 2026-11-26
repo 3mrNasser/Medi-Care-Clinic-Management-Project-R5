@@ -1,0 +1,47 @@
+﻿@model IEnumerable<TimeOnly>
+
+@{
+    ViewData["Title"] = "Reschedule";
+    var appointmentId = (int)ViewBag.AppointmentId;
+    var date = (DateOnly)ViewBag.Date;
+}
+
+<h2>Reschedule appointment</h2>
+
+<p>Current time: @ViewBag.Current</p>
+
+<p>
+    <a asp-action="Index">Back to my appointments</a>
+</p>
+
+@if (TempData["Error"] is string error)
+{
+    <p style="color:red">@error</p>
+}
+
+<form method="get">
+    <input type="hidden" name="appointmentId" value="@appointmentId" />
+    <input type="date" name="date" value="@date.ToString("yyyy-MM-dd")" />
+    <button type="submit">Show times</button>
+</form>
+
+@if (!Model.Any())
+{
+    <p>No available times on this day.</p>
+}
+else
+{
+    <form method="post" asp-action="Reschedule">
+        <input type="hidden" name="appointmentId" value="@appointmentId" />
+        <input type="hidden" name="date" value="@date.ToString("yyyy-MM-dd")" />
+
+        <select name="time">
+            @foreach (var t in Model)
+            {
+                <option value="@t.ToString("HH:mm")">@t.ToString("HH:mm")</option>
+            }
+        </select>
+
+        <button type="submit">Reschedule</button>
+    </form>
+}

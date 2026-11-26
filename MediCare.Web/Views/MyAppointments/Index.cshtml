@@ -12,6 +12,11 @@
     <p style="color:red">@error</p>
 }
 
+@if (TempData["Success"] is string success)
+{
+    <p style="color:green">@success</p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -35,6 +40,7 @@
                 <td>
                     @if (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Confirmed)
                     {
+                        <a asp-action="Reschedule" asp-route-appointmentId="@a.Id">Reschedule</a>
                         <form method="post" asp-action="Cancel" style="display:inline">
                             <input type="hidden" name="appointmentId" value="@a.Id" />
                             <button type="submit">Cancel</button>
