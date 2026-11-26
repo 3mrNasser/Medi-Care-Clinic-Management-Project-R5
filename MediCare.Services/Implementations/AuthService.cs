@@ -76,6 +76,26 @@ public class AuthService : IAuthService
 
         return AuthResult.Success();
     }
+    public async Task<LoginResult> LoginAsync(string email, string password)
+    {
+        var user = await _userManager.FindByEmailAsync(email.Trim());
+        if (user == null)
+            return LoginResult.Fail();
+
+        // A locked-out account gets the same generic message.
+        if (await _userManager.IsLockedOutAsync(user))
+            return LoginResult.Fail();
+
+        if (!await _userManager.CheckPasswordAsync(user, password))
+        {
+            await _userManager.AccessFailedAsync(user); // counts failures, locks after too many
+            return LoginResult.Fail();
+        }
+
+        await _userManager.ResetAccessFailedCountAsync(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        return new LoginResult { Succeeded = true, User = user, Role = roles.FirstOrDefault() };
+    }
 
     private static AuthResult FromIdentity(IdentityResult result)
     {
