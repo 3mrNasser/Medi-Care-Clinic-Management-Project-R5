@@ -39,10 +39,8 @@ public class AccountController : Controller
                 ModelState.AddModelError(string.Empty, error.Message);
         }
 
-        // The Signup view reads the role from ?role= in the URL. Keep it, so a doctor who
-        // makes a typo is not silently switched to Patient when the form is shown again.
-        Request.QueryString = new QueryString("?role=" + Uri.EscapeDataString(model.Role ?? ""));
         return View(model);
+   
     }
 
     [HttpGet]
