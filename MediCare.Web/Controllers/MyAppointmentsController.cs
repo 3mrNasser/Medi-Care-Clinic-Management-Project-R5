@@ -29,4 +29,39 @@ public class MyAppointmentsController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Reschedule(int appointmentId, DateOnly? date)
+    {
+        var mine = await _appointmentService.GetPatientAppointmentsAsync(DbSeeder.TestPatientId);
+        var appointment = mine.FirstOrDefault(a => a.Id == appointmentId);
+        if (appointment is null)
+            return NotFound();
+
+        var selected = date ?? appointment.Date;
+        var times = await _appointmentService.GetAvailableTimesAsync(appointment.DoctorId, selected);
+
+        ViewBag.AppointmentId = appointmentId;
+        ViewBag.Date = selected;
+        ViewBag.Current = $"{appointment.Date:yyyy-MM-dd} {appointment.StartTime:HH:mm}";
+        return View(times);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reschedule(int appointmentId, DateOnly date, TimeOnly time)
+    {
+        var result = await _appointmentService.RescheduleAsync(
+            DbSeeder.TestPatientId, appointmentId, date, time);
+
+        if (result.Success)
+        {
+            TempData["Success"] = "Appointment rescheduled. Waiting for the doctor's confirmation.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        TempData["Error"] = result.Error;
+        return RedirectToAction(nameof(Reschedule),
+            new { appointmentId, date = date.ToString("yyyy-MM-dd") });
+    }
 }

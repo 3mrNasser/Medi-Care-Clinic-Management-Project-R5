@@ -1,4 +1,6 @@
-﻿using MediCare.Services.Interfaces;
+﻿using MediCare.Data.Enums;
+using MediCare.Services.Common;
+using MediCare.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCare.Web.Controllers;
@@ -19,6 +21,31 @@ public class DoctorAppointmentsController : Controller
         return View(appointments);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Events(int doctorId)
+    {
+        var appointments = await _appointmentService.GetDoctorAppointmentsAsync(doctorId);
+        var length = TimeSpan.FromMinutes(BookingRules.AppointmentMinutes);
+
+        var events = appointments
+            .Where(a => a.Status != AppointmentStatus.Cancelled
+                     && a.Status != AppointmentStatus.Rejected)
+            .Select(a =>
+            {
+                var start = a.Date.ToDateTime(a.StartTime);
+                return new
+                {
+                    id = a.Id,
+                    title = a.PatientName,
+                    start = start.ToString("s"),
+                    end = (start + length).ToString("s"),
+                    status = a.Status.ToString()
+                };
+            });
+
+        return Json(events);
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Confirm(int doctorId, int appointmentId)
@@ -35,6 +62,28 @@ public class DoctorAppointmentsController : Controller
     public async Task<IActionResult> Reject(int doctorId, int appointmentId)
     {
         var result = await _appointmentService.RejectAsync(doctorId, appointmentId);
+        if (!result.Success)
+            TempData["Error"] = result.Error;
+
+        return RedirectToAction(nameof(Index), new { doctorId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Complete(int doctorId, int appointmentId)
+    {
+        var result = await _appointmentService.CompleteAsync(doctorId, appointmentId);
+        if (!result.Success)
+            TempData["Error"] = result.Error;
+
+        return RedirectToAction(nameof(Index), new { doctorId });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NoShow(int doctorId, int appointmentId)
+    {
+        var result = await _appointmentService.MarkNoShowAsync(doctorId, appointmentId);
         if (!result.Success)
             TempData["Error"] = result.Error;
 

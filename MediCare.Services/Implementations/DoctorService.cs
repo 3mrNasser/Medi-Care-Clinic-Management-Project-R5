@@ -13,12 +13,13 @@ public class DoctorService : IDoctorService
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<IEnumerable<DoctorDto>> SearchAsync(string? specialty, string? name)
+    public async Task<IEnumerable<DoctorDto>> SearchAsync(string? specialty, string? name, string? location)
     {
         var doctors = await _unitOfWork.Doctors.FindAsync(
             d => d.IsApproved
                  && (string.IsNullOrEmpty(specialty) || d.Specialty == specialty)
-                 && (string.IsNullOrEmpty(name) || d.User.FullName.Contains(name)),
+                 && (string.IsNullOrEmpty(name) || d.User.FullName.Contains(name))
+                 && (string.IsNullOrEmpty(location) || d.ClinicAddress.Contains(location)),
             d => d.User);
 
         return doctors.Select(d => new DoctorDto

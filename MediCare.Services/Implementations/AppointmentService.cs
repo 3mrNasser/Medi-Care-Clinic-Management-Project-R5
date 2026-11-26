@@ -111,6 +111,32 @@ public class AppointmentService : IAppointmentService
     public Task<ServiceResult> RejectAsync(int doctorId, int appointmentId)
         => RespondAsync(doctorId, appointmentId, AppointmentStatus.Rejected);
 
+    public Task<ServiceResult> CompleteAsync(int doctorId, int appointmentId)
+    => FinishAsync(doctorId, appointmentId, AppointmentStatus.Completed);
+
+    public Task<ServiceResult> MarkNoShowAsync(int doctorId, int appointmentId)
+        => FinishAsync(doctorId, appointmentId, AppointmentStatus.NoShow);
+
+    private async Task<ServiceResult> FinishAsync(
+        int doctorId, int appointmentId, AppointmentStatus newStatus)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
+        if (appointment is null || appointment.DoctorProfileId != doctorId)
+            return ServiceResult.Fail("Appointment not found.");
+
+        if (appointment.Status != AppointmentStatus.Confirmed)
+            return ServiceResult.Fail("Only confirmed appointments can be completed or marked as no-show.");
+
+        if (!HasPassed(appointment))
+            return ServiceResult.Fail("The appointment time has not arrived yet.");
+
+        appointment.Status = newStatus;
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveChangesAsync();
+
+        return ServiceResult.Ok();
+    }
+
     public async Task<IEnumerable<AppointmentDto>> GetDoctorAppointmentsAsync(int doctorId)
     {
         var appointments = await _unitOfWork.Appointments.FindAsync(
@@ -151,6 +177,61 @@ public class AppointmentService : IAppointmentService
         return ServiceResult.Ok();
     }
 
+    public async Task<ServiceResult> RescheduleAsync(
+    string patientId, int appointmentId, DateOnly newDate, TimeOnly newTime)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(appointmentId);
+        if (appointment is null || appointment.PatientId != patientId)
+            return ServiceResult.Fail("Appointment not found.");
+
+        if (appointment.Status != AppointmentStatus.Pending
+            && appointment.Status != AppointmentStatus.Confirmed)
+            return ServiceResult.Fail("This appointment cannot be rescheduled.");
+
+        if (HasPassed(appointment))
+            return ServiceResult.Fail("This appointment time has already passed.");
+
+        if (appointment.AppointmentDate == newDate && appointment.StartTime == newTime)
+            return ServiceResult.Fail("Please choose a different time.");
+
+        var doctorId = appointment.DoctorProfileId;
+
+        var available = await GetAvailableTimesAsync(doctorId, newDate);
+        if (!available.Contains(newTime))
+            return ServiceResult.Fail("This time is not available.");
+
+        var step = TimeSpan.FromMinutes(BookingRules.AppointmentMinutes);
+        var slots = await _unitOfWork.Slots.FindAsync(s =>
+            s.DoctorProfileId == doctorId && s.DayOfWeek == newDate.DayOfWeek);
+
+        var slot = slots.FirstOrDefault(s =>
+            newTime >= s.StartTime && newTime.ToTimeSpan() + step <= s.EndTime.ToTimeSpan());
+
+        if (slot is null)
+            return ServiceResult.Fail("This time is not available.");
+
+        appointment.AppointmentDate = newDate;
+        appointment.StartTime = newTime;
+        appointment.AvailabilitySlotId = slot.Id;
+        appointment.Status = AppointmentStatus.Pending;
+        _unitOfWork.Appointments.Update(appointment);
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            var stillAvailable = await GetAvailableTimesAsync(doctorId, newDate);
+            if (!stillAvailable.Contains(newTime))
+                return ServiceResult.Fail("This time was just booked by someone else.");
+
+            throw;
+        }
+
+        return ServiceResult.Ok();
+    }
+
     public async Task<IEnumerable<AppointmentDto>> GetPatientAppointmentsAsync(string patientId)
     {
         var appointments = await _unitOfWork.Appointments.FindAsync(a => a.PatientId == patientId);
@@ -165,6 +246,7 @@ public class AppointmentService : IAppointmentService
             .Select(a => new AppointmentDto
             {
                 Id = a.Id,
+                DoctorId = a.DoctorProfileId,
                 DoctorName = doctorNames.GetValueOrDefault(a.DoctorProfileId) ?? string.Empty,
                 Date = a.AppointmentDate,
                 StartTime = a.StartTime,

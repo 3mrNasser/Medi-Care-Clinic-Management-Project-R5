@@ -47,6 +47,24 @@
                             <button type="submit">Reject</button>
                         </form>
                     }
+                    else if (a.Status == AppointmentStatus.Confirmed)
+                    {
+                        <form method="post" asp-action="Complete" style="display:inline">
+                            <input type="hidden" name="doctorId" value="@doctorId" />
+                            <input type="hidden" name="appointmentId" value="@a.Id" />
+                            <button type="submit">Completed</button>
+                        </form>
+                        <form method="post" asp-action="NoShow" style="display:inline">
+                            <input type="hidden" name="doctorId" value="@doctorId" />
+                            <input type="hidden" name="appointmentId" value="@a.Id" />
+                            <button type="submit">No-show</button>
+                        </form>
+                    }
+                    else if (a.Status == AppointmentStatus.Completed)
+                    {
+                        <a asp-controller="Prescriptions" asp-action="Index"
+                           asp-route-doctorId="@doctorId" asp-route-appointmentId="@a.Id">Prescription</a>
+                    }
                 </td>
             </tr>
         }
