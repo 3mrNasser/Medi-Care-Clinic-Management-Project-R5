@@ -70,4 +70,43 @@ public class PrescriptionService : IPrescriptionService
             DurationDays = p.DurationDays
         });
     }
+
+    public async Task<IEnumerable<PrescriptionGroupDto>> GetForPatientAsync(string patientId)
+    {
+        var appointments = (await _unitOfWork.Appointments.FindAsync(
+            a => a.PatientId == patientId && a.Status == AppointmentStatus.Completed)).ToList();
+
+        if (appointments.Count == 0)
+            return Enumerable.Empty<PrescriptionGroupDto>();
+
+        var appointmentIds = appointments.Select(a => a.Id).ToList();
+        var items = (await _unitOfWork.Prescriptions.FindAsync(
+            p => appointmentIds.Contains(p.AppointmentId))).ToList();
+
+        var doctorIds = appointments.Select(a => a.DoctorProfileId).Distinct().ToList();
+        var doctors = await _unitOfWork.Doctors.FindAsync(d => doctorIds.Contains(d.Id), d => d.User);
+        var doctorNames = doctors.ToDictionary(d => d.Id, d => d.User.FullName);
+
+        return appointments
+            .OrderByDescending(a => a.AppointmentDate)
+            .Select(a => new PrescriptionGroupDto
+            {
+                AppointmentId = a.Id,
+                DoctorName = doctorNames.GetValueOrDefault(a.DoctorProfileId) ?? string.Empty,
+                Date = a.AppointmentDate,
+                Items = items
+                    .Where(p => p.AppointmentId == a.Id)
+                    .Select(p => new PrescriptionDto
+                    {
+                        Id = p.Id,
+                        MedicationName = p.MedicationName,
+                        Dosage = p.Dosage,
+                        Frequency = p.Frequency,
+                        DurationDays = p.DurationDays
+                    })
+                    .ToList()
+            })
+            .Where(g => g.Items.Count > 0)
+            .ToList();
+    }
 }

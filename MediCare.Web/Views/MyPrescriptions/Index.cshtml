@@ -1,0 +1,60 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.PrescriptionGroupDto>
+
+@{
+    ViewData["Title"] = "My prescriptions";
+}
+
+<style>
+    .prescription { margin-bottom: 2rem; }
+
+    @@media print {
+        header, footer, nav, .no-print { display: none !important; }
+        .prescription { page-break-inside: avoid; }
+    }
+</style>
+
+<h2>My prescriptions</h2>
+
+<p class="no-print">
+    <button type="button" onclick="window.print()">Print</button>
+</p>
+
+@if (Model.Any())
+{
+    <p class="no-print">
+        <button type="button" onclick="window.print()">Print</button>
+    </p>
+}
+else
+{
+    <p>No prescriptions yet.</p>
+}
+
+@foreach (var group in Model)
+{
+    <div class="prescription">
+        <h4>@group.DoctorName - @group.Date.ToString("yyyy-MM-dd")</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Frequency</th>
+                    <th>Days</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in group.Items)
+                {
+                    <tr>
+                        <td>@p.MedicationName</td>
+                        <td>@p.Dosage</td>
+                        <td>@p.Frequency</td>
+                        <td>@p.DurationDays</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

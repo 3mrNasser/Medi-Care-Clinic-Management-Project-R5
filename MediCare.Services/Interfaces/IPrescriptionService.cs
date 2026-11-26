@@ -10,4 +10,5 @@ public interface IPrescriptionService
         string medicationName, string dosage, string frequency, int durationDays);
 
     Task<IEnumerable<PrescriptionDto>> GetForAppointmentAsync(int doctorId, int appointmentId);
+    Task<IEnumerable<PrescriptionGroupDto>> GetForPatientAsync(string patientId);
 }
