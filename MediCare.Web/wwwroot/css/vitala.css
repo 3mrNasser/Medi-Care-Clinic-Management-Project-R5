@@ -662,7 +662,9 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 @media print {
   .vt-sidebar, .vt-fab, .vt-no-print, .vt-menu-btn, .vt-alert { display: none !important; }
   .vt-app, .vt-app.is-collapsed { display: block; }
-  .vt-main { padding: 0; background: #fff; }
+  .vt-body, .vt-main { background: #fff !important; }
+  .vt-main { padding: 0; }
+  .vt-app { min-height: 0; }
   .vt-print-only { display: block; }
   .vt-card { border: 1px solid #CBD5E1; box-shadow: none; }
   .vt-card + .vt-card { margin-top: 14px; }
