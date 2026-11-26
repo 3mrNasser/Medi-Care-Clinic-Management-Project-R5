@@ -1,20 +1,34 @@
-@* 04 — Sign up (step 2, after Select Role)
+@* 04 â€” Sign up (step 2, after Select Role)
    Reached as /Account/Signup?role=Patient|Doctor|Pharmacist|Admin (defaults to Patient).
    Fields posted: Role (hidden), FullName, Email, Password, ConfirmPassword
    Security: the backend must not trust Role=Admin from this form (see docs/VITALA-FRONTEND.md).
+   When the POST action returns View(model) after a failed signup, this view keeps the posted
+   Role, FullName and Email (from Model, else ModelState) and shows server field errors.
+   It works with any model type that has those properties, so no @model line is needed.
 *@
 @{
     Layout = "_AuthLayout";
     ViewData["Title"] = "Sign up";
     ViewData["AuthPanelTitle"] = "Create Your Account";
 
+    // Value posted back for a field: Model.<name> first, then what the user typed (ModelState).
+    string? Posted(string name)
+    {
+        var model = ViewData.Model;
+        if (model?.GetType().GetProperty(name)?.GetValue(model) is string fromModel && fromModel.Length > 0)
+            return fromModel;
+        return ViewData.ModelState.TryGetValue(name, out var entry) ? entry?.AttemptedValue : null;
+    }
+    string? ServerError(string name) =>
+        ViewData.ModelState.TryGetValue(name, out var entry) ? entry?.Errors.FirstOrDefault()?.ErrorMessage : null;
+
     var allowedRoles = new[] { "Patient", "Doctor", "Pharmacist", "Admin" };
-    var requested = Context.Request.Query["role"].ToString();
+    var requested = Posted("Role") ?? Context.Request.Query["role"].ToString();
     var role = allowedRoles.FirstOrDefault(r => r.Equals(requested, StringComparison.OrdinalIgnoreCase)) ?? "Patient";
 }
 <h1 class="vt-auth__title">Sign up</h1>
 <p class="vt-auth__lead">
-    Signing up as <strong>@role</strong> ·
+    Signing up as <strong>@role</strong> Â·
     <a class="vt-link-strong" asp-controller="Account" asp-action="SelectRole" asp-route-role="@role">Change</a>
 </p>
 
@@ -24,20 +38,20 @@
 
     <div class="vt-field">
         <label class="vt-label" for="FullName">Full Name</label>
-        <input class="vt-input" id="FullName" name="FullName" type="text" autocomplete="name" required
+        <input class="vt-input" id="FullName" name="FullName" type="text" autocomplete="name" value="@Posted("FullName")" required
                data-val="true"
                data-val-required="Full name is required."
                data-val-maxlength="Full name must be 100 characters or fewer." data-val-maxlength-max="100" />
-        <span class="vt-field-error" data-valmsg-for="FullName" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="FullName" data-valmsg-replace="true">@ServerError("FullName")</span>
     </div>
 
     <div class="vt-field">
         <label class="vt-label" for="Email">Email Address</label>
-        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" required
+        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" value="@Posted("Email")" required
                data-val="true"
                data-val-required="Email is required."
                data-val-email="Enter a valid email address." />
-        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true">@ServerError("Email")</span>
     </div>
 
     <div class="vt-field">
@@ -49,7 +63,7 @@
                    data-val-minlength="Password must be at least 6 characters." data-val-minlength-min="6" />
             <partial name="_PasswordToggle" model='"#Password"' />
         </div>
-        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true">@ServerError("Password")</span>
     </div>
 
     <div class="vt-field">
@@ -61,7 +75,7 @@
                    data-val-equalto="Passwords do not match." data-val-equalto-other="*.Password" />
             <partial name="_PasswordToggle" model='"#ConfirmPassword"' />
         </div>
-        <span class="vt-field-error" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true">@ServerError("ConfirmPassword")</span>
     </div>
 
     <button type="submit" class="vt-btn vt-btn--primary vt-btn--block vt-auth__submit">Sign up</button>
