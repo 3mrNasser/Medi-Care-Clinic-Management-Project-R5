@@ -1,0 +1,37 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.MedicalRecordDto>
+
+@{
+    ViewData["Title"] = "My medical records";
+}
+
+<h2>My medical records</h2>
+
+@if (!Model.Any())
+{
+    <p>No medical records yet.</p>
+}
+
+@foreach (var r in Model)
+{
+    <div class="medical-record">
+        <h4>@r.DoctorName - @r.Date.ToString("yyyy-MM-dd")</h4>
+        <p><strong>Diagnosis:</strong> @r.Diagnosis</p>
+
+        @if (!string.IsNullOrWhiteSpace(r.Notes))
+        {
+            <p><strong>Notes:</strong></p>
+            <p style="white-space: pre-line">@r.Notes</p>
+        }
+
+        <p>
+            <small>
+                Written: @r.CreatedAtUtc.ToString("yyyy-MM-dd")
+                @if (r.UpdatedAtUtc is not null)
+                {
+                    <text> | Updated: @r.UpdatedAtUtc.Value.ToString("yyyy-MM-dd")</text>
+                }
+            </small>
+        </p>
+        <hr />
+    </div>
+}

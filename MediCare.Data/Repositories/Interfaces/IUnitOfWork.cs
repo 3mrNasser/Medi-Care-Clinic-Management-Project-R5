@@ -8,6 +8,7 @@ public interface IUnitOfWork
     IGenericRepository<AvailabilitySlot> Slots { get; }
     IGenericRepository<Appointment> Appointments { get; }
     IGenericRepository<Prescription> Prescriptions { get; }
+    IGenericRepository<MedicalRecord> MedicalRecords { get; }
 
     Task<int> SaveChangesAsync();
 }
