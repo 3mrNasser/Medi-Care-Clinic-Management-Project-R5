@@ -133,64 +133,6 @@
     start();
   });
 
-  /* ---------- AI chat (UI only)  [data-vt-chat] ----------
-     Appends the user's message and fires a `vitala:chat-send` event with
-     { message, appendBotMessage, showTyping } so the team can plug in the API:
-
-       document.addEventListener('vitala:chat-send', async (e) => {
-         const stopTyping = e.detail.showTyping();
-         const reply = await fetch(...);          // backend team
-         stopTyping();
-         e.detail.appendBotMessage(reply.text);
-       });
-  */
-  $$('[data-vt-chat]').forEach((root) => {
-    const log = $('[data-vt-chat-log]', root);
-    const form = $('[data-vt-chat-form]', root);
-    const input = $('input', form);
-
-    const append = (text, who) => {
-      const div = document.createElement('div');
-      div.className = 'vt-msg vt-msg--' + who;
-      div.textContent = text;
-      log.appendChild(div);
-      log.scrollTop = log.scrollHeight;
-      return div;
-    };
-    const showTyping = () => {
-      const t = document.createElement('div');
-      t.className = 'vt-msg vt-msg--bot vt-msg--typing';
-      t.setAttribute('aria-label', 'Assistant is typing');
-      t.innerHTML = '<span></span><span></span><span></span>';
-      log.appendChild(t);
-      log.scrollTop = log.scrollHeight;
-      return () => t.remove();
-    };
-    const send = (text) => {
-      text = (text || '').trim();
-      if (!text) return;
-      append(text, 'user');
-      input.value = '';
-      const evt = new CustomEvent('vitala:chat-send', {
-        cancelable: true,
-        detail: { message: text, appendBotMessage: (t) => append(t, 'bot'), showTyping },
-      });
-      const handled = !document.dispatchEvent(evt) || evt.defaultPrevented;
-      // Demo reply only while no backend handler calls preventDefault().
-      if (!handled && root.hasAttribute('data-vt-chat-demo')) {
-        const stop = showTyping();
-        setTimeout(() => { stop(); append('Thanks for sharing. (Demo reply — the assistant will answer here once the backend is connected.)', 'bot'); }, 900);
-      }
-    };
-
-    form.addEventListener('submit', (e) => { e.preventDefault(); send(input.value); });
-    $$('[data-vt-chip]', root).forEach((chip) => chip.addEventListener('click', () => {
-      input.value = chip.getAttribute('data-vt-chip');
-      input.focus();
-    }));
-    log.scrollTop = log.scrollHeight;
-  });
-
   /* ---------- Submit a GET form when one of its fields changes  <form data-vt-autosubmit> ---------- */
   $$('form[data-vt-autosubmit]').forEach((form) => {
     form.addEventListener('change', () => form.requestSubmit ? form.requestSubmit() : form.submit());

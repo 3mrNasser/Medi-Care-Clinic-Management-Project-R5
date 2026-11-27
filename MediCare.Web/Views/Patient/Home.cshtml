@@ -2,7 +2,7 @@
 @* 1.2 — Patient Home Dashboard (Figma "1.2-Home-Web-Dashboard")
    Name: FullName claim of the signed-in patient. Upcoming appointment: ViewBag.NextAppointment (AppointmentDto?)
    + ViewBag.NextDoctor (DoctorDto?) from PatientController.Home.
-   Service tiles: Doctor → Doctors/Index, Medical History → MyMedicalRecords; the others open "Coming soon".
+   Service tiles: Doctor → Doctors/Index, Medical History → MyMedicalRecords.
 *@
 @{
     Layout = "_DashboardLayout";
@@ -20,14 +20,10 @@
         return $"{day}, {time.ToString("h:mm tt")}";
     }
 
-    // Icons exported from Figma (null = inline SVG fallback: the Reward export only contained its badge background).
+    // Service tiles (icons exported from Figma). Pharmacy, Reward, Labs and e-Consultation were removed from scope.
     var services = new[]
     {
         (Name: "Doctor",          Image: (string?)"~/images/vitala/svc-doctor.png",          Icon: "doctor",  Controller: "Doctors", Action: "Index"),
-        (Name: "Pharmacy",        Image: (string?)"~/images/vitala/svc-pharmacy.png",        Icon: "pharmacy", Controller: "Patient", Action: "Pharmacy"),
-        (Name: "Reward",          Image: (string?)null,                                      Icon: "reward",  Controller: "Patient", Action: "Rewards"),
-        (Name: "Labs",            Image: (string?)"~/images/vitala/svc-labs.png",            Icon: "labs",    Controller: "Patient", Action: "Labs"),
-        (Name: "e-Consultation",  Image: (string?)"~/images/vitala/svc-econsultation.png",   Icon: "consult", Controller: "Patient", Action: "Consultation"),
         (Name: "Medical History", Image: (string?)"~/images/vitala/svc-medical-history.png", Icon: "history", Controller: "MyMedicalRecords", Action: "Index"),
     };
 }
@@ -46,7 +42,7 @@
         <form class="vt-search" role="search" method="get" asp-controller="Doctors" asp-action="Index">
             <label for="vt-q" class="vt-sr-only">Search doctors</label>
             <partial name="_VtIcon" model='"search:20"' />
-            <input id="vt-q" name="name" type="search" placeholder="Search doctors, labs, medicines..." />
+            <input id="vt-q" name="name" type="search" placeholder="Search doctors..." />
         </form>
         <a class="vt-icon-btn" asp-controller="Patient" asp-action="Notifications" aria-label="Notifications">
             <partial name="_VtIcon" model='"bell:24"' />
@@ -119,8 +115,3 @@
         <a class="vt-chip-link" asp-controller="Doctors" asp-action="Index">Book now</a>
     }
 </section>
-
-<a class="vt-fab" asp-controller="Patient" asp-action="AiAssistant" aria-label="Open AI Assistant" title="AI Assistant">
-    <img src="~/images/vitala/bot.png" width="50" height="50" alt="" />
-    <span class="vt-fab__dot" aria-hidden="true"></span>
-</a>

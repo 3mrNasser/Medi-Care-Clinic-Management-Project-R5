@@ -40,7 +40,6 @@
                         <li><a class="is-active" asp-controller="Home" asp-action="Index" aria-current="page">Home</a></li>
                         <li><a asp-controller="Doctors" asp-action="Index">Find Specialist</a></li>
                         <li><a asp-controller="@appointmentsController" asp-action="Index">My Appointments</a></li>
-                        <li><a asp-controller="Patient" asp-action="AiAssistant">AI Assistant</a></li>
                     </ul>
                 </nav>
                 <div class="vt-nav__actions">
@@ -73,8 +72,8 @@
                 <span class="vt-pill">All-in-one healthcare web platform</span>
                 <h1 class="vt-hero__title">Connecting You To <span>Better Health.</span></h1>
                 <p class="vt-hero__text">
-                    Book appointments with top specialists, locate nearby pharmacies,
-                    and stay connected with trusted healthcare providers.
+                    Book appointments with top specialists, keep your prescriptions and medical records
+                    in one place, and stay connected with trusted healthcare providers.
                 </p>
                 <div class="vt-hero__cta">
                     @if (showDashboard)
@@ -103,7 +102,7 @@
                 </div>
                 <div class="vt-stat-grid">
                     <div class="vt-stat"><strong>500+ Doctors</strong><span>Instant Booking</span></div>
-                    <div class="vt-stat"><strong>24/7 Pharmacy</strong><span>Nearby Medicines</span></div>
+                    <div class="vt-stat"><strong>Digital Records</strong><span>Prescriptions &amp; History</span></div>
                 </div>
             </div>
         </section>
@@ -118,18 +117,17 @@
             </a>
             <a class="vt-feature" id="my-appointments" asp-controller="MyAppointments" asp-action="Index">
                 <span class="vt-feature__icon">
-                    @* Figma card was "Search Pharmacy" (removed from scope); its image is ~/images/vitala/feature-search-pharmacy.png *@
                     <partial name="_VtIcon" model='"calendar:34"' />
                 </span>
                 <h3 class="vt-feature__title">Manage Appointments</h3>
                 <p class="vt-feature__text">Track or cancel your bookings in one place.</p>
             </a>
-            <a class="vt-feature" id="ai-assistant" asp-controller="Patient" asp-action="AiAssistant">
+            <a class="vt-feature" id="medical-records" asp-controller="MyMedicalRecords" asp-action="Index">
                 <span class="vt-feature__icon">
-                    <img src="~/images/vitala/feature-get-connected.png" alt="" width="70" height="68" />
+                    <partial name="_VtIcon" model='"history:34"' />
                 </span>
-                <h3 class="vt-feature__title">Get Connected</h3>
-                <p class="vt-feature__text">Stay connected with healthcare providers.</p>
+                <h3 class="vt-feature__title">Medical Records</h3>
+                <p class="vt-feature__text">Your diagnoses and doctor's notes after every visit.</p>
             </a>
         </section>
     </div>
