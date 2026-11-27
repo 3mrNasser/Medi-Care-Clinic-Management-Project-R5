@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="INotificationService"/>; see the interface for what each member does.</summary>
 public class NotificationService : INotificationService
 {
     private readonly IUnitOfWork _unitOfWork;

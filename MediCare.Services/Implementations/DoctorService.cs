@@ -5,6 +5,7 @@ using MediCare.Services.Interfaces;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IDoctorService"/>; see the interface for what each member does.</summary>
 public class DoctorService : IDoctorService
 {
     private readonly IUnitOfWork _unitOfWork;

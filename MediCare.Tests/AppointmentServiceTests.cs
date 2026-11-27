@@ -80,6 +80,36 @@ public sealed class AppointmentServiceTests : IDisposable
     }
 
     [Fact]
+    public async Task Follow_up_without_an_earlier_completed_visit_is_refused()
+    {
+        var result = await _appointments.BookAsync(PatientId, _doctorId, _day, new TimeOnly(9, 0), null, AppointmentType.FollowUp);
+
+        Assert.False(result.Success);
+        Assert.Contains("follow-up", result.Error, StringComparison.OrdinalIgnoreCase);
+        Assert.Empty(_db.Appointments.AsNoTracking());
+    }
+
+    [Fact]
+    public async Task Follow_up_after_a_recent_completed_visit_is_booked_with_its_type()
+    {
+        var slotId = _db.AvailabilitySlots.AsNoTracking().Single().Id;
+        _db.Appointments.Add(new Appointment
+        {
+            PatientId = PatientId, DoctorProfileId = _doctorId, AvailabilitySlotId = slotId,
+            AppointmentDate = _day.AddDays(-14), StartTime = new TimeOnly(9, 0), Status = AppointmentStatus.Completed
+        });
+        _db.SaveChanges();
+
+        var result = await _appointments.BookAsync(PatientId, _doctorId, _day, new TimeOnly(9, 0), null, AppointmentType.FollowUp);
+
+        Assert.True(result.Success, result.Error);
+        var booked = _db.Appointments.AsNoTracking().Single(a => a.Status == AppointmentStatus.Pending);
+        Assert.Equal(AppointmentType.FollowUp, booked.Type);
+        var dto = Assert.Single(await _appointments.GetPatientAppointmentsAsync(PatientId), a => a.Status == AppointmentStatus.Pending);
+        Assert.Equal("Follow-up", dto.TypeName);
+    }
+
+    [Fact]
     public async Task Same_time_cannot_be_booked_twice()
     {
         await _appointments.BookAsync(PatientId, _doctorId, _day, new TimeOnly(9, 30), null);

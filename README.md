@@ -78,6 +78,7 @@ Every service below is optional: without it the app still runs, and in Developme
 
 ### Notifications and reminders
 * **Factory Pattern:** `MediCare.Services/Notifications/AppointmentNotifications.cs`. `NotificationFactory.Create(type)` returns one class per event (booked, rescheduled, cancelled, confirmed, rejected, completed, reminder). Each class decides the recipient, the text, the link, and whether email/SMS are also sent.
+* **Factory Pattern for appointments:** `MediCare.Services/Appointments/AppointmentFactory.cs`. `AppointmentFactory.Create(type)` returns one class per visit type: **Examination** (full fee), **Follow-up** (half fee, only after a completed visit with the same doctor in the last 60 days) and **Consultation** (75% of the fee). Each class has its own price and booking rule; `AppointmentFactory.Build(...)` creates every new appointment, and the admin's fees and revenue use the type's price.
 * **In-app:** saved in the `Notifications` table and listed at `/Notifications` (patients and doctors). The sidebar shows an unread badge.
 * **Real-time (SignalR):** `MediCare.Web/Hubs/NotificationHub.cs` at `/hubs/notifications`. A new notification appears immediately as a toast and the badge updates, without a page reload.
 * **Email:** confirmations, rejections and reminders go to the patient (`SmtpEmailService`).
@@ -93,10 +94,14 @@ ASP.NET Core Identity with role-based authorization (`[Authorize(Roles = "...")]
 ```bash
 dotnet test MediCare.slnx
 ```
-`MediCare.Tests` (xUnit, **46 tests**):
-* **Unit tests:** `NotificationFactory` (right type, recipient, channels and text for every event) and `ReminderRules` (due only within the next 24 hours).
+`MediCare.Tests` (xUnit, **71 tests**):
+* **Unit tests:** `NotificationFactory` (right type, recipient, channels and text for every event), `AppointmentFactory` (right class and price for every visit type, the follow-up 60-day rule) and `ReminderRules` (due only within the next 24 hours).
+* **UI tests** (`MediCare.Tests/UI`, `Microsoft.AspNetCore.Mvc.Testing`): the real app runs in memory on SQLite and the tests request real pages and post real forms with anti-forgery tokens and login cookies. Critical paths: home page, login redirect for visitors, wrong password, each role lands on its home, a patient can't open admin pages, booking through the form, a POST without the anti-forgery token is refused, the doctor confirms and the patient is notified and emailed, the admin dashboard and PDF report.
 * **Integration tests** (real services, repositories and Unit of Work on an in-memory SQLite database): booking creates a pending appointment and notifies the doctor; the same time can't be booked twice; times outside working hours are refused; booked times disappear from the free times; confirming notifies the patient in-app and by email; another doctor can't confirm; cancelling frees the time and notifies the doctor; a reminder is sent once by every channel; no reminder for pending or far appointments; "mark all as read"; a user can't open someone else's notification.
 * **Clinic features** (same in-memory database): a day off removes every free time and blocks booking; a day off is refused while patients are booked; only real PDF/JPG/PNG files up to 10 MB are accepted (a renamed file is rejected); only the patient and doctors they booked with can open a file; doctors upload only for their own patients; duplicate specializations are refused and renaming moves the doctors; hidden specializations are not offered; the profile is validated; email is skipped when the patient turned it off (in-app stays).
+
+### Code documentation
+Public interfaces (services, repositories, Unit of Work) and the factories have XML documentation comments (`/// <summary>`). `GenerateDocumentationFile` is on in `MediCare.Data`, `MediCare.Services` and `MediCare.Web`, so each build writes the XML file next to the DLL; Visual Studio and Rider show it as IntelliSense.
 
 ## CI/CD and deployment
 GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
@@ -189,7 +194,7 @@ All project deliverables are available in both **interactive Markdown format (`m
 | Section | Deliverable Details | Markdown File (`mdFiles/`) | PDF / File (`docs/`) |
 | :--- | :--- | :--- | :--- |
 | **5. Implementation** | Code structure & standards, branching and pull requests, execution, requirements traceability | [5. Implementation (Source Code and Execution).md](mdFiles/5.%20Implementation%20(Source%20Code%20and%20Execution).md) | [05_Implementation (Source Code & Execution).pdf](docs/05_Implementation%20(Source%20Code%20%26%20Execution).pdf) |
-| **6. Testing & QA** | Test plan, 42 test cases, 46 automated tests, bug report | [6. Testing and Quality Assurance.md](mdFiles/6.%20Testing%20and%20Quality%20Assurance.md) | [06_Testing & Quality Assurance.pdf](docs/06_Testing%20%26%20Quality%20Assurance.pdf) |
+| **6. Testing & QA** | Test plan, 43 test cases, 71 automated tests (incl. UI), bug report | [6. Testing and Quality Assurance.md](mdFiles/6.%20Testing%20and%20Quality%20Assurance.md) | [06_Testing & Quality Assurance.pdf](docs/06_Testing%20%26%20Quality%20Assurance.pdf) |
 | **7.1 User Manual** | Step-by-step guide with screenshots for patients, doctors and admins | [7.1 User Manual.md](mdFiles/7.1%20User%20Manual.md) | [07_1_User Manual.pdf](docs/07_1_User%20Manual.pdf) |
 | **7.2 Technical Documentation** | Architecture, database schema (ERD), endpoints, flows, security, configuration, CI/CD | [7.2 Technical Documentation.md](mdFiles/7.2%20Technical%20Documentation.md) | [07_2_Technical Documentation.pdf](docs/07_2_Technical%20Documentation.pdf) |
 | **Final Presentation** | 15 slides with speaker notes | — | [08_Final Presentation.pptx](docs/08_Final%20Presentation.pptx) · [PDF](docs/08_Final%20Presentation.pdf) |

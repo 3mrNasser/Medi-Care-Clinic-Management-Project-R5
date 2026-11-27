@@ -1,6 +1,7 @@
-﻿using MediCare.Data.Entities;
+using MediCare.Data.Entities;
 using MediCare.Data.Enums;
 using MediCare.Data.Repositories.Interfaces;
+using MediCare.Services.Appointments;
 using MediCare.Services.Common;
 using MediCare.Services.DTOs;
 using MediCare.Services.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IAppointmentService"/>; see the interface for what each member does.</summary>
 public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -66,10 +68,20 @@ public class AppointmentService : IAppointmentService
     }
 
     public async Task<ServiceResult> BookAsync(
-    string patientId, int doctorId, DateOnly date, TimeOnly time, string? reason)
+    string patientId, int doctorId, DateOnly date, TimeOnly time, string? reason,
+    AppointmentType type = AppointmentType.FirstVisit)
     {
         if (reason is { Length: > 500 })
             return ServiceResult.Fail("Reason is too long (maximum 500 characters).");
+
+        // Factory Pattern: the visit type brings its own rule (e.g. a follow-up needs an earlier completed visit).
+        if (!Enum.IsDefined(type))
+            return ServiceResult.Fail("Choose a visit type.");
+        var kind = AppointmentFactory.Create(type);
+        var pastVisits = (await _unitOfWork.Appointments.FindAsync(a => a.PatientId == patientId && a.DoctorProfileId == doctorId)).ToList();
+        var rule = kind.Validate(new AppointmentBookingContext(patientId, doctorId, date, pastVisits));
+        if (!rule.Success)
+            return rule;
 
         var available = await GetAvailableTimesAsync(doctorId, date);
         if (!available.Contains(time))
@@ -85,16 +97,7 @@ public class AppointmentService : IAppointmentService
         if (slot is null)
             return ServiceResult.Fail("This time is not available.");
 
-        var appointment = new Appointment
-        {
-            PatientId = patientId,
-            DoctorProfileId = doctorId,
-            AvailabilitySlotId = slot.Id,
-            AppointmentDate = date,
-            StartTime = time,
-            Status = AppointmentStatus.Pending,
-            ReasonForVisit = reason
-        };
+        var appointment = AppointmentFactory.Build(kind, patientId, doctorId, slot.Id, date, time, reason);
         await _unitOfWork.Appointments.AddAsync(appointment);
         try
         {
@@ -164,7 +167,9 @@ public class AppointmentService : IAppointmentService
                 Date = a.AppointmentDate,
                 StartTime = a.StartTime,
                 Status = a.Status,
-                Reason = a.ReasonForVisit
+                Reason = a.ReasonForVisit,
+                Type = a.Type,
+                TypeName = AppointmentFactory.Create(a.Type).DisplayName
             });
     }
 
@@ -265,7 +270,9 @@ public class AppointmentService : IAppointmentService
                 Date = a.AppointmentDate,
                 StartTime = a.StartTime,
                 Status = a.Status,
-                Reason = a.ReasonForVisit
+                Reason = a.ReasonForVisit,
+                Type = a.Type,
+                TypeName = AppointmentFactory.Create(a.Type).DisplayName
             });
     }
 

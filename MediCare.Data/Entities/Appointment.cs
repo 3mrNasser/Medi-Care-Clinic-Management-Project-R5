@@ -1,5 +1,6 @@
 ﻿using MediCare.Data.Enums;
 
+
 namespace MediCare.Data.Entities;
 
 public class Appointment
@@ -19,6 +20,9 @@ public class Appointment
     public TimeOnly StartTime { get; set; }
 
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
+
+    // Visit type, created through AppointmentFactory (decides the rules and the price).
+    public AppointmentType Type { get; set; } = AppointmentType.FirstVisit;
     public string? ReasonForVisit { get; set; }
 
     // Set when the 24-hour reminder was sent, so it's sent only once. Cleared when the appointment is rescheduled.

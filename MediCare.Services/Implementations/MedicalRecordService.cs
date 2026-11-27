@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IMedicalRecordService"/>; see the interface for what each member does.</summary>
 public class MedicalRecordService : IMedicalRecordService
 {
     private readonly IUnitOfWork _unitOfWork;

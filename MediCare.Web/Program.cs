@@ -126,3 +126,6 @@ app.MapControllerRoute(
 app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
+
+// Lets the UI tests (WebApplicationFactory<Program>) start the real app.
+public partial class Program { }

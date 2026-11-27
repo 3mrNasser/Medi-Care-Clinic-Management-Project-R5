@@ -7,6 +7,7 @@ using MediCare.Services.Interfaces;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="ISpecializationService"/>; see the interface for what each member does.</summary>
 public class SpecializationService : ISpecializationService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -82,6 +83,7 @@ public class SpecializationService : ISpecializationService
     private static string? Clean(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 }
 
+/// <summary>Implements <see cref="IPatientProfileService"/>; see the interface for what each member does.</summary>
 public class PatientProfileService : IPatientProfileService
 {
     private static readonly string[] Genders = { "Male", "Female" };
@@ -181,6 +183,7 @@ public class PatientProfileService : IPatientProfileService
     private static string? Clean(string? s) => string.IsNullOrWhiteSpace(s) ? null : s.Trim();
 }
 
+/// <summary>Implements <see cref="IMedicalDocumentService"/>; see the interface for what each member does.</summary>
 public class MedicalDocumentService : IMedicalDocumentService
 {
     public const long MaxBytes = 10 * 1024 * 1024; // 10 MB
@@ -301,6 +304,7 @@ public class MedicalDocumentService : IMedicalDocumentService
     };
 }
 
+/// <summary>Implements <see cref="ITimeOffService"/>; see the interface for what each member does.</summary>
 public class TimeOffService : ITimeOffService
 {
     private readonly IUnitOfWork _unitOfWork;

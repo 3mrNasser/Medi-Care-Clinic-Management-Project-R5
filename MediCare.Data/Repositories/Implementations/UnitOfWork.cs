@@ -4,6 +4,7 @@ using MediCare.Data.Repositories.Interfaces;
 
 namespace MediCare.Data.Repositories.Implementations;
 
+/// <summary>Implements <see cref="IUnitOfWork"/>; see the interface for what each member does.</summary>
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ApplicationDbContext _context;
