@@ -5,6 +5,7 @@ using MediCare.Data.Repositories.Interfaces;
 using MediCare.Data.Seed;
 using MediCare.Services.Implementations;
 using MediCare.Services.Interfaces;
+using MediCare.Web.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -51,6 +52,10 @@ builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
 var app = builder.Build();
 
