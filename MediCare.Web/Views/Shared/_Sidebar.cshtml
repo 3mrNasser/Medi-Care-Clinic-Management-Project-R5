@@ -15,9 +15,8 @@
         : new[] { home, appointments, records, cart, notifications };
 
     // Doctor pages (ViewData["SidebarRole"] = "Doctor"): doctor menu.
-    // TEMPORARY: doctorId is read from the URL until login is ready (backend note), then these route values go away.
+    // The signed-in doctor is read from the login cookie by the backend, so no doctorId in the URL.
     var isDoctor = ViewData["SidebarRole"] as string == "Doctor";
-    var doctorId = Context.Request.Query["doctorId"].ToString();
     if (isDoctor)
     {
         items = new[]
@@ -26,7 +25,6 @@
             (Key: "Availability",       Text: "Working Hours", Controller: "Availability",       Action: "Index", Image: (string?)null, Icon: "clock"),
         };
     }
-    var routeValues = new Dictionary<string, string> { ["doctorId"] = doctorId };
 }
 <aside class="vt-sidebar" id="vt-sidebar" aria-label="Main navigation">
     <a class="vt-sidebar__brand" asp-controller="Home" asp-action="Index">
@@ -42,9 +40,7 @@
             var isActive = item.Key == active;
             <li>
                 <a class="vt-sidebar__link @(isActive ? "is-active" : "")"
-                   asp-controller="@item.Controller" asp-action="@item.Action"
-                   asp-all-route-data="@(isDoctor ? routeValues : new Dictionary<string, string>())"
-                   aria-current="@(isActive ? "page" : null)">
+                   asp-controller="@item.Controller" asp-action="@item.Action"                   aria-current="@(isActive ? "page" : null)">
                     <span class="vt-sidebar__icon">
                         @if (item.Image is not null)
                         {

@@ -1,13 +1,12 @@
-﻿@using MediCare.Data.Enums
+@using MediCare.Data.Enums
 @model IEnumerable<MediCare.Services.DTOs.AppointmentDto>
-@* Doctor appointments — GET /DoctorAppointments?doctorId=, JSON GET /DoctorAppointments/Events?doctorId= (FullCalendar),
-   POST DoctorAppointments/Confirm | Reject | Complete | NoShow (doctorId, appointmentId). Vitala style. *@
+@* Doctor appointments — GET /DoctorAppointments, JSON GET /DoctorAppointments/Events (FullCalendar),
+   POST DoctorAppointments/Confirm | Reject | Complete | NoShow (appointmentId). Vitala style. *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Appointments";
     ViewData["ActiveNav"] = "DoctorAppointments";
     ViewData["SidebarRole"] = "Doctor";
-    var doctorId = (int)ViewBag.DoctorId;
     var today = DateOnly.FromDateTime(DateTime.Now);
     var list = Model.ToList();
     var todayCount = list.Count(a => a.Date == today && a.Status is AppointmentStatus.Pending or AppointmentStatus.Confirmed);
@@ -52,7 +51,7 @@
             <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"calendar:30"' /></span>
             <h2 class="vt-empty__title">No appointments yet</h2>
             <p class="vt-empty__text">New booking requests from patients will appear here.</p>
-            <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Availability" asp-action="Index" asp-route-doctorId="@doctorId">Set working hours</a>
+            <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Availability" asp-action="Index">Set working hours</a>
         </section>
     }
     @if (active.Any())
@@ -72,7 +71,7 @@
 </section>
 
 <section class="vt-tabpanel" id="vt-tab-calendar" role="tabpanel" aria-labelledby="vt-tab-calendar-btn" hidden>
-    <div class="vt-calendar" data-vt-calendar data-events-url="@Url.Action("Events", "DoctorAppointments", new { doctorId })"></div>
+    <div class="vt-calendar" data-vt-calendar data-events-url="@Url.Action("Events", "DoctorAppointments")"></div>
 </section>
 
 @section Scripts {

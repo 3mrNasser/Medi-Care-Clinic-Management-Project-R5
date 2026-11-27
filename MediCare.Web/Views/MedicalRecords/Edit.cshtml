@@ -1,13 +1,12 @@
-﻿@* Doctor writes / updates the medical record of a completed appointment.
-   GET /MedicalRecords/Edit?doctorId=&appointmentId=  (ViewBag: DoctorId, AppointmentId, Diagnosis, Notes, HasRecord)
-   POST MedicalRecords/Save (doctorId, appointmentId, diagnosis, notes?) → redirects back here with TempData Success/Error.
+@* Doctor writes / updates the medical record of a completed appointment.
+   GET /MedicalRecords/Edit?appointmentId=  (ViewBag: AppointmentId, Diagnosis, Notes, HasRecord)
+   POST MedicalRecords/Save (appointmentId, diagnosis, notes?) → redirects back here with TempData Success/Error.
    Vitala style. *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Medical record";
     ViewData["ActiveNav"] = "DoctorAppointments";
     ViewData["SidebarRole"] = "Doctor";
-    var doctorId = (int)ViewBag.DoctorId;
     var appointmentId = (int)ViewBag.AppointmentId;
     var diagnosis = (string)ViewBag.Diagnosis;
     var notes = (string)ViewBag.Notes;
@@ -24,10 +23,10 @@
     </div>
     <div class="vt-page-actions">
         <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="Prescriptions" asp-action="Index"
-           asp-route-doctorId="@doctorId" asp-route-appointmentId="@appointmentId">
+           asp-route-appointmentId="@appointmentId">
             <partial name="_VtIcon" model='"pill:18"' /> Prescription
         </a>
-        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index" asp-route-doctorId="@doctorId">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index">
             <partial name="_VtIcon" model='"back:18"' /> Back to appointments
         </a>
     </div>
@@ -38,7 +37,6 @@
 <section class="vt-card">
     <h2 class="vt-card__title">@(hasRecord ? "Edit record" : "New record")</h2>
     <form method="post" asp-controller="MedicalRecords" asp-action="Save" class="vt-list">
-        <input type="hidden" name="doctorId" value="@doctorId" />
         <input type="hidden" name="appointmentId" value="@appointmentId" />
 
         <div class="vt-field">

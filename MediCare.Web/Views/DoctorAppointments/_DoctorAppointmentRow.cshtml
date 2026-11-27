@@ -1,8 +1,5 @@
 @using MediCare.Data.Enums
 @model MediCare.Services.DTOs.AppointmentDto
-@{
-    var doctorId = (int)ViewBag.DoctorId;
-}
 <article class="vt-row">
     <div class="vt-date" aria-hidden="true">
         <span class="vt-date__day">@Model.Date.Day</span>
@@ -24,13 +21,11 @@
         @if (Model.Status == AppointmentStatus.Pending)
         {
             <form method="post" asp-controller="DoctorAppointments" asp-action="Confirm" class="vt-inline-form">
-                <input type="hidden" name="doctorId" value="@doctorId" />
                 <input type="hidden" name="appointmentId" value="@Model.Id" />
                 <button type="submit" class="vt-btn vt-btn--success vt-btn--xs">Confirm</button>
             </form>
             <form method="post" asp-controller="DoctorAppointments" asp-action="Reject" class="vt-inline-form"
                   data-vt-confirm="Reject the appointment with @Model.PatientName?">
-                <input type="hidden" name="doctorId" value="@doctorId" />
                 <input type="hidden" name="appointmentId" value="@Model.Id" />
                 <button type="submit" class="vt-btn vt-btn--danger vt-btn--xs">Reject</button>
             </form>
@@ -38,13 +33,11 @@
         else if (Model.Status == AppointmentStatus.Confirmed)
         {
             <form method="post" asp-controller="DoctorAppointments" asp-action="Complete" class="vt-inline-form">
-                <input type="hidden" name="doctorId" value="@doctorId" />
                 <input type="hidden" name="appointmentId" value="@Model.Id" />
                 <button type="submit" class="vt-btn vt-btn--primary vt-btn--xs">Completed</button>
             </form>
             <form method="post" asp-controller="DoctorAppointments" asp-action="NoShow" class="vt-inline-form"
                   data-vt-confirm="Mark @Model.PatientName as no-show?">
-                <input type="hidden" name="doctorId" value="@doctorId" />
                 <input type="hidden" name="appointmentId" value="@Model.Id" />
                 <button type="submit" class="vt-btn vt-btn--outline vt-btn--xs">No-show</button>
             </form>
@@ -52,11 +45,11 @@
         else if (Model.Status == AppointmentStatus.Completed)
         {
             <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="Prescriptions" asp-action="Index"
-               asp-route-doctorId="@doctorId" asp-route-appointmentId="@Model.Id">
+               asp-route-appointmentId="@Model.Id">
                 <partial name="_VtIcon" model='"pill:15"' /> Prescription
             </a>
             <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="MedicalRecords" asp-action="Edit"
-               asp-route-doctorId="@doctorId" asp-route-appointmentId="@Model.Id">
+               asp-route-appointmentId="@Model.Id">
                 <partial name="_VtIcon" model='"history:15"' /> Medical record
             </a>
         }
