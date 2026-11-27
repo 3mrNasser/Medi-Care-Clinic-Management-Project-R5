@@ -1,0 +1,63 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.DoctorAdminDto>
+@{
+    ViewData["Title"] = "Doctors";
+    var pending = Model.Where(d => !d.IsApproved).ToList();
+    var approved = Model.Where(d => d.IsApproved).ToList();
+}
+<h2>Doctors</h2>
+<p><a asp-action="Index">Back</a> | <a asp-action="Users">Users</a></p>
+
+@if (TempData["Message"] is string message)
+{
+    <p><strong>@message</strong></p>
+}
+
+<h3>Waiting for approval (@pending.Count)</h3>
+@if (pending.Count == 0)
+{
+    <p>No doctors are waiting for approval.</p>
+}
+else
+{
+    <table border="1" cellpadding="4">
+        <tr><th>Name</th><th>Email</th><th>Specialty</th><th></th></tr>
+        @foreach (var d in pending)
+        {
+            <tr>
+                <td>@d.FullName</td>
+                <td>@d.Email</td>
+                <td>@(string.IsNullOrWhiteSpace(d.Specialty) ? "(not set)" : d.Specialty)</td>
+                <td>
+                    <form method="post" asp-action="Approve" asp-route-id="@d.Id">
+                        <button type="submit">Approve</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+}
+
+<h3>Approved (@approved.Count)</h3>
+@if (approved.Count == 0)
+{
+    <p>No approved doctors.</p>
+}
+else
+{
+    <table border="1" cellpadding="4">
+        <tr><th>Name</th><th>Email</th><th>Specialty</th><th></th></tr>
+        @foreach (var d in approved)
+        {
+            <tr>
+                <td>@d.FullName</td>
+                <td>@d.Email</td>
+                <td>@(string.IsNullOrWhiteSpace(d.Specialty) ? "(not set)" : d.Specialty)</td>
+                <td>
+                    <form method="post" asp-action="Revoke" asp-route-id="@d.Id">
+                        <button type="submit">Revoke</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </table>
+}

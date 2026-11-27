@@ -50,6 +50,8 @@ builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+builder.Services.AddScoped<IAdminService, AdminService>();   
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

@@ -1,0 +1,18 @@
+﻿@model IEnumerable<MediCare.Services.DTOs.UserAdminDto>
+@{
+    ViewData["Title"] = "Users";
+}
+<h2>Users</h2>
+<p><a asp-action="Index">Back</a> | <a asp-action="Doctors">Doctors</a></p>
+
+<table border="1" cellpadding="4">
+    <tr><th>Name</th><th>Email</th><th>Roles</th></tr>
+    @foreach (var u in Model)
+    {
+        <tr>
+            <td>@u.FullName</td>
+            <td>@u.Email</td>
+            <td>@u.Roles</td>
+        </tr>
+    }
+</table>
