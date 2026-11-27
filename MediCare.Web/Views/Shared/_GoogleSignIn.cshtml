@@ -3,6 +3,10 @@
    Backend: add [HttpPost] ExternalLogin(string provider, string? returnUrl) + Google authentication in Program.cs. *@
 <form class="vt-social" method="post" asp-controller="Account" asp-action="ExternalLogin">
     <input type="hidden" name="provider" value="Google" />
+    @if (ViewData["ReturnUrl"] is string returnUrl)
+    {
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+    }
     <button type="submit" class="vt-social__btn" aria-label="Continue with Google" title="Continue with Google">
         <img src="~/images/vitala/google.png" width="34" height="35" alt="" />
     </button>

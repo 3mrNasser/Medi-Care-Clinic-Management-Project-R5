@@ -1,21 +1,43 @@
 @* 03 — Login
-   Fields posted: Email, Password  (match these to the team's LoginViewModel, or switch to asp-for)
+   Fields posted: Email, Password, ReturnUrl (hidden).
+   ReturnUrl comes from ?returnUrl= (set by [Authorize] redirects), or from Model/ModelState when the
+   POST action returns View(model). Only local URLs are kept; the backend should still check Url.IsLocalUrl.
+   After a failed POST the Email is refilled and server field errors are shown. No @model needed.
 *@
 @{
     Layout = "_AuthLayout";
     ViewData["Title"] = "Log in";
     ViewData["AuthPanelTitle"] = "Welcome Back to Vitala";
+
+    // Value posted back for a field: Model.<name> first, then what the user typed (ModelState).
+    string? Posted(string name)
+    {
+        var model = ViewData.Model;
+        if (model?.GetType().GetProperty(name)?.GetValue(model) is string fromModel && fromModel.Length > 0)
+            return fromModel;
+        return ViewData.ModelState.TryGetValue(name, out var entry) ? entry?.AttemptedValue : null;
+    }
+    string? ServerError(string name) =>
+        ViewData.ModelState.TryGetValue(name, out var entry) ? entry?.Errors.FirstOrDefault()?.ErrorMessage : null;
+
+    var returnUrl = Posted("ReturnUrl") ?? Context.Request.Query["returnUrl"].ToString();
+    if (string.IsNullOrEmpty(returnUrl) || !Url.IsLocalUrl(returnUrl)) { returnUrl = null; }
+    ViewData["ReturnUrl"] = returnUrl; // used by _GoogleSignIn
 }
 <h1 class="vt-auth__title">Log in</h1>
 
 <form method="post" asp-controller="Account" asp-action="Login" novalidate>
     <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>
+    @if (returnUrl is not null)
+    {
+        <input type="hidden" name="ReturnUrl" value="@returnUrl" />
+    }
 
     <div class="vt-field">
         <label class="vt-label" for="Email">Email Address</label>
-        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" required
+        <input class="vt-input" id="Email" name="Email" type="email" autocomplete="email" value="@Posted("Email")" required
                data-val="true" data-val-required="Email is required." data-val-email="Enter a valid email address." />
-        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="Email" data-valmsg-replace="true">@ServerError("Email")</span>
     </div>
 
     <div class="vt-field">
@@ -25,7 +47,7 @@
                    data-val="true" data-val-required="Password is required." />
             <partial name="_PasswordToggle" model='"#Password"' />
         </div>
-        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+        <span class="vt-field-error" data-valmsg-for="Password" data-valmsg-replace="true">@ServerError("Password")</span>
     </div>
 
     <div class="vt-auth__row-end">
