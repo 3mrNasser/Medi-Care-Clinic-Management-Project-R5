@@ -3,7 +3,8 @@
     // Image = icon exported from Figma; otherwise an inline SVG icon.
     var home          = (Key: "Home",          Text: "Home",          Controller: "Patient",        Action: "Home",          Image: (string?)"~/images/vitala/icon-home.png",          Icon: "home");
     var appointments  = (Key: "Appointments",  Text: "Appointments",  Controller: "MyAppointments", Action: "Index",         Image: (string?)null,                                     Icon: "calendar");
-    var cart          = (Key: "Cart",          Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
+    var records       = (Key: "MedicalRecords", Text: "Medical Records", Controller: "MyMedicalRecords", Action: "Index", Image: (string?)null,                             Icon: "history");
+    var cart          = (Key: "Cart",         Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
     var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Patient",        Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
     var aiAssistant   = (Key: "AiAssistant",   Text: "AI Assistant",  Controller: "Patient",        Action: "AiAssistant",   Image: (string?)null,                                     Icon: "bot");
 
@@ -11,7 +12,7 @@
     // (The dashboard reaches the AI Assistant through the floating robot button.)
     var items = active == "AiAssistant"
         ? new[] { home, aiAssistant }
-        : new[] { home, appointments, cart, notifications };
+        : new[] { home, appointments, records, cart, notifications };
 
     // Doctor pages (ViewData["SidebarRole"] = "Doctor"): doctor menu.
     // TEMPORARY: doctorId is read from the URL until login is ready (backend note), then these route values go away.
@@ -60,6 +61,18 @@
             </li>
         }
     </ul>
+
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        var userRole = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Doctor") ? "Doctor" : User.IsInRole("Patient") ? "Patient" : null;
+        <div class="vt-sidebar__user">
+            <span class="vt-sidebar__user-icon"><partial name="_VtIcon" model='"user:18"' /></span>
+            <span class="vt-sidebar__user-text">
+                <span class="vt-sidebar__user-name">@User.Identity.Name</span>
+                @if (userRole is not null) { <span class="vt-sidebar__user-role">@userRole</span> }
+            </span>
+        </div>
+    }
 
     @* POST + anti-forgery token (added by the form tag helper). Backend adds [HttpPost] Account/Logout. *@
     <form class="vt-sidebar__logout" method="post" asp-controller="Account" asp-action="Logout">

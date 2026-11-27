@@ -111,6 +111,11 @@
 .vt-nav__actions { display: flex; gap: 13px; }
 .vt-nav__actions .vt-btn { height: 42px; padding: 0 32px; font-size: 14px; border-radius: 10px; }
 .vt-nav__menu { display: contents; }
+.vt-nav__actions .vt-inline-form { display: contents; }
+.vt-nav__user { display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 14px; font-weight: 600; max-width: 260px; }
+.vt-nav__user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 170px; }
+@media (min-width: 961px) and (max-width: 1180px) { .vt-nav__user-name { display: none; } }
+.vt-nav__role { flex: none; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, .14); color: var(--vt-sky-soft); font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
 .vt-nav__toggle { display: none; background: none; border: 0; color: #fff; cursor: pointer; padding: 4px; }
 
 .vt-hero {
@@ -325,6 +330,12 @@
 .vt-sidebar__link:hover { background: rgba(255, 255, 255, .1); color: #fff; }
 .vt-sidebar__link.is-active { background: #fff; color: var(--vt-primary); font-weight: 700; }
 .vt-sidebar__logout { margin: auto 0 0; }
+.vt-sidebar__user { display: flex; align-items: center; gap: 10px; margin: auto 0 0; padding: 12px 10px; border-top: 1px solid rgba(255, 255, 255, .15); color: #fff; }
+.vt-sidebar__user + .vt-sidebar__logout { margin-top: 4px; }
+.vt-sidebar__user-icon { display: grid; place-items: center; flex: none; width: 34px; height: 34px; border-radius: 50%; background: rgba(255, 255, 255, .14); }
+.vt-sidebar__user-text { display: grid; min-width: 0; }
+.vt-sidebar__user-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; font-weight: 600; }
+.vt-sidebar__user-role { font-size: 11px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--vt-sky-soft); }
 .vt-sidebar__logout .vt-sidebar__link { width: 100%; background: none; border: 0; font: inherit; font-size: 14px; cursor: pointer; text-align: left; }
 .vt-sidebar__logout .vt-sidebar__link:hover { background: rgba(255, 255, 255, .1); }
 .vt-sidebar__link svg { flex: 0 0 auto; }
@@ -650,6 +661,14 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 .vt-rx__head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
 .vt-rx__doctor { margin: 0; font: 700 17px/1.3 var(--vt-font-display); }
 .vt-print-only { display: none; }
+
+/* Medical records (patient) */
+.vt-record { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 10px 16px; margin: 0; font-size: 14px; }
+.vt-record dt { font-size: 12px; font-weight: 700; letter-spacing: .3px; text-transform: uppercase; color: var(--vt-text-muted); padding-top: 2px; }
+.vt-record dd { margin: 0; color: var(--vt-text); }
+.vt-record__notes { white-space: pre-line; line-height: 1.55; }
+.vt-record__meta { margin: 14px 0 0; font-size: 12px; }
+@media (max-width: 560px) { .vt-record { grid-template-columns: 1fr; gap: 4px; } .vt-record dd { margin-bottom: 8px; } }
 
 @media (max-width: 960px) {
   .vt-booking { grid-template-columns: 1fr; }

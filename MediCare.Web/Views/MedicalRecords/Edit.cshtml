@@ -1,5 +1,12 @@
-﻿@{
+﻿@* Doctor writes / updates the medical record of a completed appointment.
+   GET /MedicalRecords/Edit?doctorId=&appointmentId=  (ViewBag: DoctorId, AppointmentId, Diagnosis, Notes, HasRecord)
+   POST MedicalRecords/Save (doctorId, appointmentId, diagnosis, notes?) → redirects back here with TempData Success/Error.
+   Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
     ViewData["Title"] = "Medical record";
+    ViewData["ActiveNav"] = "DoctorAppointments";
+    ViewData["SidebarRole"] = "Doctor";
     var doctorId = (int)ViewBag.DoctorId;
     var appointmentId = (int)ViewBag.AppointmentId;
     var diagnosis = (string)ViewBag.Diagnosis;
@@ -7,37 +14,49 @@
     var hasRecord = (bool)ViewBag.HasRecord;
 }
 
-<h2>Medical record</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Medical record</h1>
+        <p class="vt-page-sub">Appointment #@appointmentId · @(hasRecord ? "update the diagnosis and notes." : "write the diagnosis and notes for this visit.")</p>
+    </div>
+    <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="Prescriptions" asp-action="Index"
+           asp-route-doctorId="@doctorId" asp-route-appointmentId="@appointmentId">
+            <partial name="_VtIcon" model='"pill:18"' /> Prescription
+        </a>
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index" asp-route-doctorId="@doctorId">
+            <partial name="_VtIcon" model='"back:18"' /> Back to appointments
+        </a>
+    </div>
+</header>
 
-<p>
-    <a asp-controller="DoctorAppointments" asp-action="Index" asp-route-doctorId="@doctorId">Back to appointments</a>
-</p>
+<partial name="_VtAlerts" />
 
-@if (TempData["Error"] is string error)
-{
-    <p style="color:red">@error</p>
-}
-@if (TempData["Success"] is string success)
-{
-    <p style="color:green">@success</p>
-}
+<section class="vt-card">
+    <h2 class="vt-card__title">@(hasRecord ? "Edit record" : "New record")</h2>
+    <form method="post" asp-controller="MedicalRecords" asp-action="Save" class="vt-list">
+        <input type="hidden" name="doctorId" value="@doctorId" />
+        <input type="hidden" name="appointmentId" value="@appointmentId" />
 
-<form method="post" asp-action="Save">
-    <input type="hidden" name="doctorId" value="@doctorId" />
-    <input type="hidden" name="appointmentId" value="@appointmentId" />
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="diagnosis">Diagnosis</label>
+            <input class="vt-input vt-input--sm" id="diagnosis" name="diagnosis" value="@diagnosis" maxlength="500" required
+                   placeholder="e.g. Seasonal allergic rhinitis" />
+        </div>
 
-    <p>
-        <label>
-            Diagnosis<br />
-            <input type="text" name="diagnosis" value="@diagnosis" maxlength="500" required />
-        </label>
-    </p>
-    <p>
-        <label>
-            Notes<br />
-            <textarea name="notes" rows="6" cols="60" maxlength="2000">@notes</textarea>
-        </label>
-    </p>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="notes">Notes <span class="vt-muted">(optional)</span></label>
+            <textarea class="vt-input" id="notes" name="notes" rows="6" maxlength="2000"
+                      placeholder="Symptoms, advice, follow-up…">@notes</textarea>
+        </div>
 
-    <button type="submit">@(hasRecord ? "Update record" : "Save record")</button>
-</form>
+        <div>
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm">
+                <partial name="_VtIcon" model='"check-circle:18"' /> @(hasRecord ? "Update record" : "Save record")
+            </button>
+        </div>
+    </form>
+</section>

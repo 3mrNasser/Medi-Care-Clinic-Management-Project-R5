@@ -1,37 +1,72 @@
 ﻿@model IEnumerable<MediCare.Services.DTOs.MedicalRecordDto>
-
+@* Patient medical records — GET /MyMedicalRecords. One card per completed visit that has a record.
+   Printable: the sidebar and buttons are hidden when printing. Vitala style. *@
 @{
-    ViewData["Title"] = "My medical records";
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Medical Records";
+    ViewData["ActiveNav"] = "MedicalRecords";
 }
 
-<h2>My medical records</h2>
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Medical Records</h1>
+        <p class="vt-page-sub">Diagnoses and notes from your completed visits.</p>
+    </div>
+    <div class="vt-page-actions vt-no-print">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="MyPrescriptions" asp-action="Index">
+            <partial name="_VtIcon" model='"pill:18"' /> My prescriptions
+        </a>
+        @if (Model.Any())
+        {
+            <button type="button" class="vt-btn vt-btn--primary vt-btn--sm" onclick="window.print()">
+                <partial name="_VtIcon" model='"print:18"' /> Print
+            </button>
+        }
+    </div>
+</header>
+
+<p class="vt-print-only vt-muted">vitala · Printed @DateTime.Now.ToString("d MMM yyyy")</p>
 
 @if (!Model.Any())
 {
-    <p>No medical records yet.</p>
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"history:30"' /></span>
+        <h2 class="vt-empty__title">No medical records yet</h2>
+        <p class="vt-empty__text">After a visit, your doctor's diagnosis and notes show up here.</p>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="MyAppointments" asp-action="Index">My appointments</a>
+    </section>
 }
 
 @foreach (var r in Model)
 {
-    <div class="medical-record">
-        <h4>@r.DoctorName - @r.Date.ToString("yyyy-MM-dd")</h4>
-        <p><strong>Diagnosis:</strong> @r.Diagnosis</p>
+    <section class="vt-card vt-rx">
+        <div class="vt-rx__head">
+            <div>
+                <span class="vt-eyebrow">Visit</span>
+                <h2 class="vt-rx__doctor">@r.DoctorName</h2>
+            </div>
+            <span class="vt-muted"><partial name="_VtIcon" model='"calendar:15"' /> @r.Date.ToString("d MMM yyyy")</span>
+        </div>
 
-        @if (!string.IsNullOrWhiteSpace(r.Notes))
-        {
-            <p><strong>Notes:</strong></p>
-            <p style="white-space: pre-line">@r.Notes</p>
-        }
+        <dl class="vt-record">
+            <dt>Diagnosis</dt>
+            <dd><strong>@r.Diagnosis</strong></dd>
+            @if (!string.IsNullOrWhiteSpace(r.Notes))
+            {
+                <dt>Notes</dt>
+                <dd class="vt-record__notes">@r.Notes</dd>
+            }
+        </dl>
 
-        <p>
-            <small>
-                Written: @r.CreatedAtUtc.ToString("yyyy-MM-dd")
-                @if (r.UpdatedAtUtc is not null)
-                {
-                    <text> | Updated: @r.UpdatedAtUtc.Value.ToString("yyyy-MM-dd")</text>
-                }
-            </small>
+        <p class="vt-record__meta vt-muted">
+            Written @r.CreatedAtUtc.ToLocalTime().ToString("d MMM yyyy")
+            @if (r.UpdatedAtUtc is not null)
+            {
+                <text> · Updated @r.UpdatedAtUtc.Value.ToLocalTime().ToString("d MMM yyyy")</text>
+            }
         </p>
-        <hr />
-    </div>
+    </section>
 }

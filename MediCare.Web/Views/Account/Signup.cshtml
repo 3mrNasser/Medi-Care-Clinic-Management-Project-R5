@@ -1,5 +1,5 @@
 @* 04 â€” Sign up (step 2, after Select Role)
-   Reached as /Account/Signup?role=Patient|Doctor|Pharmacist|Admin (defaults to Patient).
+   Reached as /Account/Signup?role=Patient|Doctor (defaults to Patient). Pharmacist/Admin cannot sign up here.
    Fields posted: Role (hidden), FullName, Email, Password, ConfirmPassword
    Security: the backend must not trust Role=Admin from this form (see docs/VITALA-FRONTEND.md).
    When the POST action returns View(model) after a failed signup, this view keeps the posted
@@ -22,7 +22,7 @@
     string? ServerError(string name) =>
         ViewData.ModelState.TryGetValue(name, out var entry) ? entry?.Errors.FirstOrDefault()?.ErrorMessage : null;
 
-    var allowedRoles = new[] { "Patient", "Doctor", "Pharmacist", "Admin" };
+    var allowedRoles = new[] { "Patient", "Doctor" };
     var requested = Posted("Role") ?? Context.Request.Query["role"].ToString();
     var role = allowedRoles.FirstOrDefault(r => r.Equals(requested, StringComparison.OrdinalIgnoreCase)) ?? "Patient";
 }

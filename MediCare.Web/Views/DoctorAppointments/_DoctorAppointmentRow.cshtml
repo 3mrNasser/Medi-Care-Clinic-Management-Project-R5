@@ -55,6 +55,10 @@
                asp-route-doctorId="@doctorId" asp-route-appointmentId="@Model.Id">
                 <partial name="_VtIcon" model='"pill:15"' /> Prescription
             </a>
+            <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="MedicalRecords" asp-action="Edit"
+               asp-route-doctorId="@doctorId" asp-route-appointmentId="@Model.Id">
+                <partial name="_VtIcon" model='"history:15"' /> Medical record
+            </a>
         }
     </div>
 </article>

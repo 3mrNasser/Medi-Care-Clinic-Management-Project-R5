@@ -19,6 +19,10 @@
         <p class="vt-page-sub">Appointment #@appointmentId · add each medication the patient should take.</p>
     </div>
     <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="MedicalRecords" asp-action="Edit"
+           asp-route-doctorId="@doctorId" asp-route-appointmentId="@appointmentId">
+            <partial name="_VtIcon" model='"history:18"' /> Medical record
+        </a>
         <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index" asp-route-doctorId="@doctorId">
             <partial name="_VtIcon" model='"back:18"' /> Back to appointments
         </a>
