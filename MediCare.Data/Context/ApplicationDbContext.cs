@@ -16,6 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<Prescription> Prescriptions => Set<Prescription>();
     public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -58,6 +59,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.Property(p => p.Dosage).HasMaxLength(100);
             e.Property(p => p.Frequency).HasMaxLength(100);
             e.ToTable(t => t.HasCheckConstraint("CK_Prescription_Duration", "[DurationDays] > 0"));
+        });
+
+        builder.Entity<Notification>(e =>
+        {
+            e.Property(n => n.Type).HasConversion<string>().HasMaxLength(40);
+            e.Property(n => n.Title).HasMaxLength(150);
+            e.Property(n => n.Message).HasMaxLength(500);
+            e.Property(n => n.Link).HasMaxLength(300);
+
+            // Unread count and the list are always read per user, newest first.
+            e.HasIndex(n => new { n.UserId, n.IsRead });
+
+            e.HasOne(n => n.User).WithMany()
+                .HasForeignKey(n => n.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<MedicalRecord>(e =>

@@ -13,12 +13,15 @@ public class PatientController : Controller
     private readonly IAppointmentService _appointmentService;
     private readonly IDoctorService _doctorService;
     private readonly ICurrentUser _currentUser;
+    private readonly INotificationService _notificationService;
 
-    public PatientController(IAppointmentService appointmentService, IDoctorService doctorService, ICurrentUser currentUser)
+    public PatientController(IAppointmentService appointmentService, IDoctorService doctorService, ICurrentUser currentUser,
+        INotificationService notificationService)
     {
         _appointmentService = appointmentService;
         _doctorService = doctorService;
         _currentUser = currentUser;
+        _notificationService = notificationService;
     }
 
     // Dashboard: the patient's name (FullName claim) and their next Pending/Confirmed appointment.
@@ -38,14 +41,14 @@ public class PatientController : Controller
 
         ViewBag.NextAppointment = next;
         ViewBag.NextDoctor = next is null ? null : await _doctorService.GetByIdAsync(next.DoctorId);
+        ViewBag.UnreadCount = await _notificationService.GetUnreadCountAsync(_currentUser.UserId!);
         return View();
     }
 
-    // Cart and Notifications are in the Figma sidebar but have no screen design yet:
-    // they render an empty state so the links never 404.
+    // Cart is in the Figma sidebar but has no screen design yet: it renders an empty state so the link never 404s.
     [HttpGet]
     public IActionResult Cart() => View();
 
     [HttpGet]
-    public IActionResult Notifications() => View();
+    public IActionResult Notifications() => RedirectToAction("Index", "Notifications"); // moved: shared with doctors
 }

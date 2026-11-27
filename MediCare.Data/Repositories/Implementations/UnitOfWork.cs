@@ -1,4 +1,4 @@
-﻿using MediCare.Data.Context;
+using MediCare.Data.Context;
 using MediCare.Data.Entities;
 using MediCare.Data.Repositories.Interfaces;
 
@@ -16,6 +16,7 @@ public class UnitOfWork : IUnitOfWork
         Appointments = new GenericRepository<Appointment>(context);
         Prescriptions = new GenericRepository<Prescription>(context);
         MedicalRecords = new GenericRepository<MedicalRecord>(context);
+        Notifications = new GenericRepository<Notification>(context);
     }
 
     public IGenericRepository<DoctorProfile> Doctors { get; }
@@ -23,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
     public IGenericRepository<Appointment> Appointments { get; }
     public IGenericRepository<Prescription> Prescriptions { get; }
     public IGenericRepository<MedicalRecord> MedicalRecords { get; }
+    public IGenericRepository<Notification> Notifications { get; }
 
     public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
 }

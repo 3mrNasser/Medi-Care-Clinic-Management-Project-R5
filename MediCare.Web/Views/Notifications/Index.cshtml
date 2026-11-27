@@ -1,0 +1,103 @@
+@model IReadOnlyList<MediCare.Services.DTOs.NotificationDto>
+@* Notifications — GET /Notifications; POST Notifications/Open (id) marks one read and opens its page;
+   POST Notifications/MarkAllRead. New ones also arrive live (SignalR) and show a toast. Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Notifications";
+    ViewData["ActiveNav"] = "Notifications";
+    if (User.IsInRole("Doctor")) { ViewData["SidebarRole"] = "Doctor"; }
+    var unread = Model.Count(n => !n.IsRead);
+    var isDoctor = User.IsInRole("Doctor");
+
+    static string Ago(DateTime utc)
+    {
+        var span = DateTime.UtcNow - utc;
+        if (span.TotalMinutes < 1) return "just now";
+        if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} min ago";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} h ago";
+        if (span.TotalDays < 7) return $"{(int)span.TotalDays} d ago";
+        return utc.ToLocalTime().ToString("d MMM yyyy");
+    }
+    static string IconFor(string type) => type switch
+    {
+        "AppointmentReminder" => "clock",
+        "AppointmentConfirmed" or "AppointmentCompleted" => "check-circle",
+        "AppointmentRejected" or "AppointmentCancelled" => "alert",
+        _ => "calendar"
+    };
+    static string ToneFor(string type) => type switch
+    {
+        "AppointmentConfirmed" or "AppointmentCompleted" => "success",
+        "AppointmentRejected" or "AppointmentCancelled" => "danger",
+        "AppointmentReminder" => "warning",
+        _ => "info"
+    };
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Notifications</h1>
+        <p class="vt-page-sub">@(unread == 0 ? "You're all caught up." : $"{unread} unread")</p>
+    </div>
+    @if (unread > 0)
+    {
+        <div class="vt-page-actions">
+            <form method="post" asp-controller="Notifications" asp-action="MarkAllRead" class="vt-inline-form">
+                <button type="submit" class="vt-btn vt-btn--outline vt-btn--sm">
+                    <partial name="_VtIcon" model='"check-circle:18"' /> Mark all as read
+                </button>
+            </form>
+        </div>
+    }
+</header>
+
+<partial name="_VtAlerts" />
+
+@if (!Model.Any())
+{
+    <section class="vt-empty">
+        <span class="vt-empty__icon"><img src="~/images/vitala/icon-notifications.png" width="39" height="39" alt="" /></span>
+        <h2 class="vt-empty__title">No notifications yet</h2>
+        <p class="vt-empty__text">
+            @(isDoctor ? "New appointment requests, changes and cancellations will appear here."
+                       : "Confirmations, reminders and updates about your appointments will appear here.")
+        </p>
+        @if (isDoctor)
+        {
+            <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index">My appointments</a>
+        }
+        else
+        {
+            <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Patient" asp-action="Home">Back to Home</a>
+        }
+    </section>
+}
+else
+{
+    <ul class="vt-notes-list" data-vt-notes-list>
+        @foreach (var n in Model)
+        {
+            <li class="vt-notif @(n.IsRead ? "" : "is-unread")">
+                <form method="post" asp-controller="Notifications" asp-action="Open" asp-route-id="@n.Id" class="vt-notif__form">
+                    <button type="submit" class="vt-notif__btn">
+                        <span class="vt-notif__icon vt-notif__icon--@ToneFor(n.Type)" aria-hidden="true">
+                            <partial name="_VtIcon" model='IconFor(n.Type) + ":20"' />
+                        </span>
+                        <span class="vt-notif__body">
+                            <span class="vt-notif__title">
+                                @n.Title
+                                @if (!n.IsRead) { <span class="vt-notif__dot"><span class="vt-sr-only">Unread</span></span> }
+                            </span>
+                            <span class="vt-notif__msg">@n.Message</span>
+                            <span class="vt-notif__time">@Ago(n.CreatedAtUtc)</span>
+                        </span>
+                        <span class="vt-notif__go" aria-hidden="true"><partial name="_VtIcon" model='"arrow-right:18"' /></span>
+                    </button>
+                </form>
+            </li>
+        }
+    </ul>
+}

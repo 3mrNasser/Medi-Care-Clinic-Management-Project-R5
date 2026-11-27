@@ -14,5 +14,20 @@
     </main>
 </div>
 
+@* Live notifications for signed-in patients and doctors (SignalR client 10.x, pinned with SRI). vitala.js connects. *@
+@{ var liveNotifications = User.IsInRole("Patient") || User.IsInRole("Doctor"); }
+@if (liveNotifications)
+{
+    <div hidden data-vt-live-notifications data-hub-url="/hubs/notifications" data-list-url="@Url.Action("Index", "Notifications")"></div>
+}
+
 @section Styles { @await RenderSectionAsync("Styles", required: false) }
-@section Scripts { @await RenderSectionAsync("Scripts", required: false) }
+@section Scripts {
+    @if (liveNotifications)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@10.0.11/dist/browser/signalr.min.js"
+                integrity="sha384-N+pL/4qXZHZcvsa6hVMd5/7cdF3lC59ZMNHeQyRo5q9jmC7yw0hcJILPjUDSU7ZS"
+                crossorigin="anonymous"></script>
+    }
+    @await RenderSectionAsync("Scripts", required: false)
+}

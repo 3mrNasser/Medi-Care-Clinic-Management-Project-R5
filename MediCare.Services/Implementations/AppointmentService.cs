@@ -11,10 +11,12 @@ namespace MediCare.Services.Implementations;
 public class AppointmentService : IAppointmentService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly INotificationService _notifications;
 
-    public AppointmentService(IUnitOfWork unitOfWork)
+    public AppointmentService(IUnitOfWork unitOfWork, INotificationService notifications)
     {
         _unitOfWork = unitOfWork;
+        _notifications = notifications;
     }
 
     public async Task<IEnumerable<TimeOnly>> GetAvailableTimesAsync(int doctorId, DateOnly date)
@@ -79,7 +81,7 @@ public class AppointmentService : IAppointmentService
         if (slot is null)
             return ServiceResult.Fail("This time is not available.");
 
-        await _unitOfWork.Appointments.AddAsync(new Appointment
+        var appointment = new Appointment
         {
             PatientId = patientId,
             DoctorProfileId = doctorId,
@@ -88,7 +90,8 @@ public class AppointmentService : IAppointmentService
             StartTime = time,
             Status = AppointmentStatus.Pending,
             ReasonForVisit = reason
-        });
+        };
+        await _unitOfWork.Appointments.AddAsync(appointment);
         try
         {
             await _unitOfWork.SaveChangesAsync();
@@ -102,6 +105,7 @@ public class AppointmentService : IAppointmentService
             throw;
         }
 
+        await _notifications.NotifyAsync(appointment.Id, NotificationType.AppointmentBooked);
         return ServiceResult.Ok();
     }
 
@@ -134,6 +138,8 @@ public class AppointmentService : IAppointmentService
         _unitOfWork.Appointments.Update(appointment);
         await _unitOfWork.SaveChangesAsync();
 
+        if (newStatus == AppointmentStatus.Completed)
+            await _notifications.NotifyAsync(appointment.Id, NotificationType.AppointmentCompleted);
         return ServiceResult.Ok();
     }
 
@@ -174,6 +180,7 @@ public class AppointmentService : IAppointmentService
         _unitOfWork.Appointments.Update(appointment);
         await _unitOfWork.SaveChangesAsync();
 
+        await _notifications.NotifyAsync(appointment.Id, NotificationType.AppointmentCancelled);
         return ServiceResult.Ok();
     }
 
@@ -214,6 +221,7 @@ public class AppointmentService : IAppointmentService
         appointment.StartTime = newTime;
         appointment.AvailabilitySlotId = slot.Id;
         appointment.Status = AppointmentStatus.Pending;
+        appointment.ReminderSentAtUtc = null; // new time → a new reminder
         _unitOfWork.Appointments.Update(appointment);
 
         try
@@ -229,6 +237,7 @@ public class AppointmentService : IAppointmentService
             throw;
         }
 
+        await _notifications.NotifyAsync(appointment.Id, NotificationType.AppointmentRescheduled);
         return ServiceResult.Ok();
     }
 
@@ -272,6 +281,9 @@ public class AppointmentService : IAppointmentService
         _unitOfWork.Appointments.Update(appointment);
         await _unitOfWork.SaveChangesAsync();
 
+        await _notifications.NotifyAsync(appointment.Id, newStatus == AppointmentStatus.Confirmed
+            ? NotificationType.AppointmentConfirmed
+            : NotificationType.AppointmentRejected);
         return ServiceResult.Ok();
     }
 
