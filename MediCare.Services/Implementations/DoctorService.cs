@@ -31,4 +31,10 @@ public class DoctorService : IDoctorService
             ConsultationFee = d.ConsultationFee
         });
     }
+
+    public async Task<int?> GetDoctorIdByUserIdAsync(string userId)
+    {
+        var found = await _unitOfWork.Doctors.FindAsync(d => d.UserId == userId);
+        return found.FirstOrDefault()?.Id;
+    }
 }
