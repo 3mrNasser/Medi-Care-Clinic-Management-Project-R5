@@ -1,0 +1,121 @@
+@model MediCare.Services.DTOs.PatientProfileDto
+@* Patient profile — GET /PatientProfile, POST PatientProfile/Save (PatientProfileDto fields).
+   Includes notification preferences (email / SMS). The phone number is used for SMS reminders. Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Profile";
+    ViewData["ActiveNav"] = "PatientProfile";
+    string[] genders = { "Male", "Female" };
+    string[] bloodTypes = { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">My Profile</h1>
+        <p class="vt-page-sub">Your doctors see this information when you book with them.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<form method="post" asp-controller="PatientProfile" asp-action="Save">
+    <section class="vt-card">
+        <h2 class="vt-card__title">Personal information</h2>
+        <div class="vt-form-grid vt-form-grid--top">
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="FullName">Full name</label>
+                <input class="vt-input vt-input--sm" id="FullName" name="FullName" value="@Model.FullName" maxlength="100" required />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="Email">Email</label>
+                <input class="vt-input vt-input--sm" id="Email" value="@Model.Email" disabled />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="PhoneNumber">Mobile <span class="vt-muted">(for SMS reminders)</span></label>
+                <input class="vt-input vt-input--sm" id="PhoneNumber" name="PhoneNumber" type="tel" value="@Model.PhoneNumber" placeholder="+201001234567" maxlength="20" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="DateOfBirth">Date of birth</label>
+                <input class="vt-input vt-input--sm" id="DateOfBirth" name="DateOfBirth" type="date" value="@Model.DateOfBirth?.ToString("yyyy-MM-dd")" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="Gender">Gender</label>
+                <select class="vt-input vt-input--sm" id="Gender" name="Gender">
+                    <option value="">Not set</option>
+                    @foreach (var g in genders) { <option value="@g" selected="@(g == Model.Gender)">@g</option> }
+                </select>
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="Address">Address</label>
+                <input class="vt-input vt-input--sm" id="Address" name="Address" value="@Model.Address" maxlength="250" placeholder="City, street" />
+            </div>
+        </div>
+    </section>
+
+    <section class="vt-card">
+        <h2 class="vt-card__title">Medical information</h2>
+        <div class="vt-form-grid vt-form-grid--top">
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="BloodType">Blood type</label>
+                <select class="vt-input vt-input--sm" id="BloodType" name="BloodType">
+                    <option value="">Not set</option>
+                    @foreach (var b in bloodTypes) { <option value="@b" selected="@(b == Model.BloodType)">@b</option> }
+                </select>
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="Allergies">Allergies</label>
+                <input class="vt-input vt-input--sm" id="Allergies" name="Allergies" value="@Model.Allergies" maxlength="500" placeholder="e.g. Penicillin, peanuts" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="ChronicConditions">Chronic conditions</label>
+                <input class="vt-input vt-input--sm" id="ChronicConditions" name="ChronicConditions" value="@Model.ChronicConditions" maxlength="500" placeholder="e.g. Diabetes, asthma" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="CurrentMedications">Current medications</label>
+                <input class="vt-input vt-input--sm" id="CurrentMedications" name="CurrentMedications" value="@Model.CurrentMedications" maxlength="500" />
+            </div>
+        </div>
+        <div class="vt-field vt-mt-md">
+            <label class="vt-label vt-label--sm" for="MedicalHistoryNotes">Medical history <span class="vt-muted">(surgeries, past illnesses, family history)</span></label>
+            <textarea class="vt-input" id="MedicalHistoryNotes" name="MedicalHistoryNotes" rows="4" maxlength="2000">@Model.MedicalHistoryNotes</textarea>
+        </div>
+    </section>
+
+    <section class="vt-card">
+        <h2 class="vt-card__title">Emergency contact</h2>
+        <div class="vt-form-grid vt-form-grid--top">
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="EmergencyContactName">Name</label>
+                <input class="vt-input vt-input--sm" id="EmergencyContactName" name="EmergencyContactName" value="@Model.EmergencyContactName" maxlength="100" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="EmergencyContactPhone">Phone</label>
+                <input class="vt-input vt-input--sm" id="EmergencyContactPhone" name="EmergencyContactPhone" type="tel" value="@Model.EmergencyContactPhone" maxlength="20" />
+            </div>
+        </div>
+    </section>
+
+    <section class="vt-card">
+        <h2 class="vt-card__title">Notifications</h2>
+        <p class="vt-muted">You always get notifications inside Vitala. Choose what else you'd like:</p>
+        <div class="vt-list">
+            <label class="vt-switch">
+                <input type="checkbox" name="EmailNotificationsEnabled" value="true" checked="@Model.EmailNotificationsEnabled" />
+                <span>Email me confirmations and reminders</span>
+            </label>
+            <label class="vt-switch">
+                <input type="checkbox" name="SmsNotificationsEnabled" value="true" checked="@Model.SmsNotificationsEnabled" />
+                <span>Text me a reminder the day before (needs a mobile number)</span>
+            </label>
+        </div>
+        <input type="hidden" name="EmailNotificationsEnabled" value="false" />
+        <input type="hidden" name="SmsNotificationsEnabled" value="false" />
+    </section>
+
+    <div class="vt-mt-md">
+        <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm"><partial name="_VtIcon" model='"check-circle:18"' /> Save profile</button>
+    </div>
+</form>

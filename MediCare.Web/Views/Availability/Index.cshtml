@@ -82,3 +82,39 @@
         </div>
     }
 </section>
+
+@* Days off (vacation): POST Availability/AddTimeOff (date, reason), POST Availability/RemoveTimeOff (timeOffId).
+   No times are offered on these dates. A day with booked appointments can't be added until they're handled. *@
+@{ var timeOff = (IReadOnlyList<MediCare.Services.DTOs.TimeOffDto>)ViewBag.TimeOff; }
+<section class="vt-card">
+    <h2 class="vt-card__title">Days off</h2>
+    <p class="vt-muted">Vacations, conferences or any day you won't see patients. Patients can't book on these dates.</p>
+    <form method="post" asp-controller="Availability" asp-action="AddTimeOff" class="vt-form-grid vt-mt-md">
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="off-date">Date</label>
+            <input class="vt-input vt-input--sm" id="off-date" name="date" type="date" required min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="off-reason">Reason <span class="vt-muted">(optional)</span></label>
+            <input class="vt-input vt-input--sm" id="off-reason" name="reason" maxlength="200" placeholder="e.g. Conference" />
+        </div>
+        <div class="vt-field">
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm vt-btn--block"><partial name="_VtIcon" model='"plus:18"' /> Add day off</button>
+        </div>
+    </form>
+    @if (timeOff.Any())
+    {
+        <div class="vt-list vt-mt-lg">
+            @foreach (var off in timeOff)
+            {
+                <div class="vt-chip-slot">
+                    <span><strong>@off.Date.ToString("ddd d MMM yyyy")</strong>@(string.IsNullOrWhiteSpace(off.Reason) ? "" : $" · {off.Reason}")</span>
+                    <form method="post" asp-controller="Availability" asp-action="RemoveTimeOff" class="vt-inline-form">
+                        <input type="hidden" name="timeOffId" value="@off.Id" />
+                        <button type="submit" aria-label="Remove day off @off.Date.ToString("d MMM")"><partial name="_VtIcon" model='"close:16"' /></button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</section>

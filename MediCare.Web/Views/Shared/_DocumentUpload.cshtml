@@ -1,0 +1,25 @@
+@model IEnumerable<string>
+@* Upload form (multipart). Model = categories. ViewData["Action"], ["Controller"], ["PatientId"] (doctor uploads only). *@
+<form method="post" enctype="multipart/form-data" asp-controller="@ViewData["Controller"]" asp-action="@ViewData["Action"]" class="vt-form-grid vt-upload">
+    @if (ViewData["PatientId"] is string pid)
+    {
+        <input type="hidden" name="patientId" value="@pid" />
+    }
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="doc-title">Title</label>
+        <input class="vt-input vt-input--sm" id="doc-title" name="title" maxlength="150" required placeholder="e.g. Blood test — Nov 2026" />
+    </div>
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="doc-category">Type</label>
+        <select class="vt-input vt-input--sm" id="doc-category" name="category">
+            @foreach (var c in Model) { <option value="@c">@c</option> }
+        </select>
+    </div>
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="doc-file">File <span class="vt-muted">(PDF, JPG, PNG · max 10 MB)</span></label>
+        <input class="vt-input vt-input--sm vt-input--file" id="doc-file" name="file" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required />
+    </div>
+    <div class="vt-field">
+        <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm vt-btn--block"><partial name="_VtIcon" model='"plus:18"' /> Upload</button>
+    </div>
+</form>

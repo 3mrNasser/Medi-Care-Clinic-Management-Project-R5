@@ -1,0 +1,93 @@
+@model MediCare.Services.DTOs.PatientProfileDto
+@* Doctor: patient details — GET /DoctorPatients/Details?patientId= (only patients who booked with this doctor).
+   Shows the profile (allergies first), visits with this doctor, documents, and an upload form. Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = Model.FullName;
+    ViewData["ActiveNav"] = "DoctorAppointments";
+    ViewData["SidebarRole"] = "Doctor";
+    var history = (IReadOnlyList<MediCare.Services.DTOs.AppointmentDto>)ViewBag.History;
+    var documents = (IReadOnlyList<MediCare.Services.DTOs.MedicalDocumentDto>)ViewBag.Documents;
+    ViewData["ReturnUrl"] = Url.Action("Details", "DoctorPatients", new { patientId = Model.UserId });
+    string Or(string? s) => string.IsNullOrWhiteSpace(s) ? "—" : s;
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">@Model.FullName</h1>
+        <p class="vt-page-sub">
+            @(Model.Age is int age ? $"{age} years" : "Age not set")@(string.IsNullOrWhiteSpace(Model.Gender) ? "" : $" · {Model.Gender}")@(string.IsNullOrWhiteSpace(Model.BloodType) ? "" : $" · Blood type {Model.BloodType}")
+        </p>
+    </div>
+    <div class="vt-page-actions">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="DoctorAppointments" asp-action="Index">
+            <partial name="_VtIcon" model='"back:18"' /> Back to appointments
+        </a>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+@if (!string.IsNullOrWhiteSpace(Model.Allergies))
+{
+    <div class="vt-alert vt-alert--error" role="note">
+        <partial name="_VtIcon" model='"alert:20"' />
+        <span><strong>Allergies:</strong> @Model.Allergies</span>
+    </div>
+}
+
+<div class="vt-booking">
+    <section class="vt-card">
+        <h2 class="vt-card__title">Medical information</h2>
+        <dl class="vt-record">
+            <dt>Chronic</dt><dd>@Or(Model.ChronicConditions)</dd>
+            <dt>Medications</dt><dd>@Or(Model.CurrentMedications)</dd>
+            <dt>History</dt><dd class="vt-record__notes">@Or(Model.MedicalHistoryNotes)</dd>
+        </dl>
+    </section>
+    <aside class="vt-card">
+        <h2 class="vt-card__title">Contact</h2>
+        <dl class="vt-record">
+            <dt>Mobile</dt><dd>@Or(Model.PhoneNumber)</dd>
+            <dt>Email</dt><dd>@Model.Email</dd>
+            <dt>Emergency</dt><dd>@Or(Model.EmergencyContactName)@(string.IsNullOrWhiteSpace(Model.EmergencyContactPhone) ? "" : $" · {Model.EmergencyContactPhone}")</dd>
+        </dl>
+    </aside>
+</div>
+
+<section class="vt-card">
+    <h2 class="vt-card__title">Visits with you</h2>
+    <div class="vt-table-wrap">
+        <table class="vt-table">
+            <thead><tr><th>Date</th><th>Reason</th><th>Status</th><th><span class="vt-sr-only">Links</span></th></tr></thead>
+            <tbody>
+                @foreach (var a in history)
+                {
+                    <tr>
+                        <td><strong>@a.Date.ToString("ddd d MMM yyyy")</strong> · @a.StartTime.ToString("HH:mm")</td>
+                        <td>@Or(a.Reason)</td>
+                        <td><partial name="_VtStatusBadge" model="a.Status" /></td>
+                        <td>
+                            @if (a.Status == MediCare.Data.Enums.AppointmentStatus.Completed)
+                            {
+                                <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="MedicalRecords" asp-action="Edit" asp-route-appointmentId="@a.Id">Record</a>
+                                <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="Prescriptions" asp-action="Index" asp-route-appointmentId="@a.Id">Prescription</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="vt-card">
+    <h2 class="vt-card__title">Documents (@documents.Count)</h2>
+    <partial name="_DocumentList" model="documents" view-data="ViewData" />
+    <h3 class="vt-section-label vt-mt-lg">Add a file to this patient's record</h3>
+    @{ ViewData["Controller"] = "DoctorPatients"; ViewData["Action"] = "Upload"; ViewData["PatientId"] = Model.UserId; }
+    <partial name="_DocumentUpload" model="(IEnumerable<string>)ViewBag.Categories" view-data="ViewData" />
+</section>

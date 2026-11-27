@@ -1,0 +1,41 @@
+@model IReadOnlyList<MediCare.Services.DTOs.MedicalDocumentDto>
+@* List of medical documents with View / Download / Delete (Delete only for files the viewer may remove).
+   ViewData["ReturnUrl"]: where Delete goes back to. *@
+@{
+    var returnUrl = ViewData["ReturnUrl"] as string;
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    static string Size(long b) => b >= 1024 * 1024 ? $"{b / 1024d / 1024:0.0} MB" : $"{Math.Max(1, b / 1024)} KB";
+}
+@if (!Model.Any())
+{
+    <p class="vt-muted">No files yet.</p>
+}
+else
+{
+    <ul class="vt-docs">
+        @foreach (var d in Model)
+        {
+            var isImage = d.ContentType.StartsWith("image/");
+            var canDelete = d.UploadedByMe || d.PatientId == currentUserId;
+            <li class="vt-doc">
+                <span class="vt-doc__icon" aria-hidden="true"><partial name="_VtIcon" model='(isImage ? "eye-care" : "list") + ":20"' /></span>
+                <div class="vt-doc__body">
+                    <strong class="vt-doc__title">@d.Title</strong>
+                    <span class="vt-doc__meta">@d.Category · @Size(d.SizeBytes) · @d.UploadedAtUtc.ToLocalTime().ToString("d MMM yyyy") · added by @d.UploadedByName</span>
+                </div>
+                <div class="vt-doc__actions">
+                    <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="Documents" asp-action="Download" asp-route-id="@d.Id" target="_blank" rel="noopener">View</a>
+                    <a class="vt-btn vt-btn--outline vt-btn--xs" asp-controller="Documents" asp-action="Download" asp-route-id="@d.Id" asp-route-download="true">Download</a>
+                    @if (canDelete)
+                    {
+                        <form method="post" asp-controller="Documents" asp-action="Delete" class="vt-inline-form" data-vt-confirm="Delete “@d.Title”?">
+                            <input type="hidden" name="id" value="@d.Id" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button type="submit" class="vt-btn vt-btn--danger vt-btn--xs">Delete</button>
+                        </form>
+                    }
+                </div>
+            </li>
+        }
+    </ul>
+}

@@ -344,6 +344,37 @@
   border-radius: 999px; background: var(--vt-orange); color: #fff; font-size: 11px; font-weight: 700; line-height: 1; }
 .vt-sidebar__badge[hidden], .vt-icon-btn__dot[hidden] { display: none; }
 
+/* Admin charts */
+.vt-charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.vt-charts .vt-card + .vt-card { margin-top: 0; }
+.vt-chart-card--wide { grid-column: 1 / -1; }
+.vt-chart { position: relative; height: 280px; }
+.vt-chart--split { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vt-chart--split canvas { min-width: 0; }
+@media (max-width: 960px) { .vt-charts { grid-template-columns: 1fr; } .vt-chart--split { grid-template-columns: 1fr; height: 520px; } }
+
+.vt-switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer; }
+.vt-switch input { width: 18px; height: 18px; accent-color: var(--vt-primary); }
+
+/* Medical documents */
+.vt-docs { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.vt-doc { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1.5px solid var(--vt-border); border-radius: 14px; background: var(--vt-surface); }
+.vt-doc__icon { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: #EEF2FF; color: var(--vt-primary); }
+.vt-doc__body { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.vt-doc__title { font-size: 14px; color: var(--vt-text); overflow-wrap: anywhere; }
+.vt-doc__meta { font-size: 12px; color: var(--vt-text-muted); }
+.vt-doc__actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+@media (max-width: 640px) { .vt-doc { flex-wrap: wrap; } .vt-doc__actions { width: 100%; justify-content: flex-start; } }
+.vt-input--file { padding-top: 10px; }
+.vt-form-grid--top { align-items: start; }
+.vt-row__link { color: inherit; text-decoration: underline; text-decoration-color: var(--vt-border-strong); text-underline-offset: 3px; }
+.vt-row__link:hover { color: var(--vt-blue); }
+
+/* Filters row above admin tables */
+.vt-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-bottom: 18px; }
+.vt-toolbar .vt-field { min-width: 150px; flex: 1 1 150px; }
+.vt-toolbar .vt-field--grow { flex: 3 1 240px; }
+
 /* Notifications page */
 .vt-notes-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; max-width: 860px; }
 .vt-notif__form { margin: 0; }
@@ -745,3 +776,60 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 @media (prefers-reduced-motion: reduce) {
   .vt-body *, .vt-body *::before, .vt-body *::after { transition: none !important; animation: none !important; }
 }
+
+/* =========================================================================
+   Dark mode  (<html data-theme="dark">, toggled by [data-vt-theme-toggle], saved in localStorage)
+   ========================================================================= */
+.vt-theme-toggle { width: 100%; background: none; border: 0; font: inherit; font-size: 14px; cursor: pointer; text-align: left; margin-top: auto; }
+.vt-theme-toggle + .vt-sidebar__user, .vt-theme-toggle + .vt-sidebar__logout { margin-top: 4px; }
+.vt-theme-toggle__sun { display: none; }
+[data-theme="dark"] .vt-theme-toggle__sun { display: block; }
+[data-theme="dark"] .vt-theme-toggle__moon { display: none; }
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --vt-bg: #0B1120;
+  --vt-surface: #111A2E;
+  --vt-border: #22304A;
+  --vt-border-strong: #31415F;
+  --vt-text: #E2E8F0;
+  --vt-text-muted: #94A3B8;
+  --vt-slate: #CBD5E1;
+  --vt-primary: #8EA2FF;            /* text / accents on dark backgrounds */
+  --vt-shadow-sm: 0 1px 2px rgba(0, 0, 0, .4);
+  --vt-shadow: 0 7px 22px rgba(0, 0, 0, .45);
+}
+[data-theme="dark"] .vt-body { background: var(--vt-bg); color: var(--vt-text); }
+[data-theme="dark"] .vt-main,
+[data-theme="dark"] .vt-auth__main,
+[data-theme="dark"] .vt-role-page,
+[data-theme="dark"] .vt-denied { background: var(--vt-bg); }
+
+/* Surfaces that are white in light mode */
+[data-theme="dark"] :is(.vt-card, .vt-stat-tile, .vt-empty, .vt-row, .vt-doctor-card, .vt-specialty, .vt-appointment,
+  .vt-notif__btn, .vt-doc, .vt-denied__card, .vt-icon-btn, .vt-search input, .vt-tabs, .vt-doc-summary, .vt-role-card) {
+  background: var(--vt-surface); border-color: var(--vt-border); color: var(--vt-text);
+}
+[data-theme="dark"] .vt-notif.is-unread .vt-notif__btn { background: #16224A; border-color: #2E3F7A; }
+[data-theme="dark"] .vt-input { background: #0F172A; border-color: var(--vt-border-strong); color: var(--vt-text); }
+[data-theme="dark"] .vt-input:focus { background: #0F172A; border-color: #8EA2FF; box-shadow: 0 0 0 3px rgba(142, 162, 255, .2); }
+[data-theme="dark"] .vt-input:disabled { opacity: .7; }
+[data-theme="dark"] .vt-table th { background: #0F172A; color: var(--vt-text-muted); border-color: var(--vt-border); }
+[data-theme="dark"] .vt-table td { border-color: var(--vt-border); }
+[data-theme="dark"] .vt-table tbody tr:hover td { background: rgba(255, 255, 255, .03); }
+
+/* Buttons: keep the brand navy fill readable */
+[data-theme="dark"] .vt-btn--primary { background: #3B4FD6; color: #fff; }
+[data-theme="dark"] .vt-btn--primary:hover { background: #4A5EE8; }
+[data-theme="dark"] .vt-btn--outline { background: transparent; color: #C7D2FE; border-color: #4A5A8F; }
+[data-theme="dark"] .vt-btn--outline:hover { background: rgba(142, 162, 255, .12); }
+[data-theme="dark"] .vt-chip-link { background: rgba(142, 162, 255, .15); color: #C7D2FE; }
+
+/* Tinted chips / notes */
+[data-theme="dark"] :is(.vt-note, .vt-empty__icon, .vt-doc__icon, .vt-notif__icon--info, .vt-denied__user, .vt-date) { background: rgba(142, 162, 255, .12); color: #C7D2FE; }
+[data-theme="dark"] .vt-alert--success { background: rgba(16, 185, 129, .12); color: #6EE7B7; border-color: rgba(16, 185, 129, .35); }
+[data-theme="dark"] .vt-alert--error { background: rgba(239, 68, 68, .12); color: #FCA5A5; border-color: rgba(239, 68, 68, .35); }
+[data-theme="dark"] .vt-alert--warning { background: rgba(245, 158, 11, .12); color: #FCD34D; border-color: rgba(245, 158, 11, .35); }
+[data-theme="dark"] .vt-slot span { background: #0F172A; border-color: var(--vt-border-strong); color: var(--vt-text); }
+[data-theme="dark"] .vt-label, [data-theme="dark"] .vt-auth__title { color: #C7D2FE; }
+[data-theme="dark"] .vt-calendar { --fc-page-bg-color: var(--vt-surface); --fc-neutral-bg-color: #0F172A; --fc-border-color: var(--vt-border); }

@@ -10,6 +10,11 @@ public interface IUnitOfWork
     IGenericRepository<Prescription> Prescriptions { get; }
     IGenericRepository<MedicalRecord> MedicalRecords { get; }
     IGenericRepository<Notification> Notifications { get; }
+    IGenericRepository<Specialization> Specializations { get; }
+    IGenericRepository<PatientProfile> PatientProfiles { get; }
+    IGenericRepository<MedicalDocument> MedicalDocuments { get; }
+    IGenericRepository<DoctorTimeOff> TimeOffs { get; }
+    IGenericRepository<ApplicationUser> Users { get; }
 
     Task<int> SaveChangesAsync();
 }

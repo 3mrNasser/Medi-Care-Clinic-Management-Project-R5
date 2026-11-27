@@ -17,6 +17,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Prescription> Prescriptions => Set<Prescription>();
     public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<Specialization> Specializations => Set<Specialization>();
+    public DbSet<PatientProfile> PatientProfiles => Set<PatientProfile>();
+    public DbSet<MedicalDocument> MedicalDocuments => Set<MedicalDocument>();
+    public DbSet<DoctorTimeOff> DoctorTimeOffs => Set<DoctorTimeOff>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -74,6 +78,56 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             e.HasOne(n => n.User).WithMany()
                 .HasForeignKey(n => n.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<ApplicationUser>(e =>
+        {
+            e.Property(u => u.EmailNotificationsEnabled).HasDefaultValue(true);
+            e.Property(u => u.SmsNotificationsEnabled).HasDefaultValue(true);
+        });
+
+        builder.Entity<Specialization>(e =>
+        {
+            e.Property(s => s.Name).HasMaxLength(100);
+            e.Property(s => s.Description).HasMaxLength(300);
+            e.HasIndex(s => s.Name).IsUnique();
+        });
+
+        builder.Entity<PatientProfile>(e =>
+        {
+            e.HasIndex(p => p.UserId).IsUnique();
+            e.Property(p => p.Gender).HasMaxLength(10);
+            e.Property(p => p.BloodType).HasMaxLength(5);
+            e.Property(p => p.Address).HasMaxLength(250);
+            e.Property(p => p.Allergies).HasMaxLength(500);
+            e.Property(p => p.ChronicConditions).HasMaxLength(500);
+            e.Property(p => p.CurrentMedications).HasMaxLength(500);
+            e.Property(p => p.MedicalHistoryNotes).HasMaxLength(2000);
+            e.Property(p => p.EmergencyContactName).HasMaxLength(100);
+            e.Property(p => p.EmergencyContactPhone).HasMaxLength(30);
+            e.HasOne(p => p.User).WithMany()
+                .HasForeignKey(p => p.UserId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<MedicalDocument>(e =>
+        {
+            e.Property(d => d.Title).HasMaxLength(150);
+            e.Property(d => d.Category).HasMaxLength(30);
+            e.Property(d => d.OriginalFileName).HasMaxLength(255);
+            e.Property(d => d.StoredFileName).HasMaxLength(100);
+            e.Property(d => d.ContentType).HasMaxLength(100);
+            e.Property(d => d.UploadedByUserId).HasMaxLength(450);
+            e.HasIndex(d => d.PatientId);
+            e.HasOne(d => d.Patient).WithMany()
+                .HasForeignKey(d => d.PatientId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<DoctorTimeOff>(e =>
+        {
+            e.Property(t => t.Reason).HasMaxLength(200);
+            e.HasIndex(t => new { t.DoctorProfileId, t.Date }).IsUnique();
+            e.HasOne(t => t.DoctorProfile).WithMany()
+                .HasForeignKey(t => t.DoctorProfileId).OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<MedicalRecord>(e =>

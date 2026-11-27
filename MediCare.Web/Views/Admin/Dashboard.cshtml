@@ -1,0 +1,112 @@
+@model MediCare.Services.DTOs.AnalyticsDto
+@* Admin analytics — GET /Admin/Dashboard?from=&to= (default: last 12 months).
+   Charts: Chart.js 4.6.2 (CDN, SRI-pinned). Data comes from the JSON island below (no inline JS data).
+   Export: GET /Admin/ExportPdf and /Admin/ExportExcel with the same range. Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActiveNav"] = "AdminDashboard";
+    ViewData["SidebarRole"] = "Admin";
+    var range = new { from = Model.From.ToString("yyyy-MM-dd"), to = Model.To.ToString("yyyy-MM-dd") };
+    var chartData = System.Text.Json.JsonSerializer.Serialize(new
+    {
+        months = Model.Months.Select(m => m.Label),
+        appointments = Model.Months.Select(m => m.Appointments),
+        completed = Model.Months.Select(m => m.Completed),
+        cancelled = Model.Months.Select(m => m.Cancelled),
+        revenue = Model.Months.Select(m => m.Revenue),
+        newPatients = Model.Months.Select(m => m.NewPatients),
+        status = Model.StatusBreakdown,
+        doctors = Model.TopDoctors,
+        specialties = Model.TopSpecialties,
+        genders = Model.Genders,
+        ages = Model.AgeGroups
+    });
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Dashboard</h1>
+        <p class="vt-page-sub">@Model.From.ToString("d MMM yyyy") – @Model.To.ToString("d MMM yyyy")</p>
+    </div>
+    <div class="vt-page-actions vt-no-print">
+        <a class="vt-btn vt-btn--outline vt-btn--sm" asp-action="ExportExcel" asp-all-route-data='@(new Dictionary<string, string> { ["from"] = range.from, ["to"] = range.to })'>
+            <partial name="_VtIcon" model='"list:18"' /> Excel
+        </a>
+        <a class="vt-btn vt-btn--primary vt-btn--sm" asp-action="ExportPdf" asp-all-route-data='@(new Dictionary<string, string> { ["from"] = range.from, ["to"] = range.to })'>
+            <partial name="_VtIcon" model='"print:18"' /> PDF
+        </a>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<section class="vt-card vt-no-print">
+    <form method="get" asp-action="Dashboard" class="vt-form-grid">
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="from">From</label>
+            <input class="vt-input vt-input--sm" id="from" name="from" type="date" value="@range.from" />
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="to">To</label>
+            <input class="vt-input vt-input--sm" id="to" name="to" type="date" value="@range.to" />
+        </div>
+        <div class="vt-field">
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm vt-btn--block">Update</button>
+        </div>
+    </form>
+</section>
+
+<div class="vt-stats vt-mt-lg">
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@Model.TotalPatients</span><span class="vt-stat-tile__label">Patients</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@Model.ApprovedDoctors<small class="vt-muted">/@Model.TotalDoctors</small></span><span class="vt-stat-tile__label">Approved doctors</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@Model.TotalAppointments</span><span class="vt-stat-tile__label">Appointments in range</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@Model.CompletedAppointments</span><span class="vt-stat-tile__label">Completed visits</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@Model.TotalRevenue.ToString("#,##0")</span><span class="vt-stat-tile__label">Revenue (EGP)</span></div>
+</div>
+
+<div class="vt-charts">
+    <section class="vt-card vt-chart-card vt-chart-card--wide">
+        <h2 class="vt-card__title">Monthly appointments</h2>
+        <div class="vt-chart"><canvas id="chart-monthly" aria-label="Monthly appointments chart" role="img"></canvas></div>
+    </section>
+    <section class="vt-card vt-chart-card vt-chart-card--wide">
+        <h2 class="vt-card__title">Revenue (EGP, completed visits)</h2>
+        <div class="vt-chart"><canvas id="chart-revenue" aria-label="Monthly revenue chart" role="img"></canvas></div>
+    </section>
+    <section class="vt-card vt-chart-card">
+        <h2 class="vt-card__title">Most popular doctors</h2>
+        <div class="vt-chart"><canvas id="chart-doctors" aria-label="Most popular doctors chart" role="img"></canvas></div>
+    </section>
+    <section class="vt-card vt-chart-card">
+        <h2 class="vt-card__title">Most popular specialties</h2>
+        <div class="vt-chart"><canvas id="chart-specialties" aria-label="Most popular specialties chart" role="img"></canvas></div>
+    </section>
+    <section class="vt-card vt-chart-card">
+        <h2 class="vt-card__title">Appointments by status</h2>
+        <div class="vt-chart"><canvas id="chart-status" aria-label="Appointments by status chart" role="img"></canvas></div>
+    </section>
+    <section class="vt-card vt-chart-card">
+        <h2 class="vt-card__title">Patients: gender and age</h2>
+        <div class="vt-chart vt-chart--split">
+            <canvas id="chart-gender" aria-label="Patients by gender chart" role="img"></canvas>
+            <canvas id="chart-age" aria-label="Patients by age chart" role="img"></canvas>
+        </div>
+    </section>
+    <section class="vt-card vt-chart-card vt-chart-card--wide">
+        <h2 class="vt-card__title">New patients per month</h2>
+        <div class="vt-chart"><canvas id="chart-patients" aria-label="New patients per month chart" role="img"></canvas></div>
+    </section>
+</div>
+
+<script type="application/json" id="vt-analytics-data">@Html.Raw(chartData.Replace("<", "\\u003c"))</script>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.2/dist/chart.umd.min.js"
+            integrity="sha384-wFIO1nJgUOP2XDesMi2Xqyej8+jLnzOfBrJbdvz7Pp+UI88xOiL08fKFupi2KqR0"
+            crossorigin="anonymous"></script>
+    <script src="~/js/vitala-charts.js" asp-append-version="true"></script>
+}

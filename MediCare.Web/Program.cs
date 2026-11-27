@@ -84,6 +84,16 @@ builder.Services.AddHttpClient<ISmsSender, TwilioSmsSender>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddHostedService<ReminderBackgroundService>();
 
+// Patient profile, medical documents, specializations, days off, admin and reports.
+builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
+builder.Services.AddScoped<ISpecializationService, SpecializationService>();
+builder.Services.AddScoped<IPatientProfileService, PatientProfileService>();
+builder.Services.AddScoped<IMedicalDocumentService, MedicalDocumentService>();
+builder.Services.AddScoped<ITimeOffService, TimeOffService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community; // free for student / non-commercial use
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
