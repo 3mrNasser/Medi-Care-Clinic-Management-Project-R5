@@ -29,6 +29,10 @@ public class AppointmentService : IAppointmentService
         if (!doctors.Any())
             return Enumerable.Empty<TimeOnly>();
 
+        // Day off (vacation): no times at all.
+        if ((await _unitOfWork.TimeOffs.FindAsync(t => t.DoctorProfileId == doctorId && t.Date == date)).Any())
+            return Enumerable.Empty<TimeOnly>();
+
         var slots = await _unitOfWork.Slots.FindAsync(s =>
             s.DoctorProfileId == doctorId && s.DayOfWeek == date.DayOfWeek);
 
@@ -156,6 +160,7 @@ public class AppointmentService : IAppointmentService
             {
                 Id = a.Id,
                 PatientName = a.Patient.FullName,
+                PatientId = a.PatientId,
                 Date = a.AppointmentDate,
                 StartTime = a.StartTime,
                 Status = a.Status,

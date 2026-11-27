@@ -1,0 +1,74 @@
+@model IReadOnlyList<MediCare.Services.DTOs.AdminPatientDto>
+@* Admin: patients — GET /Admin/Patients?q=, POST Admin/SetPatientLocked (patientId, locked). Blocked = can't sign in. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Patients";
+    ViewData["ActiveNav"] = "AdminPatients";
+    ViewData["SidebarRole"] = "Admin";
+    var q = ViewBag.Query as string;
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Patients</h1>
+        <p class="vt-page-sub">@Model.Count patient@(Model.Count == 1 ? "" : "s")@(string.IsNullOrWhiteSpace(q) ? "" : $" matching “{q}”"). Block an account to stop it signing in.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<form method="get" asp-action="Patients" class="vt-toolbar">
+    <div class="vt-field vt-field--grow">
+        <label class="vt-label vt-label--sm" for="q">Search</label>
+        <input class="vt-input vt-input--sm" id="q" name="q" value="@q" placeholder="Name or email" />
+    </div>
+    <div class="vt-field" style="flex:0 0 auto">
+        <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm"><partial name="_VtIcon" model='"search:18"' /> Search</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"user:30"' /></span>
+        <h2 class="vt-empty__title">No patients found</h2>
+        <p class="vt-empty__text">Patients appear here after they sign up.</p>
+    </section>
+}
+else
+{
+    <section class="vt-card">
+        <div class="vt-table-wrap">
+            <table class="vt-table">
+                <thead><tr><th>Patient</th><th>Phone</th><th>Joined</th><th>Appointments</th><th>Status</th><th><span class="vt-sr-only">Actions</span></th></tr></thead>
+                <tbody>
+                    @foreach (var p in Model)
+                    {
+                        <tr>
+                            <td><strong>@p.FullName</strong><br /><span class="vt-muted">@p.Email</span></td>
+                            <td>@(p.PhoneNumber ?? "—")</td>
+                            <td>@p.CreatedAt.ToLocalTime().ToString("d MMM yyyy")</td>
+                            <td>@p.AppointmentCount</td>
+                            <td>
+                                @if (p.IsLocked) { <span class="vt-badge vt-badge--rejected">Blocked</span> }
+                                else { <span class="vt-badge vt-badge--confirmed">Active</span> }
+                            </td>
+                            <td>
+                                <form method="post" asp-action="SetPatientLocked" class="vt-inline-form"
+                                      data-vt-confirm="@(p.IsLocked ? $"Unblock {p.FullName}?" : $"Block {p.FullName}? They won't be able to sign in.")">
+                                    <input type="hidden" name="patientId" value="@p.Id" />
+                                    <input type="hidden" name="locked" value="@(p.IsLocked ? "false" : "true")" />
+                                    <input type="hidden" name="q" value="@q" />
+                                    <button type="submit" class="vt-btn @(p.IsLocked ? "vt-btn--outline" : "vt-btn--danger") vt-btn--xs">@(p.IsLocked ? "Unblock" : "Block")</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

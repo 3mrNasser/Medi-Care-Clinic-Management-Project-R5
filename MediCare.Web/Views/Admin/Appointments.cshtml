@@ -1,0 +1,97 @@
+@using MediCare.Data.Enums
+@model IReadOnlyList<MediCare.Services.DTOs.AdminAppointmentDto>
+@* Admin: all appointments — GET /Admin/Appointments?status=&from=&to=&q=, POST Admin/CancelAppointment (appointmentId, returnUrl).
+   Cancelling notifies the patient (in-app, email, SMS) and the doctor. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Appointments";
+    ViewData["ActiveNav"] = "AdminAppointments";
+    ViewData["SidebarRole"] = "Admin";
+    var status = ViewBag.Status as AppointmentStatus?;
+    var from = ViewBag.From as DateOnly?;
+    var to = ViewBag.To as DateOnly?;
+    var q = ViewBag.Query as string;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">All appointments</h1>
+        <p class="vt-page-sub">@Model.Count result@(Model.Count == 1 ? "" : "s")</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<form method="get" asp-action="Appointments" class="vt-toolbar">
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="status">Status</label>
+        <select class="vt-input vt-input--sm" id="status" name="status">
+            <option value="">All</option>
+            @foreach (var s in Enum.GetValues<AppointmentStatus>())
+            {
+                <option value="@s" selected="@(status == s)">@s</option>
+            }
+        </select>
+    </div>
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="from">From</label>
+        <input class="vt-input vt-input--sm" id="from" name="from" type="date" value="@from?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="vt-field">
+        <label class="vt-label vt-label--sm" for="to">To</label>
+        <input class="vt-input vt-input--sm" id="to" name="to" type="date" value="@to?.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="vt-field vt-field--grow">
+        <label class="vt-label vt-label--sm" for="q">Patient or doctor</label>
+        <input class="vt-input vt-input--sm" id="q" name="q" value="@q" placeholder="Name" />
+    </div>
+    <div class="vt-field" style="flex:0 0 auto">
+        <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm">Filter</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"calendar:30"' /></span>
+        <h2 class="vt-empty__title">No appointments</h2>
+        <p class="vt-empty__text">Try another filter.</p>
+    </section>
+}
+else
+{
+    <section class="vt-card">
+        <div class="vt-table-wrap">
+            <table class="vt-table">
+                <thead><tr><th>Date</th><th>Patient</th><th>Doctor</th><th>Fee</th><th>Status</th><th><span class="vt-sr-only">Actions</span></th></tr></thead>
+                <tbody>
+                    @foreach (var a in Model)
+                    {
+                        <tr>
+                            <td><strong>@a.Date.ToString("ddd d MMM yyyy")</strong><br /><span class="vt-muted">@a.StartTime.ToString("HH:mm")</span></td>
+                            <td>@a.PatientName</td>
+                            <td>@a.DoctorName<br /><span class="vt-muted">@a.Specialty</span></td>
+                            <td>@a.Fee.ToString("0") EGP</td>
+                            <td><partial name="_VtStatusBadge" model="a.Status" /></td>
+                            <td>
+                                @if (a.Status is AppointmentStatus.Pending or AppointmentStatus.Confirmed)
+                                {
+                                    <form method="post" asp-action="CancelAppointment" class="vt-inline-form"
+                                          data-vt-confirm="Cancel @a.PatientName's appointment with @a.DoctorName on @a.Date.ToString("d MMM")? Both will be notified.">
+                                        <input type="hidden" name="appointmentId" value="@a.Id" />
+                                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                        <button type="submit" class="vt-btn vt-btn--danger vt-btn--xs">Cancel</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}

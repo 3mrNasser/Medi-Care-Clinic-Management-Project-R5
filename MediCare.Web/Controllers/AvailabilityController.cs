@@ -10,13 +10,44 @@ public class AvailabilityController : Controller
 {
     private readonly IAvailabilityService _availabilityService;
     private readonly ICurrentUser _currentUser;
+    private readonly ITimeOffService _timeOff;
 
     public AvailabilityController(
         IAvailabilityService availabilityService,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        ITimeOffService timeOff)
     {
         _availabilityService = availabilityService;
         _currentUser = currentUser;
+        _timeOff = timeOff;
+    }
+
+    // ----- Days off (vacation): no times are offered on these dates -----
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddTimeOff(DateOnly date, string? reason)
+    {
+        var doctorId = await _currentUser.GetDoctorIdAsync();
+        if (doctorId is null)
+            return Forbid();
+
+        var result = await _timeOff.AddAsync(doctorId.Value, date, reason);
+        if (result.Success) TempData["Success"] = $"{date:ddd d MMM} is now a day off.";
+        else TempData["Error"] = result.Error;
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveTimeOff(int timeOffId)
+    {
+        var doctorId = await _currentUser.GetDoctorIdAsync();
+        if (doctorId is null)
+            return Forbid();
+
+        var result = await _timeOff.RemoveAsync(doctorId.Value, timeOffId);
+        if (!result.Success) TempData["Error"] = result.Error;
+        return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Index()
@@ -26,6 +57,7 @@ public class AvailabilityController : Controller
             return Forbid();
 
         ViewBag.DoctorId = doctorId.Value;
+        ViewBag.TimeOff = await _timeOff.GetUpcomingAsync(doctorId.Value);
         var slots = await _availabilityService.GetByDoctorAsync(doctorId.Value);
         return View(slots);
     }

@@ -6,7 +6,10 @@
         <span class="vt-date__mon">@Model.Date.ToString("MMM")</span>
     </div>
     <div>
-        <h3 class="vt-row__title">@Model.PatientName</h3>
+        <h3 class="vt-row__title">
+            @* Quick access to the patient's information (profile, allergies, documents). *@
+            <a class="vt-row__link" asp-controller="DoctorPatients" asp-action="Details" asp-route-patientId="@Model.PatientId">@Model.PatientName</a>
+        </h3>
         <div class="vt-row__meta">
             <span><partial name="_VtIcon" model='"calendar:15"' /> @Model.Date.ToString("ddd, d MMM yyyy")</span>
             <span><partial name="_VtIcon" model='"clock:15"' /> @Model.StartTime.ToString("HH:mm")</span>

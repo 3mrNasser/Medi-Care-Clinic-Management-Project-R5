@@ -10,7 +10,7 @@
     var (dashController, dashAction) = role switch
     {
         "Doctor" => ("DoctorAppointments", "Index"),
-        "Admin"  => ("Admin", "Doctors"),
+        "Admin"  => ("Admin", "Dashboard"),
         _        => ("Patient", "Home"),
     };
     var showDashboard = signedIn;

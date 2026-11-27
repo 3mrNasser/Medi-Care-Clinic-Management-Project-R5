@@ -9,5 +9,6 @@ public enum NotificationType
     AppointmentConfirmed,   // → patient
     AppointmentRejected,    // → patient
     AppointmentCompleted,   // → patient
-    AppointmentReminder     // → patient, ~24 hours before
+    AppointmentReminder,    // → patient, ~24 hours before
+    AppointmentCancelledByClinic // → patient, when the admin cancels
 }

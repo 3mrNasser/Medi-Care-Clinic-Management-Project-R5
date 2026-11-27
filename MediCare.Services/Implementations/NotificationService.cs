@@ -155,7 +155,8 @@ public class NotificationService : INotificationService
 
         // 3. Email / SMS: only patient-facing types ask for them.
         var toPatient = recipient == context.PatientUserId;
-        if (kind.SendEmail && toPatient && !string.IsNullOrWhiteSpace(context.PatientEmail))
+        // The patient's notification preferences (profile page) decide whether email / SMS are used.
+        if (kind.SendEmail && toPatient && context.PatientWantsEmail && !string.IsNullOrWhiteSpace(context.PatientEmail))
         {
             var body = $"""
                 <p>Hello {System.Net.WebUtility.HtmlEncode(context.PatientName)},</p>
@@ -165,7 +166,7 @@ public class NotificationService : INotificationService
             await _email.SendAsync(context.PatientEmail!, notification.Title, body);
         }
 
-        if (kind.SendSms && toPatient && !string.IsNullOrWhiteSpace(context.PatientPhone))
+        if (kind.SendSms && toPatient && context.PatientWantsSms && !string.IsNullOrWhiteSpace(context.PatientPhone))
             await _sms.SendAsync(context.PatientPhone!, $"Vitala: {notification.Message}");
     }
 
@@ -189,7 +190,9 @@ public class NotificationService : INotificationService
             a.DoctorProfile.User.FullName,
             a.AppointmentDate,
             a.StartTime,
-            a.DoctorProfile.ClinicAddress);
+            a.DoctorProfile.ClinicAddress,
+            a.Patient.EmailNotificationsEnabled,
+            a.Patient.SmsNotificationsEnabled);
     }
 
     private static NotificationDto ToDto(Notification n) => new()
