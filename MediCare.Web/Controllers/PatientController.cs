@@ -1,13 +1,45 @@
+using MediCare.Data.Enums;
+using MediCare.Services.Interfaces;
+using MediCare.Web.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediCare.Web.Controllers;
 
-// UI only: renders the Vitala patient workspace screens with placeholder content.
-// Replace the static text in the views with real data (patient name, upcoming appointment) when the services exist.
+// The patient workspace (dashboard, AI assistant, and pages still to be designed). Patients only.
+[Authorize(Roles = "Patient")]
 public class PatientController : Controller
 {
+    private readonly IAppointmentService _appointmentService;
+    private readonly IDoctorService _doctorService;
+    private readonly ICurrentUser _currentUser;
+
+    public PatientController(IAppointmentService appointmentService, IDoctorService doctorService, ICurrentUser currentUser)
+    {
+        _appointmentService = appointmentService;
+        _doctorService = doctorService;
+        _currentUser = currentUser;
+    }
+
+    // Dashboard: the patient's name (FullName claim) and their next Pending/Confirmed appointment.
     [HttpGet]
-    public IActionResult Home() => View();
+    public async Task<IActionResult> Home()
+    {
+        var now = DateTime.Now;
+        var today = DateOnly.FromDateTime(now);
+        var time = TimeOnly.FromDateTime(now);
+
+        var appointments = await _appointmentService.GetPatientAppointmentsAsync(_currentUser.UserId!);
+        var next = appointments
+            .Where(a => a.Status is AppointmentStatus.Pending or AppointmentStatus.Confirmed)
+            .Where(a => a.Date > today || (a.Date == today && a.StartTime >= time))
+            .OrderBy(a => a.Date).ThenBy(a => a.StartTime)
+            .FirstOrDefault();
+
+        ViewBag.NextAppointment = next;
+        ViewBag.NextDoctor = next is null ? null : await _doctorService.GetByIdAsync(next.DoctorId);
+        return View();
+    }
 
     [HttpGet]
     public IActionResult AiAssistant() => View();

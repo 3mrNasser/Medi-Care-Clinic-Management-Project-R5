@@ -10,13 +10,16 @@ namespace MediCare.Web.Controllers;
 public class AppointmentsController : Controller
 {
     private readonly IAppointmentService _appointmentService;
+    private readonly IDoctorService _doctorService;
     private readonly ICurrentUser _currentUser;
 
     public AppointmentsController(
         IAppointmentService appointmentService,
+        IDoctorService doctorService,
         ICurrentUser currentUser)
     {
         _appointmentService = appointmentService;
+        _doctorService = doctorService;
         _currentUser = currentUser;
     }
 
@@ -30,7 +33,16 @@ public class AppointmentsController : Controller
     [HttpGet]
     public async Task<IActionResult> Book(int doctorId, DateOnly? date)
     {
+        // Only approved doctors can be booked; show who is being booked (name, specialty, clinic, fee).
+        var doctor = await _doctorService.GetByIdAsync(doctorId);
+        if (doctor is null || !doctor.IsApproved)
+        {
+            TempData["Error"] = "This doctor isn't available for booking.";
+            return RedirectToAction("Index", "Doctors");
+        }
+
         var selected = date ?? DateOnly.FromDateTime(DateTime.Now);
+        ViewBag.Doctor = doctor;
         ViewBag.DoctorId = doctorId;
         ViewBag.Date = selected;
 

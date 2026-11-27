@@ -73,7 +73,8 @@
 
     <aside class="vt-card">
         <h2 class="vt-card__title">Current appointment</h2>
-        <div class="vt-list">
+        <partial name="_VtDoctorSummary" model="ViewBag.Doctor as MediCare.Services.DTOs.DoctorDto" />
+        <div class="vt-list vt-mt-md">
             @if (!string.IsNullOrEmpty(current))
             {
                 <div class="vt-note"><partial name="_VtIcon" model='"calendar:18"' /><span><strong>@current</strong></span></div>

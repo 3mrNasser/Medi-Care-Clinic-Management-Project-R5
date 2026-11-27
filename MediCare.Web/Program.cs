@@ -5,6 +5,7 @@ using MediCare.Data.Repositories.Interfaces;
 using MediCare.Data.Seed;
 using MediCare.Services.Implementations;
 using MediCare.Services.Interfaces;
+using MediCare.Web.Infrastructure;
 using MediCare.Web.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,25 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddClaimsPrincipalFactory<FullNameClaimsFactory>(); // puts FullName in the login cookie
+
+// Google sign-in: only turned on when the keys exist. Keep them out of git:
+//   dotnet user-secrets set "Authentication:Google:ClientId" "..." --project MediCare.Web
+//   dotnet user-secrets set "Authentication:Google:ClientSecret" "..." --project MediCare.Web
+var googleId = builder.Configuration["Authentication:Google:ClientId"];
+var googleSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+if (!string.IsNullOrWhiteSpace(googleId) && !string.IsNullOrWhiteSpace(googleSecret))
+{
+    builder.Services.AddAuthentication().AddGoogle(options =>
+    {
+        options.ClientId = googleId;
+        options.ClientSecret = googleSecret;
+    });
+}
+
+// Email (password reset codes). See MediCare.Web/Infrastructure/SmtpEmailService.cs for the settings.
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 // cookie paths
 builder.Services.ConfigureApplicationCookie(options =>

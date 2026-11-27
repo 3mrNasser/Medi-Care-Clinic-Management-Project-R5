@@ -1,0 +1,24 @@
+@model MediCare.Services.DTOs.DoctorDto?
+@* Who is being booked: name, specialty, clinic and fee. Used on Appointments/Book and MyAppointments/Reschedule. *@
+@if (Model is not null)
+{
+    var initials = string.Concat(Model.FullName.Replace("Dr.", "").Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                                       .Take(2).Select(p => char.ToUpperInvariant(p[0])));
+    <div class="vt-doc-summary">
+        <span class="vt-doc-summary__avatar" aria-hidden="true">@initials</span>
+        <div class="vt-doc-summary__text">
+            <strong class="vt-doc-summary__name">@Model.FullName</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.Specialty))
+            {
+                <span class="vt-doc-summary__spec">@Model.Specialty</span>
+            }
+            <span class="vt-doc-summary__meta">
+                @if (!string.IsNullOrWhiteSpace(Model.ClinicAddress))
+                {
+                    <span><partial name="_VtIcon" model='"pin:14"' /> @Model.ClinicAddress</span>
+                }
+                <span><strong>@Model.ConsultationFee.ToString("0") EGP</strong> per visit</span>
+            </span>
+        </div>
+    </div>
+}

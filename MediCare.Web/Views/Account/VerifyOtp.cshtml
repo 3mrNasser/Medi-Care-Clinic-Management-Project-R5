@@ -8,6 +8,11 @@
     ViewData["AuthPanelTitle"] = "Account Verification";
 }
 <h1 class="vt-auth__title">Verify Account</h1>
+@if (ViewBag.Email is string sentTo)
+{
+    <p class="vt-auth__lead">If <strong>@sentTo</strong> has an account, we sent a 4-digit code to it. It expires in 10 minutes.</p>
+}
+<partial name="_VtAlerts" />
 
 <form method="post" asp-controller="Account" asp-action="VerifyOtp" novalidate>
     <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>
@@ -20,7 +25,7 @@
                    autocomplete="@(i == 1 ? "one-time-code" : "off")" aria-label="Digit @i" autofocus="@(i == 1)" />
         }
     </div>
-    <span class="vt-field-error" data-valmsg-for="Code" data-valmsg-replace="true"></span>
+    <span class="vt-field-error" data-valmsg-for="Code" data-valmsg-replace="true">@(ViewData.ModelState["Code"]?.Errors.FirstOrDefault()?.ErrorMessage)</span>
 
     <p class="vt-otp-timer" data-vt-countdown="179">
         <span data-vt-countdown-text aria-live="polite">02:59</span>

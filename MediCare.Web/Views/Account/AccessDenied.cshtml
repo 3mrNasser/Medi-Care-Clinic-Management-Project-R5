@@ -7,11 +7,12 @@
 
     var signedIn = User.Identity?.IsAuthenticated == true;
     var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Doctor") ? "Doctor" : User.IsInRole("Patient") ? "Patient" : null;
-    // The right home for this user's role (Admin has none yet → landing page).
+    // The right home for this user's role.
     var (homeController, homeAction, homeText) = role switch
     {
         "Doctor"  => ("DoctorAppointments", "Index", "Go to my appointments"),
         "Patient" => ("Patient", "Home", "Go to my dashboard"),
+        "Admin"   => ("Admin", "Doctors", "Go to admin"),
         _         => ("Home", "Index", "Back to home"),
     };
     var returnUrl = Context.Request.Query["ReturnUrl"].ToString();
@@ -38,7 +39,7 @@
         {
             <p class="vt-denied__user">
                 <partial name="_VtIcon" model='"user:16"' />
-                Signed in as <strong>@User.Identity!.Name</strong>
+                Signed in as <strong>@(User.FindFirst("FullName")?.Value ?? User.Identity!.Name)</strong>
             </p>
         }
 

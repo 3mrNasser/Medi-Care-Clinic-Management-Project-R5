@@ -69,7 +69,9 @@
     </section>
 
     <aside class="vt-card">
-        <h2 class="vt-card__title">Before you book</h2>
+        <h2 class="vt-card__title">Your doctor</h2>
+        <partial name="_VtDoctorSummary" model="ViewBag.Doctor as MediCare.Services.DTOs.DoctorDto" />
+        <h2 class="vt-card__title vt-mt-lg">Before you book</h2>
         <div class="vt-list">
             <div class="vt-note"><partial name="_VtIcon" model='"clock:18"' /><span>Each appointment is 30 minutes.</span></div>
             <div class="vt-note"><partial name="_VtIcon" model='"check-circle:18"' /><span>Your request stays <strong>Pending</strong> until the doctor confirms it.</span></div>

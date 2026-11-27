@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MediCare.Services.DTOs.DoctorDto>
+@model IEnumerable<MediCare.Services.DTOs.DoctorDto>
 @* Doctor search — GET /Doctors?specialty=&name=&location= (backend: DoctorsController.Index). Vitala style. *@
 @{
     Layout = "_DashboardLayout";
@@ -26,6 +26,8 @@
         <p class="vt-page-sub">Search by specialty, doctor name or location, then book a time that suits you.</p>
     </div>
 </header>
+
+<partial name="_VtAlerts" />
 
 <section class="vt-card vt-search-card" aria-label="Search doctors">
     <form method="get" asp-controller="Doctors" asp-action="Index" class="vt-form-grid">

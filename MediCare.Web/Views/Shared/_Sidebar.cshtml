@@ -23,6 +23,15 @@
         {
             (Key: "DoctorAppointments", Text: "Appointments",  Controller: "DoctorAppointments", Action: "Index", Image: (string?)null, Icon: "calendar"),
             (Key: "Availability",       Text: "Working Hours", Controller: "Availability",       Action: "Index", Image: (string?)null, Icon: "clock"),
+            (Key: "DoctorProfile",      Text: "My Profile",    Controller: "DoctorProfile",      Action: "Index", Image: (string?)null, Icon: "user"),
+        };
+    }
+    // Admin pages (ViewData["SidebarRole"] = "Admin").
+    if (ViewData["SidebarRole"] as string == "Admin")
+    {
+        items = new[]
+        {
+            (Key: "AdminDoctors", Text: "Doctors", Controller: "Admin", Action: "Doctors", Image: (string?)null, Icon: "doctor"),
         };
     }
 }
@@ -64,7 +73,7 @@
         <div class="vt-sidebar__user">
             <span class="vt-sidebar__user-icon"><partial name="_VtIcon" model='"user:18"' /></span>
             <span class="vt-sidebar__user-text">
-                <span class="vt-sidebar__user-name">@User.Identity.Name</span>
+                <span class="vt-sidebar__user-name" title="@User.Identity.Name">@(User.FindFirst("FullName")?.Value ?? User.Identity!.Name)</span>
                 @if (userRole is not null) { <span class="vt-sidebar__user-role">@userRole</span> }
             </span>
         </div>

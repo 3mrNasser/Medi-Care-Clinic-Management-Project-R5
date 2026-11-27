@@ -1,0 +1,84 @@
+@model MediCare.Services.DTOs.DoctorDto
+@* Doctor profile — GET /DoctorProfile, POST DoctorProfile/Save (specialty, clinicAddress, consultationFee). Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My profile";
+    ViewData["ActiveNav"] = "DoctorProfile";
+    ViewData["SidebarRole"] = "Doctor";
+    var complete = !string.IsNullOrWhiteSpace(Model.Specialty) && !string.IsNullOrWhiteSpace(Model.ClinicAddress);
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">My profile</h1>
+        <p class="vt-page-sub">Patients see this when they search for a doctor and book a visit.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+@if (!Model.IsApproved)
+{
+    <div class="vt-alert vt-alert--warning" role="status">
+        <partial name="_VtIcon" model='"clock:20"' />
+        <span>
+            @if (complete)
+            {
+                <text><strong>Waiting for approval.</strong> An admin will review your profile; after that patients can find and book you.</text>
+            }
+            else
+            {
+                <text><strong>Complete your profile.</strong> Add your specialty and clinic address so an admin can approve you.</text>
+            }
+        </span>
+    </div>
+}
+
+<div class="vt-booking">
+    <section class="vt-card">
+        <h2 class="vt-card__title">Profile details</h2>
+        <form method="post" asp-controller="DoctorProfile" asp-action="Save" class="vt-list">
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="specialty">Specialty</label>
+                <input class="vt-input vt-input--sm" id="specialty" name="specialty" value="@Model.Specialty" maxlength="100" required
+                       list="vt-specialties" placeholder="e.g. Cardiology" />
+                <datalist id="vt-specialties">
+                    <option value="Cardiology" /><option value="Dermatology" /><option value="Neurology" /><option value="Pediatrics" />
+                    <option value="Orthopedics" /><option value="Ophthalmology" /><option value="Internal Medicine" /><option value="Dentistry" />
+                </datalist>
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="clinicAddress">Clinic address</label>
+                <input class="vt-input vt-input--sm" id="clinicAddress" name="clinicAddress" value="@Model.ClinicAddress" maxlength="300" required
+                       placeholder="e.g. 12 El-Gomhoria St, Mansoura" />
+            </div>
+            <div class="vt-field">
+                <label class="vt-label vt-label--sm" for="consultationFee">Consultation fee (EGP)</label>
+                <input class="vt-input vt-input--sm" id="consultationFee" name="consultationFee" type="number" min="0" max="100000" step="1"
+                       value="@Model.ConsultationFee.ToString("0", System.Globalization.CultureInfo.InvariantCulture)" required />
+            </div>
+            <div>
+                <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm">
+                    <partial name="_VtIcon" model='"check-circle:18"' /> Save profile
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <aside class="vt-card">
+        <h2 class="vt-card__title">Account</h2>
+        <div class="vt-list">
+            <div class="vt-note"><partial name="_VtIcon" model='"user:18"' /><span><strong>@Model.FullName</strong><br />@Model.Email</span></div>
+            <div class="vt-note">
+                <partial name="_VtIcon" model='"check-circle:18"' />
+                <span>Status: <strong>@(Model.IsApproved ? "Approved" : "Pending approval")</strong></span>
+            </div>
+            <a class="vt-btn vt-btn--outline vt-btn--sm" asp-controller="Availability" asp-action="Index">
+                <partial name="_VtIcon" model='"clock:18"' /> Set working hours
+            </a>
+        </div>
+    </aside>
+</div>

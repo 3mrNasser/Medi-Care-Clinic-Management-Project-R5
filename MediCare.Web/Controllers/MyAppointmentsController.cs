@@ -8,13 +8,16 @@ namespace MediCare.Web.Controllers;
 public class MyAppointmentsController : Controller
 {
     private readonly IAppointmentService _appointmentService;
+    private readonly IDoctorService _doctorService;
     private readonly ICurrentUser _currentUser;
 
     public MyAppointmentsController(
         IAppointmentService appointmentService,
+        IDoctorService doctorService,
         ICurrentUser currentUser)
     {
         _appointmentService = appointmentService;
+        _doctorService = doctorService;
         _currentUser = currentUser;
     }
 
@@ -49,6 +52,7 @@ public class MyAppointmentsController : Controller
         ViewBag.AppointmentId = appointmentId;
         ViewBag.Date = selected;
         ViewBag.Current = $"{appointment.Date:yyyy-MM-dd} {appointment.StartTime:HH:mm}";
+        ViewBag.Doctor = await _doctorService.GetByIdAsync(appointment.DoctorId);
         return View(times);
     }
 

@@ -1,4 +1,4 @@
-﻿@* 01 — Web Landing Hero *@
+@* 01 — Web Landing Hero *@
 @{
     Layout = "_VitalaLayout";
     ViewData["Title"] = "";
@@ -6,10 +6,14 @@
     // Signed-in state (ASP.NET Core Identity): show the user's name + Log out instead of Log In / Get Started.
     var signedIn = User.Identity?.IsAuthenticated == true;
     var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Doctor") ? "Doctor" : User.IsInRole("Patient") ? "Patient" : null;
-    // Where "Go to Dashboard" leads for each role (Admin has no dashboard yet, so the button is hidden).
-    var dashController = role == "Doctor" ? "DoctorAppointments" : "Patient";
-    var dashAction = role == "Doctor" ? "Index" : "Home";
-    var showDashboard = signedIn && role != "Admin";
+    // Where "Go to Dashboard" leads for each role.
+    var (dashController, dashAction) = role switch
+    {
+        "Doctor" => ("DoctorAppointments", "Index"),
+        "Admin"  => ("Admin", "Doctors"),
+        _        => ("Patient", "Home"),
+    };
+    var showDashboard = signedIn;
     // "My Appointments": doctors see their own schedule; patient pages are Patient-only.
     var appointmentsController = role == "Doctor" ? "DoctorAppointments" : "MyAppointments";
 }
@@ -44,7 +48,7 @@
                     {
                         <span class="vt-nav__user" title="@User.Identity!.Name">
                             <partial name="_VtIcon" model='"user:18"' />
-                            <span class="vt-nav__user-name">@User.Identity!.Name</span>
+                            <span class="vt-nav__user-name">@(User.FindFirst("FullName")?.Value ?? User.Identity!.Name)</span>
                             @if (role is not null)
                             {
                                 <span class="vt-nav__role">@role</span>
