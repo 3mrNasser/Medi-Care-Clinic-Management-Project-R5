@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace MediCare.Data.Repositories.Implementations;
 
+/// <summary>Implements <see cref="IGenericRepository{T}"/>; see the interface for what each member does.</summary>
 public class GenericRepository<T> : IGenericRepository<T> where T : class
 {
     private readonly DbSet<T> _dbSet;

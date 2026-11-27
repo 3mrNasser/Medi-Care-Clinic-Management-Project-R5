@@ -8,6 +8,7 @@
     var doctorId = (int)ViewBag.DoctorId;
     var date = (DateOnly)ViewBag.Date;
     var today = DateOnly.FromDateTime(DateTime.Now);
+    var doctor = ViewBag.Doctor as MediCare.Services.DTOs.DoctorDto;
 }
 
 <header class="vt-page-head">
@@ -56,6 +57,24 @@
                 }
             </div>
             <p class="vt-muted" data-vt-slots-empty hidden="@(Model.Any())">No available times on this day. Try another date.</p>
+
+            @* Visit types come from AppointmentFactory (Factory Pattern): each has its own price and rule. *@
+            <div class="vt-field vt-mt-md">
+                <label class="vt-label vt-label--sm" for="vt-type">Visit type</label>
+                <select class="vt-input" id="vt-type" name="type" aria-describedby="vt-type-help">
+                    @foreach (var kind in MediCare.Services.Appointments.AppointmentFactory.All)
+                    {
+                        var price = MediCare.Services.Appointments.AppointmentFactory.PriceFor(kind.Type, doctor?.ConsultationFee ?? 0);
+                        <option value="@kind.Type">@kind.DisplayName — @price.ToString("0.##") EGP</option>
+                    }
+                </select>
+                <ul class="vt-muted vt-type-help" id="vt-type-help">
+                    @foreach (var kind in MediCare.Services.Appointments.AppointmentFactory.All)
+                    {
+                        <li><strong>@kind.DisplayName:</strong> @kind.Description</li>
+                    }
+                </ul>
+            </div>
 
             <div class="vt-field">
                 <label class="vt-label vt-label--sm" for="reason">Reason for visit <span class="vt-muted">(optional)</span></label>

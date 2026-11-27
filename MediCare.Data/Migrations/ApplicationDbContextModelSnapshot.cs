@@ -140,6 +140,13 @@ namespace MediCare.Data.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("FirstVisit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AvailabilitySlotId");

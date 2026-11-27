@@ -6,6 +6,7 @@ using MediCare.Services.Interfaces;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IAvailabilityService"/>; see the interface for what each member does.</summary>
 public class AvailabilityService : IAvailabilityService
 {
     private readonly IUnitOfWork _unitOfWork;

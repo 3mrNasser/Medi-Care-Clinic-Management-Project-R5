@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IAuthService"/>; see the interface for what each member does.</summary>
 public class AuthService : IAuthService
 {
     // Only these two roles can be created from the signup form. Never Admin.

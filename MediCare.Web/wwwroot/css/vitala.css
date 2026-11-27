@@ -833,3 +833,9 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 [data-theme="dark"] .vt-slot span { background: #0F172A; border-color: var(--vt-border-strong); color: var(--vt-text); }
 [data-theme="dark"] .vt-label, [data-theme="dark"] .vt-auth__title { color: #C7D2FE; }
 [data-theme="dark"] .vt-calendar { --fc-page-bg-color: var(--vt-surface); --fc-neutral-bg-color: #0F172A; --fc-border-color: var(--vt-border); }
+
+/* Visit type (AppointmentFactory) */
+.vt-chip-type { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; background: var(--vt-primary-soft, #EEF2FF); color: var(--vt-primary); font-size: 12px; font-weight: 600; }
+.vt-type-help { margin: 6px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6; }
+
+[data-theme="dark"] .vt-chip-type { background: rgba(142, 162, 255, .15); color: #C7D2FE; }

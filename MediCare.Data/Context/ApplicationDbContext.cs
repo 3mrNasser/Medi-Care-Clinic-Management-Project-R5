@@ -1,4 +1,5 @@
 ﻿using MediCare.Data.Entities;
+using MediCare.Data.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -43,6 +44,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<Appointment>(e =>
         {
             e.Property(a => a.Status).HasConversion<string>().HasMaxLength(30);
+            e.Property(a => a.Type).HasConversion<string>().HasMaxLength(20).HasDefaultValue(AppointmentType.FirstVisit);
             e.Property(a => a.ReasonForVisit).HasMaxLength(500);
 
             e.HasOne(a => a.Patient).WithMany()

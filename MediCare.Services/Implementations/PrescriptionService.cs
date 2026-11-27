@@ -7,6 +7,7 @@ using MediCare.Services.Interfaces;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IPrescriptionService"/>; see the interface for what each member does.</summary>
 public class PrescriptionService : IPrescriptionService
 {
     private readonly IUnitOfWork _unitOfWork;

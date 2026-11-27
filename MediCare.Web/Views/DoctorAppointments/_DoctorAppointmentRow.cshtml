@@ -13,6 +13,7 @@
         <div class="vt-row__meta">
             <span><partial name="_VtIcon" model='"calendar:15"' /> @Model.Date.ToString("ddd, d MMM yyyy")</span>
             <span><partial name="_VtIcon" model='"clock:15"' /> @Model.StartTime.ToString("HH:mm")</span>
+            <span class="vt-chip-type">@Model.TypeName</span>
             @if (!string.IsNullOrWhiteSpace(Model.Reason))
             {
                 <span>“@Model.Reason”</span>

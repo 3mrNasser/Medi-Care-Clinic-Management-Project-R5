@@ -1,6 +1,7 @@
 using MediCare.Data.Entities;
 using MediCare.Data.Enums;
 using MediCare.Data.Repositories.Interfaces;
+using MediCare.Services.Appointments;
 using MediCare.Services.Common;
 using MediCare.Services.DTOs;
 using MediCare.Services.Interfaces;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace MediCare.Services.Implementations;
 
+/// <summary>Implements <see cref="IAdminService"/>; see the interface for what each member does.</summary>
 public class AdminService : IAdminService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -82,7 +84,7 @@ public class AdminService : IAdminService
                 Date = a.AppointmentDate,
                 StartTime = a.StartTime,
                 Status = a.Status,
-                Fee = a.DoctorProfile.ConsultationFee
+                Fee = AppointmentFactory.PriceFor(a.Type, a.DoctorProfile.ConsultationFee)
             }).ToList();
     }
 
@@ -103,6 +105,7 @@ public class AdminService : IAdminService
     }
 }
 
+/// <summary>Implements <see cref="IReportService"/>; see the interface for what each member does.</summary>
 public class ReportService : IReportService
 {
     private readonly IUnitOfWork _unitOfWork;
@@ -127,7 +130,7 @@ public class ReportService : IReportService
         var profiles = (await _unitOfWork.PatientProfiles.GetAllAsync()).Where(p => patientIds.Contains(p.UserId)).ToList();
 
         static decimal Revenue(IEnumerable<Appointment> items) =>
-            items.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => a.DoctorProfile.ConsultationFee);
+            items.Where(a => a.Status == AppointmentStatus.Completed).Sum(a => AppointmentFactory.PriceFor(a.Type, a.DoctorProfile.ConsultationFee));
 
         var result = new AnalyticsDto
         {

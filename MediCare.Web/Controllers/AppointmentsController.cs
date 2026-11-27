@@ -1,4 +1,5 @@
-﻿using MediCare.Services.Interfaces;
+using MediCare.Data.Enums;
+using MediCare.Services.Interfaces;
 using MediCare.Web.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -52,10 +53,11 @@ public class AppointmentsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Book(int doctorId, DateOnly date, TimeOnly time, string? reason)
+    public async Task<IActionResult> Book(int doctorId, DateOnly date, TimeOnly time, string? reason,
+        AppointmentType type = AppointmentType.FirstVisit)
     {
         var result = await _appointmentService.BookAsync(
-            _currentUser.UserId!, doctorId, date, time, reason);
+            _currentUser.UserId!, doctorId, date, time, reason, type);
 
         if (result.Success)
             TempData["Success"] = "Appointment requested. Waiting for the doctor's confirmation.";
