@@ -69,7 +69,7 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 | VerifyOtp | `POST Account/VerifyOtp` (resend: `POST Account/ResendOtp`) | `Code` (4 digits) |
 | ResetPassword | `POST Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
 | Sidebar, landing header | `POST Account/Logout` | anti-forgery token only |
-| MedicalRecords/Edit (doctor) | `POST MedicalRecords/Save` | `doctorId`, `appointmentId` (hidden), `diagnosis`, `notes` (optional) |
+| MedicalRecords/Edit (doctor) | `POST MedicalRecords/Save` | `appointmentId` (hidden), `diagnosis`, `notes` (optional) |
 | Login / Sign up (Google button) | `POST Account/ExternalLogin` | `provider` = `Google` (standard Identity external login) |
 
 - POST forms use `asp-controller` / `asp-action`, so the anti-forgery token is added automatically.
@@ -113,13 +113,15 @@ Restyled in the Vitala look; controller actions, form field names and `@model` t
 `MyMedicalRecords/Index` (patient), `DoctorAppointments/Index`, `Availability/Index`, `Prescriptions/Index`, `MedicalRecords/Edit` (doctor). No Figma frames exist for these screens.
 - `_VtAlerts.cshtml` shows `TempData["Success"]` / `TempData["Error"]` on every page with a form.
 - `_VtStatusBadge.cshtml` colors an `AppointmentStatus`.
-- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). The sidebar keeps the
-  temporary `doctorId` from the URL; remove that when login is ready.
+- `Account/AccessDenied` (403, Identity `AccessDeniedPath`): shows the signed-in user and role, a button to that role's home
+  (Doctor → `DoctorAppointments`, Patient → `Patient/Home`) and "Use another account" (POST `Account/Logout`).
+- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). No `doctorId` is sent:
+  the backend reads the signed-in doctor. Patient pages are Patient-only and doctor pages Doctor-only (`[Authorize(Roles)]`).
 - Booking: changing the date reloads times from `GET /Appointments/AvailableTimes` (JSON) without a page reload.
 - Doctor calendar: FullCalendar 6 (CDN) reads `GET /DoctorAppointments/Events`, colored by status.
 - Cancel / Reject / No-show / Remove ask for confirmation (`<form data-vt-confirm="...">`).
 - Medical records: a completed appointment on the doctor's page has **Prescription** and **Medical record** links
-  (`MedicalRecords/Edit?doctorId=&appointmentId=`); the two pages link to each other. Patients open `MyMedicalRecords`
+  (`MedicalRecords/Edit?appointmentId=`); the two pages link to each other. Patients open `MyMedicalRecords`
   from the sidebar ("Medical Records"); the page is printable and links to My Prescriptions.
 - My Prescriptions is printable (sidebar, buttons and alerts are hidden when printing). The dashboard "Medical History" tile opens it.
 - Request for the backend: the Book page only receives free times; a `DoctorDto` (name, specialty, fee) in `ViewBag` would let it show which doctor is being booked.
