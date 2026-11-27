@@ -24,6 +24,8 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 
+builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
