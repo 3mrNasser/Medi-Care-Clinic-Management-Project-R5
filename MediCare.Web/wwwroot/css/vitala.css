@@ -398,7 +398,7 @@
 .vt-link-strong { font-size: 13px; font-weight: 700; color: var(--vt-primary); }
 .vt-link-strong:hover { text-decoration: underline; }
 
-.vt-specialties { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; margin-bottom: 42px; }
+.vt-specialties { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 190px)); gap: 16px; margin-bottom: 42px; }
 .vt-specialty {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px;
   height: 160px; padding: 12px;
@@ -429,14 +429,6 @@
 }
 .vt-chip-link:hover { background: #D9E3FF; }
 
-.vt-fab {
-  position: fixed; right: 32px; bottom: 32px; z-index: 20;
-  width: 56px; height: 56px; display: grid; place-items: center;
-  background: var(--vt-primary); color: #fff; border-radius: 14px;
-  box-shadow: 0 9px 20px rgba(20, 36, 138, .35);
-  transition: transform .15s, background-color .15s;
-}
-.vt-fab img { display: block; width: 50px; height: 50px; }
 /* Empty state (Cart / Notifications until they are designed) */
 .vt-page-head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .vt-empty {
@@ -447,74 +439,6 @@
 .vt-empty__icon { width: 72px; height: 72px; border-radius: 50%; display: grid; place-items: center; background: #EEF2FF; margin-bottom: 6px; }
 .vt-empty__title { margin: 0; font: 700 18px/1.3 var(--vt-font-display); color: var(--vt-text); }
 .vt-empty__text { margin: 0 0 12px; font-size: 14px; color: var(--vt-text-muted); }
-.vt-fab__dot {
-  position: absolute; top: -6px; right: -6px; width: 15px; height: 15px;
-  border-radius: 50%; background: rgba(90, 208, 95, .9); border: 2px solid var(--vt-bg);
-}
-.vt-fab:hover { transform: translateY(-3px); background: #1B2EA8; }
-
-/* =========================================================================
-   AI assistant
-   ========================================================================= */
-.vt-main--flush { padding: 0; display: grid; grid-template-columns: 1fr 321px; height: 100vh; overflow: hidden; }
-.vt-chat { display: flex; flex-direction: column; min-width: 0; background: #fff; border-right: 1.5px solid var(--vt-border); }
-.vt-chat__header { padding: 32px 81px 23px; border-bottom: 1.5px solid var(--vt-border); }
-.vt-chat__title { margin: 0; font: 700 18px/1.2 var(--vt-font-display); color: var(--vt-primary); }
-.vt-chat__log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 32px; padding: 46px 81px 29px; scroll-behavior: smooth; }
-.vt-msg {
-  max-width: min(540px, 85%); padding: 20px 24px;
-  font-size: 13px; line-height: 1.7; border-radius: 19px; color: #fff;
-  animation: vt-msg-in .25s ease-out;
-}
-.vt-msg { position: relative; }
-.vt-msg--bot { align-self: flex-start; background: var(--vt-primary); }
-/* Avatars beside the bubbles (Figma "Ellipse 32" + bot/user icons), drawn with CSS so JS-added messages get them too */
-.vt-msg--bot::before, .vt-msg--user::before {
-  content: ""; position: absolute; top: 6px; width: 54px; height: 49px; border-radius: 50%;
-  background-repeat: no-repeat; background-position: center;
-}
-.vt-msg--bot::before {
-  left: -67px; background-color: var(--vt-primary-alt); box-shadow: 0 -1px 4px rgba(0, 0, 0, .25);
-  background-image: url("../images/vitala/bot.png"); background-size: 28px 28px;
-}
-.vt-msg--user::before {
-  right: -67px; background-color: #737D85;
-  background-image: url("../images/vitala/user-avatar.png"); background-size: 34px 34px;
-}
-.vt-msg--typing::before { display: none; }
-.vt-msg--user { align-self: flex-end; background: var(--vt-slate); padding-top: 26px; padding-bottom: 26px; }
-.vt-msg--typing { display: inline-flex; gap: 4px; padding: 19px 24px; }
-.vt-msg--typing span { width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: .5; animation: vt-dot 1s infinite; }
-.vt-msg--typing span:nth-child(2) { animation-delay: .15s; }
-.vt-msg--typing span:nth-child(3) { animation-delay: .3s; }
-@keyframes vt-msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-@keyframes vt-dot { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
-
-.vt-chat__composer { padding: 16px 40px 35px; border-top: 1.5px solid var(--vt-border); }
-.vt-chips { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
-.vt-chip {
-  height: 30px; padding: 0 20px;
-  font: 700 11px var(--vt-font); color: #fff;
-  background: var(--vt-slate); border: 0; border-radius: 999px; cursor: pointer;
-}
-.vt-chip:hover { background: #334155; }
-.vt-composer-row { display: flex; gap: 13px; }
-.vt-composer-row input {
-  flex: 1; min-width: 0; height: 49px; padding: 0 23px;
-  font: 400 13px var(--vt-font); background: #F1F5F9;
-  border: 1.5px solid var(--vt-border); border-radius: 13px;
-}
-.vt-composer-row input:focus { outline: none; border-color: var(--vt-primary); background: #fff; }
-.vt-composer-row .vt-btn { height: 49px; padding: 0 29px; font-size: 14px; border-radius: 13px; }
-
-.vt-aside { overflow-y: auto; padding: 48px 29px 29px; background: var(--vt-bg); }
-.vt-aside__title { margin: 0 0 29px; font: 700 16px/1.3 var(--vt-font-display); }
-.vt-doc-card { padding: 26px 20px 14px; margin-bottom: 19px; background: #fff; border: 1.5px solid var(--vt-border); border-radius: 16px; }
-.vt-doc-card__name { margin: 0 0 4px; font: 700 14px/1.3 var(--vt-font-display); }
-.vt-doc-card__meta { margin: 0 0 16px; font-size: 12px; color: var(--vt-text-muted); }
-.vt-doc-card .vt-btn { height: 35px; font-size: 12px; border-radius: 7px; }
-
-
 /* Dashboard additions from the Figma frame */
 .vt-user__loc { display: inline-flex; align-items: center; gap: 4px; }
 .vt-specialty__icon img { width: 50px; height: 50px; object-fit: contain; }
@@ -703,7 +627,7 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 }
 
 @media print {
-  .vt-sidebar, .vt-fab, .vt-no-print, .vt-menu-btn, .vt-alert { display: none !important; }
+  .vt-sidebar, .vt-no-print, .vt-menu-btn, .vt-alert { display: none !important; }
   .vt-app, .vt-app.is-collapsed { display: block; }
   .vt-body, .vt-main { background: #fff !important; }
   .vt-main { padding: 0; }
@@ -716,20 +640,11 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
 /* =========================================================================
    Responsive
    ========================================================================= */
-@media (max-width: 1280px) {
-  .vt-specialties { grid-template-columns: repeat(3, 1fr); }
-  .vt-main--flush { grid-template-columns: 1fr 280px; }
-  .vt-chat__header, .vt-chat__log { padding-left: 40px; padding-right: 40px; }
-  .vt-chat__composer { padding-left: 32px; padding-right: 32px; }
-}
-
 @media (max-width: 1100px) {
   .vt-hero { grid-template-columns: 1fr; padding-bottom: 56px; }
   .vt-features { grid-template-columns: 1fr; gap: 56px; padding-top: 24px; }
   .vt-role-grid { grid-template-columns: repeat(2, 191px); }
   .vt-role-grid--3 { grid-template-columns: repeat(3, 191px); }
-  .vt-main--flush { grid-template-columns: 1fr; height: auto; overflow: visible; }
-  .vt-chat { height: 100vh; border-right: 0; }
 }
 
 @media (max-width: 960px) {
@@ -769,11 +684,6 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
   .vt-search { flex: 1; width: auto; }
   .vt-banner { padding: 28px 22px; }
   .vt-banner__art { display: none; }
-  .vt-chat__header { display: flex; align-items: center; gap: 12px; padding: 16px; }
-  .vt-chat__log { padding: 24px 16px; gap: 20px; }
-  .vt-chat__composer { padding: 14px 16px 20px; }
-  .vt-msg { max-width: 92%; padding: 14px 18px; font-size: 15px; }
-  .vt-msg--bot::before, .vt-msg--user::before { display: none; }
 }
 
 @media (max-width: 640px) {
@@ -792,8 +702,6 @@ textarea.vt-input { height: auto; min-height: 92px; padding: 12px 14px; resize: 
   .vt-specialties { grid-template-columns: repeat(2, 1fr); gap: 12px; }
   .vt-specialty { height: 140px; gap: 14px; font-size: 14px; }
   .vt-appointment { flex-direction: column; align-items: flex-start; padding: 22px 18px; }
-  .vt-composer-row .vt-btn { padding: 0 18px; }
-  .vt-fab { right: 16px; bottom: 16px; width: 52px; height: 52px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -7,7 +7,7 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 | File (under `MediCare.Web/`) | Purpose |
 |---|---|
 | `wwwroot/css/vitala.css` | All styles. Every class starts with `vt-`, so nothing clashes with Bootstrap or `site.css`. |
-| `wwwroot/js/vitala.js` | UI behaviour only (password eye, OTP boxes and timer, role cards, mobile menus, chat UI). |
+| `wwwroot/js/vitala.js` | UI behaviour only (password eye, OTP boxes and timer, role cards, mobile menus, tabs, calendar, booking times). |
 | `Views/Shared/_VitalaLayout.cshtml` | Base layout (fonts + css/js). Independent of the team's `_Layout.cshtml`. |
 | `Views/Shared/_AuthLayout.cshtml` | Split-screen layout for the auth pages. Left panel text comes from `ViewData["AuthPanelTitle"]`. |
 | `Views/Shared/_DashboardLayout.cshtml` + `_Sidebar.cshtml` | Patient workspace with sidebar. Active link comes from `ViewData["ActiveNav"]`. |
@@ -20,7 +20,6 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 | `Views/Account/VerifyOtp.cshtml` | 05 Verify OTP |
 | `Views/Account/ResetPassword.cshtml` | 06 Reset password |
 | `Views/Patient/Home.cshtml` | 1.2 Patient dashboard |
-| `Views/Patient/AiAssistant.cshtml` | AI assistant |
 
 ### Controllers
 `Controllers/AccountController.cs` and `Controllers/PatientController.cs` contain **GET actions only** (`return View();`)
@@ -42,21 +41,19 @@ so the screens can be opened. The backend work goes into the same files:
 > from this value. Reject it, or require an existing admin to create/approve admin accounts.
 
 ### Links
-Every link points to a page that exists. Links to pages that weren't built (Pharmacy, Labs, Rewards,
-e-Consultation, Medical History, Profile) were removed. Cart and Notifications are back in the sidebar (as in Figma)
+Every link points to a page that exists. **Removed from scope (team decision):** AI Assistant, Pharmacy, Labs, Rewards and
+e-Consultation: their pages, links, dashboard tiles, the floating robot button, chat CSS/JS and images are gone. Cart and Notifications stay in the sidebar (as in Figma)
 and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 
 > **Roles:** Select Role shows **Patient** and **Doctor** only (team decision). Pharmacist and Admin accounts are not created
 > from the sign-up page, and `Signup` ignores those values (falls back to Patient). The backend rejects them as well.
 - "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the **Doctor** tile go to `Doctors/Index`.
-- **Medical History** opens `MyPrescriptions/Index`. The other dashboard tiles from Figma (Pharmacy, Reward, Labs, e-Consultation) open
-  `Patient/Pharmacy`, `Patient/Rewards`, `Patient/Labs`, `Patient/Consultation`: a shared "Coming soon" page (`Views/Patient/ComingSoon.cshtml`)
+- **Medical History** opens `MyMedicalRecords/Index`. The dashboard shows two tiles: Doctor and Medical History.
   until they are designed. (`Patient/MedicalHistory` still exists but nothing links to it.)
 - Topbar (as in Figma): bell → `Patient/Notifications`; the "indent" button collapses the sidebar (opens it on mobile).
-- Sidebar (as in Figma): the AI Assistant screen shows Home + AI Assistant; every other screen shows Home, Appointments, Medical Records, Cart, Notifications.
-  The dashboard reaches the AI Assistant through the floating robot button.
+- Sidebar (patient): Home, Appointments, Medical Records, Cart, Notifications.
 - "My Appointments", sidebar "Appointments" and "View Details" go to `MyAppointments/Index`.
-- "AI Assistant" and "Get Connected" go to `Patient/AiAssistant`.
+- The landing "Medical Records" card goes to `MyMedicalRecords/Index` (it replaced "Get Connected").
 
 ## Form field names (for the backend team's ViewModels)
 
@@ -80,9 +77,6 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
   You can switch `name="Email"` to `asp-for="Email"` once a `@model` exists. The `data-val-*` attributes are then generated from the model.
 - The patient dashboard shows the real first name (`FullName` claim) and the next Pending/Confirmed appointment (`ViewBag.NextAppointment`, `ViewBag.NextDoctor`). The landing page "featured doctor" is still static marketing content.
 
-## AI chat hook
-`vitala.js` fires a `vitala:chat-send` event when the user sends a message. Usage is documented in the comment inside the file.
-Remove `data-vt-chat-demo` from `AiAssistant.cshtml` once the real API is connected.
 
 ## Images
 Exported from the Figma file into `wwwroot/images/vitala/`:
@@ -91,21 +85,17 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 |---|---|
 | `logo.png` | Landing header, sidebar |
 | `doctor-sarah-jenkins.png` | Landing featured doctor |
-| `feature-find-specialist.png`, `feature-get-connected.png` | Landing feature cards |
-| `feature-search-pharmacy.png` | Not used (pharmacy is out of scope) |
-| `role-patient.svg`, `role-doctor.svg` | Select Role cards (`role-pharmacist.png`, `role-admin.png` are no longer used) |
+| `feature-find-specialist.png` | Landing feature card |
+| `role-patient.svg`, `role-doctor.svg` | Select Role cards |
 | `eye.png` | Password show/hide button |
 | `patient-avatar.png` | Dashboard avatar |
 | `banner-doctor.png` | Dashboard "Medical Checks" banner |
-| `bot.png` | AI button on the dashboard, bot avatar in the chat |
-| `user-avatar.png` | User avatar in the chat |
 | `icon-home.png`, `icon-cart.png`, `icon-notifications.png` | Sidebar items |
 | `google.png` | Google sign-in button on Login / Sign up |
-| `svc-doctor.png`, `svc-pharmacy.png`, `svc-labs.png`, `svc-econsultation.png`, `svc-medical-history.png` | Dashboard service tiles |
-| `svc-reward.png` | Not used yet: the export only has the badge background (re-export `reward-svgrepo-com 1` with its children) |
+| `svc-doctor.png`, `svc-medical-history.png` | Dashboard service tiles |
 
-Inline SVG (`_VtIcon.cshtml`) is used where Figma has no exported icon: sidebar Appointments / AI Assistant,
-the Reward tile, and the topbar bell / indent buttons.
+Inline SVG (`_VtIcon.cshtml`) is used where Figma has no exported icon: sidebar items without a Figma icon,
+the landing feature cards, and the topbar bell / indent buttons.
 
 ## App pages (backend endpoints)
 Restyled in the Vitala look; controller actions, form field names and `@model` types are unchanged:

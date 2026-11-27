@@ -6,13 +6,9 @@
     var records       = (Key: "MedicalRecords", Text: "Medical Records", Controller: "MyMedicalRecords", Action: "Index", Image: (string?)null,                             Icon: "history");
     var cart          = (Key: "Cart",         Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
     var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Patient",        Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
-    var aiAssistant   = (Key: "AiAssistant",   Text: "AI Assistant",  Controller: "Patient",        Action: "AiAssistant",   Image: (string?)null,                                     Icon: "bot");
 
-    // As in Figma: the AI workspace sidebar shows Home + AI Assistant; every other screen shows the dashboard menu.
-    // (The dashboard reaches the AI Assistant through the floating robot button.)
-    var items = active == "AiAssistant"
-        ? new[] { home, aiAssistant }
-        : new[] { home, appointments, records, cart, notifications };
+    // Patient menu (the AI Assistant was removed from scope).
+    var items = new[] { home, appointments, records, cart, notifications };
 
     // Doctor pages (ViewData["SidebarRole"] = "Doctor"): doctor menu.
     // The signed-in doctor is read from the login cookie by the backend, so no doctorId in the URL.
