@@ -1,0 +1,71 @@
+@model IReadOnlyList<MediCare.Services.DTOs.SpecializationDto>
+@* Admin: specializations — GET /Admin/Specializations, POST Admin/AddSpecialization (name, description),
+   POST Admin/UpdateSpecialization (id, name, description, isActive). Hidden ones disappear from the doctor and search lists. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Specializations";
+    ViewData["ActiveNav"] = "AdminSpecializations";
+    ViewData["SidebarRole"] = "Admin";
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Specializations</h1>
+        <p class="vt-page-sub">Doctors choose from this list, and patients filter by it. Renaming one updates its doctors too.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<section class="vt-card">
+    <h2 class="vt-card__title">Add a specialization</h2>
+    <form method="post" asp-action="AddSpecialization" class="vt-form-grid">
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="new-name">Name</label>
+            <input class="vt-input vt-input--sm" id="new-name" name="name" maxlength="100" required placeholder="e.g. Endocrinology" />
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="new-desc">Description <span class="vt-muted">(optional)</span></label>
+            <input class="vt-input vt-input--sm" id="new-desc" name="description" maxlength="300" />
+        </div>
+        <div class="vt-field">
+            <button type="submit" class="vt-btn vt-btn--primary vt-btn--sm vt-btn--block"><partial name="_VtIcon" model='"plus:18"' /> Add</button>
+        </div>
+    </form>
+</section>
+
+<section class="vt-card">
+    <h2 class="vt-card__title">All specializations</h2>
+    <div class="vt-table-wrap">
+        <table class="vt-table">
+            <thead><tr><th>Name</th><th>Description</th><th>Doctors</th><th>Shown</th><th><span class="vt-sr-only">Save</span></th></tr></thead>
+            <tbody>
+                @foreach (var s in Model)
+                {
+                    var formId = $"spec-{s.Id}";
+                    <tr>
+                        <td><input class="vt-input vt-input--sm" form="@formId" name="name" value="@s.Name" maxlength="100" required aria-label="Name" /></td>
+                        <td><input class="vt-input vt-input--sm" form="@formId" name="description" value="@s.Description" maxlength="300" aria-label="Description" /></td>
+                        <td>@s.DoctorCount</td>
+                        <td>
+                            <label class="vt-switch">
+                                <input type="checkbox" form="@formId" name="isActive" value="true" checked="@s.IsActive" />
+                                <span>@(s.IsActive ? "Yes" : "Hidden")</span>
+                            </label>
+                        </td>
+                        <td>
+                            <form method="post" asp-action="UpdateSpecialization" id="@formId" class="vt-inline-form">
+                                <input type="hidden" name="id" value="@s.Id" />
+                                <input type="hidden" name="isActive" value="false" />
+                                <button type="submit" class="vt-btn vt-btn--outline vt-btn--xs">Save</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>

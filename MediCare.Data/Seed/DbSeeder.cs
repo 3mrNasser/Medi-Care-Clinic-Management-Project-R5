@@ -26,6 +26,19 @@ public static class DbSeeder
             await context.SaveChangesAsync();
         }
 
+        // Default specializations (the admin can add, rename or hide them). Also adds any specialty doctors already use.
+        if (!await context.Specializations.AnyAsync())
+        {
+            var names = new[]
+            {
+                "Cardiology", "Dermatology", "Pediatrics", "Neurology", "Orthopedics", "Ophthalmology",
+                "Internal Medicine", "Dentistry", "ENT", "Gynecology", "Psychiatry", "Urology"
+            }.Union(await context.DoctorProfiles.Where(d => d.Specialty != "").Select(d => d.Specialty).Distinct().ToListAsync(),
+                    StringComparer.OrdinalIgnoreCase);
+            context.Specializations.AddRange(names.Select(n => new Specialization { Name = n }));
+            await context.SaveChangesAsync();
+        }
+
         if (await context.DoctorProfiles.AnyAsync())
             return;
 

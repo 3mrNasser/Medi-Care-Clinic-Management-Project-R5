@@ -1,0 +1,32 @@
+@model IReadOnlyList<MediCare.Services.DTOs.MedicalDocumentDto>
+@* Patient documents — GET /Documents, POST Documents/Upload (title, category, file), GET Documents/Download/{id}, POST Documents/Delete.
+   Files are stored outside wwwroot; doctors the patient booked with can view them too. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Documents";
+    ViewData["ActiveNav"] = "Documents";
+    ViewData["ReturnUrl"] = Url.Action("Index", "Documents");
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">My Documents</h1>
+        <p class="vt-page-sub">Test results, X-rays and reports. Your doctors can see them when you book a visit.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<section class="vt-card">
+    <h2 class="vt-card__title">Upload a file</h2>
+    @{ ViewData["Controller"] = "Documents"; ViewData["Action"] = "Upload"; }
+    <partial name="_DocumentUpload" model="(IEnumerable<string>)ViewBag.Categories" view-data="ViewData" />
+</section>
+
+<section class="vt-card">
+    <h2 class="vt-card__title">Files (@Model.Count)</h2>
+    <partial name="_DocumentList" model="Model" view-data="ViewData" />
+</section>

@@ -43,12 +43,14 @@
         <form method="post" asp-controller="DoctorProfile" asp-action="Save" class="vt-list">
             <div class="vt-field">
                 <label class="vt-label vt-label--sm" for="specialty">Specialty</label>
-                <input class="vt-input vt-input--sm" id="specialty" name="specialty" value="@Model.Specialty" maxlength="100" required
-                       list="vt-specialties" placeholder="e.g. Cardiology" />
-                <datalist id="vt-specialties">
-                    <option value="Cardiology" /><option value="Dermatology" /><option value="Neurology" /><option value="Pediatrics" />
-                    <option value="Orthopedics" /><option value="Ophthalmology" /><option value="Internal Medicine" /><option value="Dentistry" />
-                </datalist>
+                @* The list is managed by the admin (Admin/Specializations). *@
+                <select class="vt-input vt-input--sm" id="specialty" name="specialty" required>
+                    <option value="">Choose your specialty</option>
+                    @foreach (var s in (IEnumerable<string>)ViewBag.Specialties)
+                    {
+                        <option value="@s" selected="@(s == Model.Specialty)">@s</option>
+                    }
+                </select>
             </div>
             <div class="vt-field">
                 <label class="vt-label vt-label--sm" for="clinicAddress">Clinic address</label>

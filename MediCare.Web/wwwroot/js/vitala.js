@@ -242,6 +242,27 @@
   /* ---------- Live notifications (SignalR)  <div data-vt-live-notifications data-hub-url="/hubs/notifications">
      The server pushes "notification" { id, title, message, link, unreadCount } to the signed-in user.
      Updates the sidebar badge [data-vt-unread] / topbar dot [data-vt-unread-dot] and shows a toast. ---------- */
+  /* ---------- Dark / light mode  [data-vt-theme-toggle] ----------
+     The <head> script applies the saved theme before paint; this keeps the buttons in sync and saves changes. */
+  const root = document.documentElement;
+  const syncTheme = () => {
+    const dark = root.getAttribute('data-theme') === 'dark';
+    $$('[data-vt-theme-toggle]').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(dark));
+      const label = $('[data-vt-theme-label]', btn);
+      if (label) label.textContent = dark ? 'Light mode' : 'Dark mode';
+      if (!label) btn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+  };
+  $$('[data-vt-theme-toggle]').forEach((btn) => btn.addEventListener('click', () => {
+    const dark = root.getAttribute('data-theme') !== 'dark';
+    if (dark) root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    try { localStorage.setItem('vt-theme', dark ? 'dark' : 'light'); } catch (e) { /* private mode */ }
+    syncTheme();
+    document.dispatchEvent(new CustomEvent('vt-theme-change', { detail: { dark } })); // e.g. charts redraw with the new colors
+  }));
+  syncTheme();
+
   // The SignalR library is loaded after this file (page Scripts section), so start once the page has loaded.
   const startLive = () => {
   const live = $('[data-vt-live-notifications]');

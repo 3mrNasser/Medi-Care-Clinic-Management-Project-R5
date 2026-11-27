@@ -1,5 +1,6 @@
 @model IEnumerable<MediCare.Services.DTOs.DoctorDto>
-@* Doctor search — GET /Doctors?specialty=&name=&location= (backend: DoctorsController.Index). Vitala style. *@
+@* Doctor search — GET /Doctors?specialty=&name=&location=&date= (backend: DoctorsController.Index).
+   Specialty list: Admin/Specializations. date = only doctors with a free time that day (links Book to that date). Vitala style. *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Find a Specialist";
@@ -7,8 +8,10 @@
     var specialty = q["specialty"].ToString();
     var name = q["name"].ToString();
     var location = q["location"].ToString();
+    var date = ViewBag.Date as DateOnly?;
+    var specialties = (IEnumerable<string>)ViewBag.Specialties;
     var count = Model.Count();
-    var hasFilter = !string.IsNullOrWhiteSpace(specialty) || !string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(location);
+    var hasFilter = !string.IsNullOrWhiteSpace(specialty) || !string.IsNullOrWhiteSpace(name) || !string.IsNullOrWhiteSpace(location) || date is not null;
 
     static string Initials(string fullName)
     {
@@ -33,15 +36,18 @@
     <form method="get" asp-controller="Doctors" asp-action="Index" class="vt-form-grid">
         <div class="vt-field">
             <label class="vt-label vt-label--sm" for="specialty">Specialty</label>
-            <input class="vt-input vt-input--sm" id="specialty" name="specialty" value="@specialty" list="vt-specialties" placeholder="e.g. Cardiology" />
-            <datalist id="vt-specialties">
-                <option value="Cardiology"></option>
-                <option value="Dermatology"></option>
-                <option value="Pediatrics"></option>
-                <option value="Neurology"></option>
-                <option value="Orthopedics"></option>
-                <option value="Ophthalmology"></option>
-            </datalist>
+            <select class="vt-input vt-input--sm" id="specialty" name="specialty">
+                <option value="">All specialties</option>
+                @foreach (var s in specialties)
+                {
+                    <option value="@s" selected="@(string.Equals(s, specialty, StringComparison.OrdinalIgnoreCase))">@s</option>
+                }
+            </select>
+        </div>
+        <div class="vt-field">
+            <label class="vt-label vt-label--sm" for="date">Free on</label>
+            <input class="vt-input vt-input--sm" id="date" name="date" type="date" value="@date?.ToString("yyyy-MM-dd")"
+                   min="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
         <div class="vt-field">
             <label class="vt-label vt-label--sm" for="name">Doctor name</label>
@@ -90,7 +96,8 @@ else
                 <span class="vt-doctor-card__meta"><partial name="_VtIcon" model='"pin:16"' /> @d.ClinicAddress</span>
                 <div class="vt-doctor-card__foot">
                     <span class="vt-fee">Consultation fee<strong>EGP @d.ConsultationFee.ToString("0.##")</strong></span>
-                    <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Appointments" asp-action="Book" asp-route-doctorId="@d.Id">Book</a>
+                    <a class="vt-btn vt-btn--primary vt-btn--sm" asp-controller="Appointments" asp-action="Book" asp-route-doctorId="@d.Id"
+                           asp-route-date="@date?.ToString("yyyy-MM-dd")">Book</a>
                 </div>
             </article>
         }

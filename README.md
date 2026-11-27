@@ -52,7 +52,7 @@ All use the password **`Dev123456`**. They are created by `MediCare.Data/Seed/Id
 | :--- | :--- | :--- |
 | Patient | `patient.test@medicare.test` | `/Patient/Home` |
 | Doctor | `ahmed.hassan@medicare.test` (also `sara.mostafa@`, `omar.khaled@`, `mona.adel@`) | `/DoctorAppointments` |
-| Admin | `admin@medicare.test` | `/Admin/Doctors` |
+| Admin | `admin@medicare.test` | `/Admin/Dashboard` |
 
 ### Configuration (optional services)
 Secrets are **never** stored in `appsettings.json` or in git. Use user-secrets on your machine
@@ -72,9 +72,9 @@ Every service below is optional: without it the app still runs, and in Developme
 
 | Role | What they can do |
 | :--- | :--- |
-| **Patient** | Sign up / log in (or Google), reset a forgotten password with an emailed code, search doctors by specialty, name and location, book a free 30-minute slot, cancel or reschedule, see the next appointment on the dashboard, read prescriptions (printable) and medical records, get live notifications and reminders. |
-| **Doctor** | Complete the profile (specialty, clinic, fee), set weekly working hours, see appointments as a list or a FullCalendar calendar, confirm / reject / complete / mark no-show, write prescriptions and medical records, get a live notification for every new booking, change or cancellation. |
-| **Admin** | Approve doctors (only complete profiles), remove an approval. Only approved doctors can be found and booked. |
+| **Patient** | Sign up / log in (or Google), reset a forgotten password with an emailed code, search doctors by specialty, name, location and **a free day**, book a 30-minute slot, cancel or reschedule, see the next appointment on the dashboard, keep a **medical profile** (date of birth, gender, blood type, allergies, chronic conditions, medications, history, emergency contact), **upload test results / X-rays / reports** (PDF, JPG, PNG up to 10 MB), read prescriptions (printable) and medical records, choose **email / SMS notification preferences**, get live notifications and reminders, switch **dark / light mode**. |
+| **Doctor** | Complete the profile (specialty from the admin's list, clinic, fee), set weekly working hours and **days off** (no bookings on those dates), see appointments as a list or a FullCalendar calendar, confirm / reject / complete / mark no-show, open a **patient's details** (allergies first, visits, documents) and add files to their record, write prescriptions and medical records, get a live notification for every new booking, change or cancellation. |
+| **Admin** | **Dashboard with Chart.js**: monthly appointments, revenue, most popular doctors and specialties, status breakdown, patient gender and age groups, new patients; **export to PDF (QuestPDF) and Excel (ClosedXML)** for any date range. Approve doctors, **manage patients** (search, block / unblock sign-in), **see and cancel any appointment** (patient and doctor are notified), **manage specializations** (add, rename, hide). |
 
 ### Notifications and reminders
 * **Factory Pattern:** `MediCare.Services/Notifications/AppointmentNotifications.cs`. `NotificationFactory.Create(type)` returns one class per event (booked, rescheduled, cancelled, confirmed, rejected, completed, reminder). Each class decides the recipient, the text, the link, and whether email/SMS are also sent.
@@ -93,9 +93,10 @@ ASP.NET Core Identity with role-based authorization (`[Authorize(Roles = "...")]
 ```bash
 dotnet test MediCare.slnx
 ```
-`MediCare.Tests` (xUnit, **28 tests**):
+`MediCare.Tests` (xUnit, **46 tests**):
 * **Unit tests:** `NotificationFactory` (right type, recipient, channels and text for every event) and `ReminderRules` (due only within the next 24 hours).
 * **Integration tests** (real services, repositories and Unit of Work on an in-memory SQLite database): booking creates a pending appointment and notifies the doctor; the same time can't be booked twice; times outside working hours are refused; booked times disappear from the free times; confirming notifies the patient in-app and by email; another doctor can't confirm; cancelling frees the time and notifies the doctor; a reminder is sent once by every channel; no reminder for pending or far appointments; "mark all as read"; a user can't open someone else's notification.
+* **Clinic features** (same in-memory database): a day off removes every free time and blocks booking; a day off is refused while patients are booked; only real PDF/JPG/PNG files up to 10 MB are accepted (a renamed file is rejected); only the patient and doctors they booked with can open a file; doctors upload only for their own patients; duplicate specializations are refused and renaming moves the doctors; hidden specializations are not offered; the profile is validated; email is skipped when the patient turned it off (in-app stays).
 
 ## CI/CD and deployment
 GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml).

@@ -13,7 +13,9 @@ public record AppointmentNotificationContext(
     string DoctorName,
     DateOnly Date,
     TimeOnly Time,
-    string? ClinicAddress)
+    string? ClinicAddress,
+    bool PatientWantsEmail = true,
+    bool PatientWantsSms = true)
 {
     public string When => $"{Date:ddd d MMM} at {Time:HH:mm}";
 }
@@ -113,6 +115,17 @@ public sealed class AppointmentReminderNotification : IAppointmentNotification
     public bool SendSms => true;
 }
 
+public sealed class AppointmentCancelledByClinicNotification : IAppointmentNotification
+{
+    public NotificationType Type => NotificationType.AppointmentCancelledByClinic;
+    public string RecipientUserId(AppointmentNotificationContext c) => c.PatientUserId;
+    public string Title(AppointmentNotificationContext c) => "Appointment cancelled by the clinic";
+    public string Message(AppointmentNotificationContext c) => $"Your appointment with {c.DoctorName} on {c.When} was cancelled by the clinic. Please book another time.";
+    public string Link => "/Doctors";
+    public bool SendEmail => true;
+    public bool SendSms => true;
+}
+
 // Factory Pattern: creates the right notification object for each event, so callers never switch on the type themselves.
 public static class NotificationFactory
 {
@@ -125,6 +138,7 @@ public static class NotificationFactory
         NotificationType.AppointmentRejected => new AppointmentRejectedNotification(),
         NotificationType.AppointmentCompleted => new AppointmentCompletedNotification(),
         NotificationType.AppointmentReminder => new AppointmentReminderNotification(),
+        NotificationType.AppointmentCancelledByClinic => new AppointmentCancelledByClinicNotification(),
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown notification type.")
     };
 }

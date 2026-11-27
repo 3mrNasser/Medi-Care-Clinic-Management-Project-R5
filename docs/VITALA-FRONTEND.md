@@ -154,3 +154,13 @@ Without keys, the button shows "Google sign-in isn't set up yet".
 - Sidebar "Notifications" shows an unread badge (`[data-vt-unread]`); the dashboard bell dot (`[data-vt-unread-dot]`) only shows when there's something unread.
 - `_DashboardLayout` loads the SignalR client (10.0.11, SRI-pinned) for signed-in patients/doctors; `vitala.js` connects to `/hubs/notifications`,
   shows a toast for each new notification and updates the badge without reloading. Text is inserted with `textContent` (never as HTML).
+## Pages added with the remaining requirements
+| Page | Role | Notes |
+|---|---|---|
+| `Admin/Dashboard` | Admin | Chart.js 4.6.2 (SRI). Data is a JSON island (`#vt-analytics-data`) read by `wwwroot/js/vitala-charts.js`; colors follow light/dark mode. PDF / Excel buttons export the same range. |
+| `Admin/Patients`, `Admin/Appointments`, `Admin/Specializations` | Admin | Tables with filters (`.vt-toolbar`); destructive actions ask for confirmation. |
+| `PatientProfile` | Patient | Personal + medical info, emergency contact, email/SMS preferences. |
+| `Documents` | Patient | Upload (multipart), View (opens in a new tab), Download, Delete. Shared partials `_DocumentList`, `_DocumentUpload`. |
+| `DoctorPatients/Details?patientId=` | Doctor | Reached from the patient name on the doctor's appointment row. Allergies shown first as a red note. |
+| `Availability` (Days off section) | Doctor | Add / remove days off. |
+- **Dark mode:** `<html data-theme="dark">`. The `<head>` script in `_VitalaLayout` applies the saved choice (`localStorage['vt-theme']`) or the system setting before paint; the sidebar button `[data-vt-theme-toggle]` switches it and fires `vt-theme-change`.
