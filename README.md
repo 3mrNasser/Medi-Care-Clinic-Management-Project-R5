@@ -184,6 +184,21 @@ All project deliverables are available in both **interactive Markdown format (`m
 
 ---
 
+### Phase 3: Implementation, Testing & Final Presentation (Deadlines: 30 Nov / 4 Dec 2026)
+
+| Section | Deliverable Details | Markdown File (`mdFiles/`) | PDF / File (`docs/`) |
+| :--- | :--- | :--- | :--- |
+| **5. Implementation** | Code structure & standards, branching and pull requests, execution, requirements traceability | [5. Implementation (Source Code and Execution).md](mdFiles/5.%20Implementation%20(Source%20Code%20and%20Execution).md) | [05_Implementation (Source Code & Execution).pdf](docs/05_Implementation%20(Source%20Code%20%26%20Execution).pdf) |
+| **6. Testing & QA** | Test plan, 42 test cases, 46 automated tests, bug report | [6. Testing and Quality Assurance.md](mdFiles/6.%20Testing%20and%20Quality%20Assurance.md) | [06_Testing & Quality Assurance.pdf](docs/06_Testing%20%26%20Quality%20Assurance.pdf) |
+| **7.1 User Manual** | Step-by-step guide with screenshots for patients, doctors and admins | [7.1 User Manual.md](mdFiles/7.1%20User%20Manual.md) | [07_1_User Manual.pdf](docs/07_1_User%20Manual.pdf) |
+| **7.2 Technical Documentation** | Architecture, database schema (ERD), endpoints, flows, security, configuration, CI/CD | [7.2 Technical Documentation.md](mdFiles/7.2%20Technical%20Documentation.md) | [07_2_Technical Documentation.pdf](docs/07_2_Technical%20Documentation.pdf) |
+| **Final Presentation** | 15 slides with speaker notes | — | [08_Final Presentation.pptx](docs/08_Final%20Presentation.pptx) · [PDF](docs/08_Final%20Presentation.pdf) |
+| **Project Infographic** | One 16:9 roadmap slide (DEPI template) | — | [09_Project Infographic.png](docs/09_Project%20Infographic.png) |
+
+Screenshots used in the manual: [`docs/screenshots/`](docs/screenshots/).
+
+---
+
 ## Technology Stack Summary
 * **Presentation Layer (`MediCare.Web`):** ASP.NET Core MVC, Razor Views, Bootstrap 5, JavaScript, FullCalendar.js, Chart.js, SignalR.
 * **Business Logic Layer (`MediCare.Services`):** C# Services, Dependency Injection, Factory Pattern, Conflict Detection Engine, Scheduled Reminder Jobs.
