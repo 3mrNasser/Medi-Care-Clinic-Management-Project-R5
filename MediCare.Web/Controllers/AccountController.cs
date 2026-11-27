@@ -68,8 +68,7 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult AccessDenied() =>
-        Content("Access denied. You do not have permission to view this page.");
+    public IActionResult AccessDenied() => View();
 
     [HttpGet]
     public IActionResult Signup() => View();

@@ -29,11 +29,14 @@ so the screens can be opened. The backend work goes into the same files:
 - `PatientController`: pass real data (patient name, upcoming appointment) to `Home`. `Cart` and `Notifications` show an empty state until they are designed.
 
 ### Flows
-- **Sign up:** Landing "Get Started" / Login "sign up" → `SelectRole` → `GET Account/Signup?role=Patient|Doctor|Pharmacist|Admin`.
+- **Sign up:** Landing "Get Started" / Login "sign up" → `SelectRole` → `GET Account/Signup?role=Patient|Doctor`.
   The role is shown on the Sign up page and posted as a hidden `Role` field (unknown values fall back to `Patient`).
 - **Password recovery:** Login → "Forget Password?" → `ForgotPassword` (email) → `VerifyOtp` → `ResetPassword`.
   `ForgotPassword` isn't in the Figma file. It's built from the same components so the flow has no dead end.
-- **Log out:** button at the bottom of the sidebar, `POST Account/Logout` with the anti-forgery token.
+- **Log out:** `POST Account/Logout` with the anti-forgery token, never a plain link. It is at the bottom of the sidebar and in the landing header when signed in.
+- **Signed-in state:** when `User.Identity.IsAuthenticated`, the landing header shows `User.Identity.Name`, the role
+  (`User.IsInRole("Patient" | "Doctor" | "Admin")`) and **Log Out** instead of Log In / Get Started. The hero shows
+  "Go to Dashboard" (Doctor → `DoctorAppointments/Index`, others → `Patient/Home`). The sidebar shows the name and role above Log out.
 
 > **Security:** `Role` comes from the browser, so it can be edited. The `Signup` POST must **not** create an `Admin`
 > from this value. Reject it, or require an existing admin to create/approve admin accounts.
@@ -43,14 +46,14 @@ Every link points to a page that exists. Links to pages that weren't built (Phar
 e-Consultation, Medical History, Profile) were removed. Cart and Notifications are back in the sidebar (as in Figma)
 and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 
-> **Roles:** the Figma Select Role screen has 4 roles, including **Pharmacist**, so the card is back.
-> The README currently lists 3 roles (Patient, Doctor, Admin). The Identity setup needs a `Pharmacist` role, or the card should be removed again.
+> **Roles:** Select Role shows **Patient** and **Doctor** only (team decision). Pharmacist and Admin accounts are not created
+> from the sign-up page, and `Signup` ignores those values (falls back to Patient). The backend rejects them as well.
 - "Find Specialist", "See all", "Check Now", the dashboard search (`?name=`) and the **Doctor** tile go to `Doctors/Index`.
 - **Medical History** opens `MyPrescriptions/Index`. The other dashboard tiles from Figma (Pharmacy, Reward, Labs, e-Consultation) open
   `Patient/Pharmacy`, `Patient/Rewards`, `Patient/Labs`, `Patient/Consultation`: a shared "Coming soon" page (`Views/Patient/ComingSoon.cshtml`)
   until they are designed. (`Patient/MedicalHistory` still exists but nothing links to it.)
 - Topbar (as in Figma): bell → `Patient/Notifications`; the "indent" button collapses the sidebar (opens it on mobile).
-- Sidebar (as in Figma): the AI Assistant screen shows Home + AI Assistant; every other screen shows Home, Appointments, Cart, Notifications.
+- Sidebar (as in Figma): the AI Assistant screen shows Home + AI Assistant; every other screen shows Home, Appointments, Medical Records, Cart, Notifications.
   The dashboard reaches the AI Assistant through the floating robot button.
 - "My Appointments", sidebar "Appointments" and "View Details" go to `MyAppointments/Index`.
 - "AI Assistant" and "Get Connected" go to `Patient/AiAssistant`.
@@ -59,13 +62,14 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
 
 | Page | Request | Fields |
 |---|---|---|
-| SelectRole | `GET Account/Signup` | `role` (Patient / Doctor / Pharmacist / Admin), query string |
+| SelectRole | `GET Account/Signup` | `role` (Patient / Doctor), query string |
 | Signup | `POST Account/Signup` | `Role` (hidden), `FullName`, `Email`, `Password`, `ConfirmPassword` |
 | Login | `POST Account/Login` | `Email`, `Password` |
 | ForgotPassword | `POST Account/ForgotPassword` | `Email` |
 | VerifyOtp | `POST Account/VerifyOtp` (resend: `POST Account/ResendOtp`) | `Code` (4 digits) |
 | ResetPassword | `POST Account/ResetPassword` | `NewPassword`, `ConfirmPassword` |
-| Sidebar | `POST Account/Logout` | anti-forgery token only |
+| Sidebar, landing header | `POST Account/Logout` | anti-forgery token only |
+| MedicalRecords/Edit (doctor) | `POST MedicalRecords/Save` | `appointmentId` (hidden), `diagnosis`, `notes` (optional) |
 | Login / Sign up (Google button) | `POST Account/ExternalLogin` | `provider` = `Google` (standard Identity external login) |
 
 - POST forms use `asp-controller` / `asp-action`, so the anti-forgery token is added automatically.
@@ -89,7 +93,7 @@ Exported from the Figma file into `wwwroot/images/vitala/`:
 | `doctor-sarah-jenkins.png` | Landing featured doctor |
 | `feature-find-specialist.png`, `feature-get-connected.png` | Landing feature cards |
 | `feature-search-pharmacy.png` | Not used (pharmacy is out of scope) |
-| `role-patient.svg`, `role-doctor.svg`, `role-pharmacist.png`, `role-admin.png` | Select Role cards |
+| `role-patient.svg`, `role-doctor.svg` | Select Role cards (`role-pharmacist.png`, `role-admin.png` are no longer used) |
 | `eye.png` | Password show/hide button |
 | `patient-avatar.png` | Dashboard avatar |
 | `banner-doctor.png` | Dashboard "Medical Checks" banner |
@@ -106,14 +110,19 @@ the Reward tile, and the topbar bell / indent buttons.
 ## App pages (backend endpoints)
 Restyled in the Vitala look; controller actions, form field names and `@model` types are unchanged:
 `Doctors/Index`, `Appointments/Book`, `MyAppointments/Index`, `MyPrescriptions/Index` (patient),
-`DoctorAppointments/Index`, `Availability/Index`, `Prescriptions/Index` (doctor). No Figma frames exist for these screens.
+`MyMedicalRecords/Index` (patient), `DoctorAppointments/Index`, `Availability/Index`, `Prescriptions/Index`, `MedicalRecords/Edit` (doctor). No Figma frames exist for these screens.
 - `_VtAlerts.cshtml` shows `TempData["Success"]` / `TempData["Error"]` on every page with a form.
 - `_VtStatusBadge.cshtml` colors an `AppointmentStatus`.
-- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). The sidebar keeps the
-  temporary `doctorId` from the URL; remove that when login is ready.
+- `Account/AccessDenied` (403, Identity `AccessDeniedPath`): shows the signed-in user and role, a button to that role's home
+  (Doctor → `DoctorAppointments`, Patient → `Patient/Home`) and "Use another account" (POST `Account/Logout`).
+- Doctor pages set `ViewData["SidebarRole"] = "Doctor"` (sidebar: Appointments, Working Hours). No `doctorId` is sent:
+  the backend reads the signed-in doctor. Patient pages are Patient-only and doctor pages Doctor-only (`[Authorize(Roles)]`).
 - Booking: changing the date reloads times from `GET /Appointments/AvailableTimes` (JSON) without a page reload.
 - Doctor calendar: FullCalendar 6 (CDN) reads `GET /DoctorAppointments/Events`, colored by status.
 - Cancel / Reject / No-show / Remove ask for confirmation (`<form data-vt-confirm="...">`).
+- Medical records: a completed appointment on the doctor's page has **Prescription** and **Medical record** links
+  (`MedicalRecords/Edit?appointmentId=`); the two pages link to each other. Patients open `MyMedicalRecords`
+  from the sidebar ("Medical Records"); the page is printable and links to My Prescriptions.
 - My Prescriptions is printable (sidebar, buttons and alerts are hidden when printing). The dashboard "Medical History" tile opens it.
 - Request for the backend: the Book page only receives free times; a `DoctorDto` (name, specialty, fee) in `ViewBag` would let it show which doctor is being booked.
 

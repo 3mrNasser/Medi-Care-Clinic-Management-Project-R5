@@ -1,6 +1,7 @@
 @* 02 — Select Role
    Step 1 of sign up. Sends the chosen role to the Sign up page as a query string:
-   GET /Account/Signup?role=Patient | Doctor | Pharmacist | Admin
+   GET /Account/Signup?role=Patient | Doctor
+   Only Patient and Doctor can sign up. Pharmacist and Admin accounts are created by the team, not from this page.
 *@
 @{
     Layout = "_VitalaLayout";
@@ -10,8 +11,6 @@
     {
         (Value: "Patient", Desc: "Health records",  Image: (string?)"~/images/vitala/role-patient.svg", W: 24, H: 24, Icon: "patient"),
         (Value: "Doctor",     Desc: "Manage patients", Image: (string?)"~/images/vitala/role-doctor.svg",     W: 64, H: 61, Icon: "doctor"),
-        (Value: "Pharmacist", Desc: "Dispense meds",   Image: (string?)"~/images/vitala/role-pharmacist.png", W: 64, H: 64, Icon: "pharmacist"),
-        (Value: "Admin",      Desc: "Management",      Image: (string?)"~/images/vitala/role-admin.png",      W: 64, H: 64, Icon: "admin"),
     };
     var selected = Context.Request.Query["role"].ToString();
     if (!roles.Any(r => r.Value.Equals(selected, StringComparison.OrdinalIgnoreCase))) selected = "Patient";

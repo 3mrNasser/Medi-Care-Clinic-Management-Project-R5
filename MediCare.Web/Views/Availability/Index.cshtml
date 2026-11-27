@@ -1,12 +1,11 @@
-﻿@model IEnumerable<MediCare.Services.DTOs.AvailabilitySlotDto>
-@* Doctor working hours — GET /Availability?doctorId=, POST Availability/Add (doctorId, day, start, end),
-   POST Availability/Remove (doctorId, slotId). Vitala style. *@
+@model IEnumerable<MediCare.Services.DTOs.AvailabilitySlotDto>
+@* Doctor working hours — GET /Availability, POST Availability/Add (day, start, end),
+   POST Availability/Remove (slotId). Vitala style. *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Working Hours";
     ViewData["ActiveNav"] = "Availability";
     ViewData["SidebarRole"] = "Doctor";
-    var doctorId = (int)ViewBag.DoctorId;
     // Week starting Saturday (Egypt); values posted are the DayOfWeek names the backend expects.
     var week = new[] { DayOfWeek.Saturday, DayOfWeek.Sunday, DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday };
     var byDay = Model.GroupBy(s => s.DayOfWeek).ToDictionary(g => g.Key, g => g.OrderBy(s => s.StartTime).ToList());
@@ -27,7 +26,6 @@
 <section class="vt-card">
     <h2 class="vt-card__title">Add working hours</h2>
     <form method="post" asp-controller="Availability" asp-action="Add" class="vt-form-grid">
-        <input type="hidden" name="doctorId" value="@doctorId" />
         <div class="vt-field">
             <label class="vt-label vt-label--sm" for="day">Day</label>
             <select class="vt-input vt-input--sm" id="day" name="day">
@@ -68,7 +66,6 @@
                             @s.StartTime.ToString("HH:mm") – @s.EndTime.ToString("HH:mm")
                             <form method="post" asp-controller="Availability" asp-action="Remove" class="vt-inline-form"
                                   data-vt-confirm="Remove @day @s.StartTime.ToString("HH:mm")–@s.EndTime.ToString("HH:mm")?">
-                                <input type="hidden" name="doctorId" value="@doctorId" />
                                 <input type="hidden" name="slotId" value="@s.Id" />
                                 <button type="submit" aria-label="Remove @day @s.StartTime.ToString("HH:mm") to @s.EndTime.ToString("HH:mm")">
                                     <partial name="_VtIcon" model='"close:14"' />
