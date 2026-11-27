@@ -1,0 +1,54 @@
+﻿@using System.Globalization
+@model MediCare.Services.DTOs.DoctorProfileDto
+
+@{
+    ViewData["Title"] = "My profile";
+    var specialties = (IReadOnlyList<string>)ViewBag.Specialties;
+}
+
+<h2>My profile</h2>
+
+<p><strong>@Model.FullName</strong></p>
+<p>
+    Account status:
+    @(Model.IsApproved ? "Approved" : "Waiting for admin approval")
+</p>
+
+@if (TempData["Error"] is string error)
+{
+    <p style="color:red">@error</p>
+}
+@if (TempData["Success"] is string success)
+{
+    <p style="color:green">@success</p>
+}
+
+<form method="post" asp-action="Save">
+    <p>
+        <label>
+            Specialty<br />
+            <select name="specialty" required>
+                <option value="">Choose a specialty</option>
+                @foreach (var s in specialties)
+                {
+                    <option value="@s" selected="@(s == Model.Specialty)">@s</option>
+                }
+            </select>
+        </label>
+    </p>
+    <p>
+        <label>
+            Clinic address<br />
+            <input type="text" name="clinicAddress" value="@Model.ClinicAddress" maxlength="250" required />
+        </label>
+    </p>
+    <p>
+        <label>
+            Consultation fee<br />
+            <input type="number" name="consultationFee" step="0.01" min="1"
+                   value="@(Model.ConsultationFee > 0 ? Model.ConsultationFee.ToString(CultureInfo.InvariantCulture) : "")" required />
+        </label>
+    </p>
+
+    <button type="submit">Save</button>
+</form>
