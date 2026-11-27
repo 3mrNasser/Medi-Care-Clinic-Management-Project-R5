@@ -25,7 +25,7 @@ Frontend only: Razor views + CSS + JS. **No backend logic**: no models, no servi
 ### Controllers
 `Controllers/AccountController.cs` and `Controllers/PatientController.cs` contain **GET actions only** (`return View();`)
 so the screens can be opened. The backend work goes into the same files:
-- `AccountController`: POST actions for `Login`, `Signup`, `ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword`, `Logout` (Identity task).
+- `AccountController`: Login, Signup, Logout, AccessDenied, password recovery (`ForgotPassword`, `VerifyOtp`, `ResendOtp`, `ResetPassword`) and Google sign-in (`ExternalLogin`, `ExternalLoginCallback`).
 - `PatientController`: pass real data (patient name, upcoming appointment) to `Home`. `Cart` and `Notifications` show an empty state until they are designed.
 
 ### Flows
@@ -78,7 +78,7 @@ and open an empty-state page (`Patient/Cart`, `Patient/Notifications`).
   The OTP code is checked by `vitala.js` (all 4 digits required). The "Resend code" button skips that check.
 - Every field has `<span data-valmsg-for="...">`, so ModelState errors from the server show up in the same place.
   You can switch `name="Email"` to `asp-for="Email"` once a `@model` exists. The `data-val-*` attributes are then generated from the model.
-- Static text (Sara, Dr. Sarah Jenkins, the appointment, ...) is placeholder content to replace with Model data.
+- The patient dashboard shows the real first name (`FullName` claim) and the next Pending/Confirmed appointment (`ViewBag.NextAppointment`, `ViewBag.NextDoctor`). The landing page "featured doctor" is still static marketing content.
 
 ## AI chat hook
 `vitala.js` fires a `vitala:chat-send` event when the user sends a message. Usage is documented in the comment inside the file.
@@ -124,5 +124,37 @@ Restyled in the Vitala look; controller actions, form field names and `@model` t
   (`MedicalRecords/Edit?appointmentId=`); the two pages link to each other. Patients open `MyMedicalRecords`
   from the sidebar ("Medical Records"); the page is printable and links to My Prescriptions.
 - My Prescriptions is printable (sidebar, buttons and alerts are hidden when printing). The dashboard "Medical History" tile opens it.
-- Request for the backend: the Book page only receives free times; a `DoctorDto` (name, specialty, fee) in `ViewBag` would let it show which doctor is being booked.
+- Book and Reschedule receive `ViewBag.Doctor` (`DoctorDto`) and show it with `_VtDoctorSummary` (name, specialty, clinic, fee). Booking an unknown or unapproved doctor redirects to Doctors with an error.
 
+
+## Backend features added (feature/backend-gaps)
+
+### Password recovery
+`ForgotPassword` (email) → `VerifyOtp` (4-digit code) → `ResetPassword` → `Login`.
+- The code is random, stored **hashed** in `AspNetUserTokens` (no migration), valid for **10 minutes**, one use only,
+  **5 wrong tries** max, and a new one can be requested at most once a minute.
+- The same answer is shown whether the email exists or not, so nobody can find out who has an account.
+- The email and the Identity reset token move between the steps in TempData (an encrypted cookie).
+- Email is sent by `Infrastructure/SmtpEmailService.cs`. Settings (password in user-secrets, not in git):
+  `Email:Host`, `Email:Port`, `Email:UserName`, `Email:Password`, `Email:From`, `Email:EnableSsl`.
+  **Without `Email:Host` in Development the email (with the code) is written to the server log** so the flow can be tested.
+
+### Google sign-in
+Turned on only when the keys exist (never commit them):
+```
+dotnet user-secrets set "Authentication:Google:ClientId" "..." --project MediCare.Web
+dotnet user-secrets set "Authentication:Google:ClientSecret" "..." --project MediCare.Web
+```
+Google Cloud Console → OAuth client (Web) → redirect URI `https://localhost:<port>/signin-google`.
+New Google users become **Patients**; an existing account with the same (verified) email is linked.
+Without keys, the button shows "Google sign-in isn't set up yet".
+
+### Roles and start pages
+- After login: Patient → `Patient/Home`, Doctor → `DoctorAppointments`, Admin → `Admin/Doctors` (a local `returnUrl` wins).
+- `FullName` is added to the login cookie (`Security/FullNameClaimsFactory.cs`): `User.FindFirst("FullName")`.
+- `PatientController` is Patient-only.
+
+### Doctor profile and approval
+- A doctor who signs up gets an empty profile. `DoctorProfile` (sidebar "My Profile") lets them set specialty, clinic address and fee.
+- `Admin/Doctors` lists all doctors (pending first). **Approve** works only when the profile is complete; **Remove approval** hides the doctor.
+- Only approved doctors appear in search and can be booked.

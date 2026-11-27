@@ -7,4 +7,6 @@ public class DoctorDto
     public string Specialty { get; set; } = string.Empty;
     public string ClinicAddress { get; set; } = string.Empty;
     public decimal ConsultationFee { get; set; }
+    public bool IsApproved { get; set; }
+    public string Email { get; set; } = string.Empty;
 }

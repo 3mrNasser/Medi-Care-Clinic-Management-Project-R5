@@ -1,11 +1,24 @@
+@using MediCare.Data.Enums
 @* 1.2 — Patient Home Dashboard (Figma "1.2-Home-Web-Dashboard")
-   Name and appointment below are static placeholder text. Replace with model values when the service exists.
-   Service tiles: Doctor → Doctors/Index; the others open an empty-state page until their screens are designed.
+   Name: FullName claim of the signed-in patient. Upcoming appointment: ViewBag.NextAppointment (AppointmentDto?)
+   + ViewBag.NextDoctor (DoctorDto?) from PatientController.Home.
+   Service tiles: Doctor → Doctors/Index, Medical History → MyMedicalRecords; the others open "Coming soon".
 *@
 @{
     Layout = "_DashboardLayout";
     ViewData["Title"] = "Home";
     ViewData["ActiveNav"] = "Home";
+
+    var fullName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "";
+    var firstName = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? fullName;
+    var next = ViewBag.NextAppointment as MediCare.Services.DTOs.AppointmentDto;
+    var nextDoctor = ViewBag.NextDoctor as MediCare.Services.DTOs.DoctorDto;
+    string WhenText(DateOnly date, TimeOnly time)
+    {
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var day = date == today ? "Today" : date == today.AddDays(1) ? "Tomorrow" : date.ToString("ddd, d MMM");
+        return $"{day}, {time.ToString("h:mm tt")}";
+    }
 
     // Icons exported from Figma (null = inline SVG fallback: the Reward export only contained its badge background).
     var services = new[]
@@ -15,7 +28,7 @@
         (Name: "Reward",          Image: (string?)null,                                      Icon: "reward",  Controller: "Patient", Action: "Rewards"),
         (Name: "Labs",            Image: (string?)"~/images/vitala/svc-labs.png",            Icon: "labs",    Controller: "Patient", Action: "Labs"),
         (Name: "e-Consultation",  Image: (string?)"~/images/vitala/svc-econsultation.png",   Icon: "consult", Controller: "Patient", Action: "Consultation"),
-        (Name: "Medical History", Image: (string?)"~/images/vitala/svc-medical-history.png", Icon: "history", Controller: "MyPrescriptions", Action: "Index"),
+        (Name: "Medical History", Image: (string?)"~/images/vitala/svc-medical-history.png", Icon: "history", Controller: "MyMedicalRecords", Action: "Index"),
     };
 }
 
@@ -23,11 +36,8 @@
     <div class="vt-user">
         <div class="vt-avatar"><img src="~/images/vitala/patient-avatar.png" width="53" height="53" alt="" /></div>
         <div>
-            <h1 class="vt-user__name">Hello,Sara</h1>
-            <span class="vt-user__loc">
-                <svg class="vt-user__pin" width="7" height="10" viewBox="0 0 10 14" aria-hidden="true"><path fill="#E53935" d="M5 0a5 5 0 0 0-5 5c0 3.75 5 9 5 9s5-5.25 5-9a5 5 0 0 0-5-5Zm0 6.8A1.8 1.8 0 1 1 5 3.2a1.8 1.8 0 0 1 0 3.6Z"/></svg>
-                Mansoura, EG
-            </span>
+            <h1 class="vt-user__name">Hello, @firstName</h1>
+            @* The Figma location line needs a patient address, which the account doesn't store yet. *@
         </div>
     </div>
 
@@ -86,12 +96,28 @@
 </section>
 
 <section class="vt-appointment" aria-label="Upcoming appointment">
-    <div>
-        <span class="vt-eyebrow">Upcoming Appointment</span>
-        <h3 class="vt-appointment__doctor">Dr. Ahmed Hassan — Neurologist</h3>
-        <span class="vt-appointment__meta">Tomorrow, 11:00 AM • Mansoura Medical Center</span>
-    </div>
-    <a class="vt-chip-link" asp-controller="MyAppointments" asp-action="Index">View Details</a>
+    @if (next is not null)
+    {
+        <div>
+            <span class="vt-eyebrow">Upcoming Appointment@(next.Status == AppointmentStatus.Pending ? " · waiting for confirmation" : "")</span>
+            <h3 class="vt-appointment__doctor">
+                @next.DoctorName@(string.IsNullOrWhiteSpace(nextDoctor?.Specialty) ? "" : $" — {nextDoctor!.Specialty}")
+            </h3>
+            <span class="vt-appointment__meta">
+                @WhenText(next.Date, next.StartTime)@(string.IsNullOrWhiteSpace(nextDoctor?.ClinicAddress) ? "" : $" • {nextDoctor!.ClinicAddress}")
+            </span>
+        </div>
+        <a class="vt-chip-link" asp-controller="MyAppointments" asp-action="Index">View Details</a>
+    }
+    else
+    {
+        <div>
+            <span class="vt-eyebrow">Upcoming Appointment</span>
+            <h3 class="vt-appointment__doctor">No upcoming appointments</h3>
+            <span class="vt-appointment__meta">Find a specialist and book a time that suits you.</span>
+        </div>
+        <a class="vt-chip-link" asp-controller="Doctors" asp-action="Index">Book now</a>
+    }
 </section>
 
 <a class="vt-fab" asp-controller="Patient" asp-action="AiAssistant" aria-label="Open AI Assistant" title="AI Assistant">

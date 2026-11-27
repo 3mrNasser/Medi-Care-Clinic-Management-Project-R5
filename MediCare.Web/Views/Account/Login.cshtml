@@ -25,6 +25,7 @@
     ViewData["ReturnUrl"] = returnUrl; // used by _GoogleSignIn
 }
 <h1 class="vt-auth__title">Log in</h1>
+<partial name="_VtAlerts" />
 
 <form method="post" asp-controller="Account" asp-action="Login" novalidate>
     <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>

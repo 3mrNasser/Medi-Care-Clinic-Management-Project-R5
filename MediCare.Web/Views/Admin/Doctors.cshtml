@@ -1,0 +1,93 @@
+@model IEnumerable<MediCare.Services.DTOs.DoctorDto>
+@* Admin: doctors — GET /Admin/Doctors, POST Admin/Approve | Admin/Unapprove (doctorId). Vitala style. *@
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Doctors";
+    ViewData["ActiveNav"] = "AdminDoctors";
+    ViewData["SidebarRole"] = "Admin";
+    var list = Model.ToList();
+    var pending = list.Count(d => !d.IsApproved);
+}
+
+<header class="vt-page-head">
+    <button type="button" class="vt-menu-btn" data-vt-sidebar-open aria-controls="vt-sidebar" aria-label="Open menu">
+        <partial name="_VtIcon" model='"menu"' />
+    </button>
+    <div class="vt-page-head__text">
+        <h1 class="vt-page-title">Doctors</h1>
+        <p class="vt-page-sub">Approve new doctors so patients can find and book them.</p>
+    </div>
+</header>
+
+<partial name="_VtAlerts" />
+
+<div class="vt-stats">
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@list.Count</span><span class="vt-stat-tile__label">Doctors</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@pending</span><span class="vt-stat-tile__label">Waiting for approval</span></div>
+    <div class="vt-stat-tile"><span class="vt-stat-tile__num">@(list.Count - pending)</span><span class="vt-stat-tile__label">Approved</span></div>
+</div>
+
+@if (!list.Any())
+{
+    <section class="vt-empty">
+        <span class="vt-empty__icon vt-empty__icon--navy"><partial name="_VtIcon" model='"doctor:30"' /></span>
+        <h2 class="vt-empty__title">No doctors yet</h2>
+        <p class="vt-empty__text">Doctors appear here after they sign up.</p>
+    </section>
+}
+else
+{
+    <section class="vt-card">
+        <div class="vt-table-wrap">
+            <table class="vt-table">
+                <thead>
+                    <tr><th>Doctor</th><th>Specialty</th><th>Clinic</th><th>Fee</th><th>Status</th><th><span class="vt-sr-only">Actions</span></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in list)
+                    {
+                        var complete = !string.IsNullOrWhiteSpace(d.Specialty) && !string.IsNullOrWhiteSpace(d.ClinicAddress);
+                        <tr>
+                            <td><strong>@d.FullName</strong><br /><span class="vt-muted">@d.Email</span></td>
+                            <td>@(string.IsNullOrWhiteSpace(d.Specialty) ? "—" : d.Specialty)</td>
+                            <td>@(string.IsNullOrWhiteSpace(d.ClinicAddress) ? "—" : d.ClinicAddress)</td>
+                            <td>@d.ConsultationFee.ToString("0") EGP</td>
+                            <td>
+                                @if (d.IsApproved)
+                                {
+                                    <span class="vt-badge vt-badge--confirmed">Approved</span>
+                                }
+                                else if (complete)
+                                {
+                                    <span class="vt-badge vt-badge--pending">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="vt-badge vt-badge--cancelled">Profile incomplete</span>
+                                }
+                            </td>
+                            <td>
+                                @if (d.IsApproved)
+                                {
+                                    <form method="post" asp-controller="Admin" asp-action="Unapprove" class="vt-inline-form"
+                                          data-vt-confirm="Hide @d.FullName from patients?">
+                                        <input type="hidden" name="doctorId" value="@d.Id" />
+                                        <button type="submit" class="vt-btn vt-btn--outline vt-btn--xs">Remove approval</button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form method="post" asp-controller="Admin" asp-action="Approve" class="vt-inline-form">
+                                        <input type="hidden" name="doctorId" value="@d.Id" />
+                                        <button type="submit" class="vt-btn vt-btn--success vt-btn--xs" disabled="@(!complete)"
+                                                title="@(complete ? null : "The doctor must add a specialty and clinic address first")">Approve</button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </section>
+}
