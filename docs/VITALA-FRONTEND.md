@@ -148,3 +148,9 @@ Without keys, the button shows "Google sign-in isn't set up yet".
 - A doctor who signs up gets an empty profile. `DoctorProfile` (sidebar "My Profile") lets them set specialty, clinic address and fee.
 - `Admin/Doctors` lists all doctors (pending first). **Approve** works only when the profile is complete; **Remove approval** hides the doctor.
 - Only approved doctors appear in search and can be booked.
+
+## Notifications (live)
+- `/Notifications` (patients and doctors): list with unread highlight, "Mark all as read", and each item opens its page (`POST Notifications/Open`).
+- Sidebar "Notifications" shows an unread badge (`[data-vt-unread]`); the dashboard bell dot (`[data-vt-unread-dot]`) only shows when there's something unread.
+- `_DashboardLayout` loads the SignalR client (10.0.11, SRI-pinned) for signed-in patients/doctors; `vitala.js` connects to `/hubs/notifications`,
+  shows a toast for each new notification and updates the badge without reloading. Text is inserted with `textContent` (never as HTML).

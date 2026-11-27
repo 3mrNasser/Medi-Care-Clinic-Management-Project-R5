@@ -1,11 +1,17 @@
+@inject MediCare.Services.Interfaces.INotificationService NotificationService
 @{
     var active = ViewData["ActiveNav"] as string ?? "";
+    // Unread notifications for the badge (patients and doctors). Updated live by vitala.js when a new one arrives.
+    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var unreadCount = userId is not null && (User.IsInRole("Patient") || User.IsInRole("Doctor"))
+        ? await NotificationService.GetUnreadCountAsync(userId)
+        : 0;
     // Image = icon exported from Figma; otherwise an inline SVG icon.
     var home          = (Key: "Home",          Text: "Home",          Controller: "Patient",        Action: "Home",          Image: (string?)"~/images/vitala/icon-home.png",          Icon: "home");
     var appointments  = (Key: "Appointments",  Text: "Appointments",  Controller: "MyAppointments", Action: "Index",         Image: (string?)null,                                     Icon: "calendar");
     var records       = (Key: "MedicalRecords", Text: "Medical Records", Controller: "MyMedicalRecords", Action: "Index", Image: (string?)null,                             Icon: "history");
     var cart          = (Key: "Cart",         Text: "Cart",          Controller: "Patient",        Action: "Cart",          Image: (string?)"~/images/vitala/icon-cart.png",          Icon: "cart");
-    var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Patient",        Action: "Notifications", Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
+    var notifications = (Key: "Notifications", Text: "Notifications", Controller: "Notifications",  Action: "Index",         Image: (string?)"~/images/vitala/icon-notifications.png", Icon: "bell");
 
     // Patient menu (the AI Assistant was removed from scope).
     var items = new[] { home, appointments, records, cart, notifications };
@@ -20,6 +26,7 @@
             (Key: "DoctorAppointments", Text: "Appointments",  Controller: "DoctorAppointments", Action: "Index", Image: (string?)null, Icon: "calendar"),
             (Key: "Availability",       Text: "Working Hours", Controller: "Availability",       Action: "Index", Image: (string?)null, Icon: "clock"),
             (Key: "DoctorProfile",      Text: "My Profile",    Controller: "DoctorProfile",      Action: "Index", Image: (string?)null, Icon: "user"),
+            notifications,
         };
     }
     // Admin pages (ViewData["SidebarRole"] = "Admin").
@@ -45,7 +52,8 @@
             var isActive = item.Key == active;
             <li>
                 <a class="vt-sidebar__link @(isActive ? "is-active" : "")"
-                   asp-controller="@item.Controller" asp-action="@item.Action"                   aria-current="@(isActive ? "page" : null)">
+                   asp-controller="@item.Controller" asp-action="@item.Action"
+                   aria-current="@(isActive ? "page" : null)">
                     <span class="vt-sidebar__icon">
                         @if (item.Image is not null)
                         {
@@ -58,6 +66,10 @@
                         }
                     </span>
                     @item.Text
+                    @if (item.Key == "Notifications")
+                    {
+                        <span class="vt-sidebar__badge" data-vt-unread aria-label="@unreadCount unread" hidden="@(unreadCount == 0)">@(unreadCount > 99 ? "99+" : unreadCount.ToString())</span>
+                    }
                 </a>
             </li>
         }

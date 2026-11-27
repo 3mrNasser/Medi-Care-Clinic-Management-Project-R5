@@ -20,4 +20,7 @@ public class Appointment
 
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Pending;
     public string? ReasonForVisit { get; set; }
+
+    // Set when the 24-hour reminder was sent, so it's sent only once. Cleared when the appointment is rescheduled.
+    public DateTime? ReminderSentAtUtc { get; set; }
 }

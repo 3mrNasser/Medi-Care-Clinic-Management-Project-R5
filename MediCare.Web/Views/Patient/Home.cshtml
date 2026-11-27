@@ -44,9 +44,10 @@
             <partial name="_VtIcon" model='"search:20"' />
             <input id="vt-q" name="name" type="search" placeholder="Search doctors..." />
         </form>
-        <a class="vt-icon-btn" asp-controller="Patient" asp-action="Notifications" aria-label="Notifications">
+        <a class="vt-icon-btn" asp-controller="Notifications" asp-action="Index" aria-label="Notifications">
             <partial name="_VtIcon" model='"bell:24"' />
-            <span class="vt-icon-btn__dot"></span>
+            @* Green dot only when there are unread notifications (vitala.js shows it when one arrives live). *@
+            <span class="vt-icon-btn__dot" data-vt-unread-dot hidden="@(ViewBag.UnreadCount is int u ? u == 0 : true)"></span>
         </a>
         @* Figma "foundation:indent-more": collapses the sidebar (opens it on small screens) *@
         <button type="button" class="vt-icon-btn" data-vt-sidebar-toggle aria-controls="vt-sidebar" aria-label="Toggle menu">

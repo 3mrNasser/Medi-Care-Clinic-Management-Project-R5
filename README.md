@@ -1,5 +1,7 @@
 # MediCare - Clinic Management & Appointment System
 
+[![CI](https://github.com/3mrNasser/Medi-Care-Clinic-Management-Project-R5/actions/workflows/ci.yml/badge.svg)](https://github.com/3mrNasser/Medi-Care-Clinic-Management-Project-R5/actions/workflows/ci.yml)
+
 **Initiative:** Digital Egypt Pioneers Initiative (DEPI)  
 **Track:** Full Stack .NET Web Developer  
 **Architecture Style:** Layered MVC Monolith / N-Tier Architecture (`MediCare.Web`, `MediCare.Services`, `MediCare.Data`)  
@@ -8,6 +10,101 @@
 
 ## Project Overview
 **MediCare** is a comprehensive web-based clinic management and appointment booking platform that connects patients with healthcare providers. It enables patients to search for doctors by specialization, location, and availability, book conflict-free appointments, and access their medical history and digital prescriptions. Simultaneously, it empowers doctors to manage their weekly schedules, confirm or reject appointment requests, record clinical visits, and issue printable prescriptions, while providing administrators with full system oversight and visual analytics.
+
+---
+
+## Getting Started
+
+### System requirements
+| Requirement | Version / notes |
+| :--- | :--- |
+| **.NET SDK** | **10.0** (`dotnet --version` → `10.0.x`) |
+| **SQL Server** | **LocalDB** (comes with Visual Studio "ASP.NET and web development") or any SQL Server 2019+ |
+| **IDE** (optional) | Visual Studio 2022 17.14+, Rider, or VS Code with the C# Dev Kit |
+| **EF Core CLI** | `dotnet tool install --global dotnet-ef` (to create/update the database) |
+| Hardware | Any machine that runs the .NET 10 SDK (4 GB RAM is enough) |
+
+### Installation and first run
+```bash
+# 1. Get the code
+git clone https://github.com/3mrNasser/Medi-Care-Clinic-Management-Project-R5.git
+cd Medi-Care-Clinic-Management-Project-R5
+
+# 2. Restore and build
+dotnet restore MediCare.slnx
+dotnet build MediCare.slnx
+
+# 3. Create / update the database (LocalDB "MediCareDb" from appsettings.json)
+dotnet ef database update --project MediCare.Data --startup-project MediCare.Web
+
+# 4. Run (Development seeds sample doctors, slots, a patient and the dev accounts below)
+dotnet run --project MediCare.Web --environment Development
+```
+Open the URL printed in the console (for example `https://localhost:7xxx`).
+
+> To use another SQL Server, change `ConnectionStrings:DefaultConnection` in `MediCare.Web/appsettings.json`
+> (or set it with user-secrets / an environment variable `ConnectionStrings__DefaultConnection`).
+
+### Development accounts (Development environment only)
+All use the password **`Dev123456`**. They are created by `MediCare.Data/Seed/IdentitySeeder.cs` and never in Production.
+
+| Role | Email | Starts at |
+| :--- | :--- | :--- |
+| Patient | `patient.test@medicare.test` | `/Patient/Home` |
+| Doctor | `ahmed.hassan@medicare.test` (also `sara.mostafa@`, `omar.khaled@`, `mona.adel@`) | `/DoctorAppointments` |
+| Admin | `admin@medicare.test` | `/Admin/Doctors` |
+
+### Configuration (optional services)
+Secrets are **never** stored in `appsettings.json` or in git. Use user-secrets on your machine
+(the project already has a `UserSecretsId`) and App Service settings on Azure.
+Every service below is optional: without it the app still runs, and in Development the message is written to the console log instead.
+
+| Feature | Settings | How to set them locally |
+| :--- | :--- | :--- |
+| **Email** (password-reset codes, appointment emails, reminders) | `Email:Host`, `Email:Port`, `Email:UserName`, `Email:Password`, `Email:From`, `Email:EnableSsl` | `dotnet user-secrets set "Email:Host" "smtp.gmail.com" --project MediCare.Web` (Gmail: use an *App Password*; SendGrid SMTP also works: host `smtp.sendgrid.net`, user `apikey`) |
+| **SMS** (24-hour reminders, Twilio) | `Twilio:AccountSid`, `Twilio:AuthToken`, `Twilio:From` | `dotnet user-secrets set "Twilio:AccountSid" "AC..." --project MediCare.Web` (a trial account can only text verified numbers) |
+| **Google sign-in** | `Authentication:Google:ClientId`, `Authentication:Google:ClientSecret` | `dotnet user-secrets set "Authentication:Google:ClientId" "..." --project MediCare.Web` (redirect URI: `https://<host>/signin-google`) |
+| **Reminder job** | `Reminders:Enabled` (default `true`), `Reminders:IntervalMinutes` (default `10`) | `appsettings.json` or user-secrets |
+
+---
+
+## Features
+
+| Role | What they can do |
+| :--- | :--- |
+| **Patient** | Sign up / log in (or Google), reset a forgotten password with an emailed code, search doctors by specialty, name and location, book a free 30-minute slot, cancel or reschedule, see the next appointment on the dashboard, read prescriptions (printable) and medical records, get live notifications and reminders. |
+| **Doctor** | Complete the profile (specialty, clinic, fee), set weekly working hours, see appointments as a list or a FullCalendar calendar, confirm / reject / complete / mark no-show, write prescriptions and medical records, get a live notification for every new booking, change or cancellation. |
+| **Admin** | Approve doctors (only complete profiles), remove an approval. Only approved doctors can be found and booked. |
+
+### Notifications and reminders
+* **Factory Pattern:** `MediCare.Services/Notifications/AppointmentNotifications.cs`. `NotificationFactory.Create(type)` returns one class per event (booked, rescheduled, cancelled, confirmed, rejected, completed, reminder). Each class decides the recipient, the text, the link, and whether email/SMS are also sent.
+* **In-app:** saved in the `Notifications` table and listed at `/Notifications` (patients and doctors). The sidebar shows an unread badge.
+* **Real-time (SignalR):** `MediCare.Web/Hubs/NotificationHub.cs` at `/hubs/notifications`. A new notification appears immediately as a toast and the badge updates, without a page reload.
+* **Email:** confirmations, rejections and reminders go to the patient (`SmtpEmailService`).
+* **24-hour reminders:** `ReminderBackgroundService` runs every 10 minutes and sends one reminder (in-app + email + SMS) for each **confirmed** appointment that starts within 24 hours. `Appointment.ReminderSentAtUtc` makes sure it's sent only once; rescheduling clears it.
+* A failed email/SMS/push never breaks the booking itself; it is logged.
+
+### Security
+ASP.NET Core Identity with role-based authorization (`[Authorize(Roles = "...")]` on every controller), anti-forgery tokens on every POST form, local-only redirects (`Url.IsLocalUrl`), server-side validation, EF Core parameterized queries, hashed one-time password-reset codes (10 minutes, 5 tries, one use), and no secrets in the repository.
+
+---
+
+## Testing
+```bash
+dotnet test MediCare.slnx
+```
+`MediCare.Tests` (xUnit, **28 tests**):
+* **Unit tests:** `NotificationFactory` (right type, recipient, channels and text for every event) and `ReminderRules` (due only within the next 24 hours).
+* **Integration tests** (real services, repositories and Unit of Work on an in-memory SQLite database): booking creates a pending appointment and notifies the doctor; the same time can't be booked twice; times outside working hours are refused; booked times disappear from the free times; confirming notifies the patient in-app and by email; another doctor can't confirm; cancelling frees the time and notifies the doctor; a reminder is sent once by every channel; no reminder for pending or far appointments; "mark all as read"; a user can't open someone else's notification.
+
+## CI/CD and deployment
+GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+* **Every pull request and push to `main`:** restore → build (Release) → run all tests → upload the test results.
+* **Deploy to Azure App Service** (push to `main`): runs only after the Azure setup exists. Add, in *Settings → Secrets and variables → Actions*:
+  * variable `AZURE_WEBAPP_NAME` (the App Service name)
+  * secret `AZURE_WEBAPP_PUBLISH_PROFILE` (Azure portal → App Service → *Download publish profile*)
+* On Azure, set `ConnectionStrings__DefaultConnection` (Azure SQL) and the optional secrets above as **App Service → Configuration** settings, then apply the migrations once:
+  `dotnet ef database update --project MediCare.Data --startup-project MediCare.Web --connection "<Azure SQL connection string>"`.
 
 ---
 
@@ -26,6 +123,12 @@
 ## Repository Folder Structure
 
 ```text
+├── MediCare.Web/          # Presentation: MVC controllers, Razor views, SignalR hub, background jobs, wwwroot (vitala.css/js)
+├── MediCare.Services/     # Business logic: services, DTOs, NotificationFactory, booking & reminder rules
+├── MediCare.Data/         # Data access: EF Core DbContext, entities, migrations, Generic Repository, Unit of Work, seeders
+├── MediCare.Tests/        # xUnit unit + integration tests
+├── .github/workflows/     # CI/CD (build, test, deploy to Azure)
+│
 ├── docs/                                                   # Official PDF Deliverables
 │   ├── 01_Project Planning & Management.pdf
 │   ├── 02_ Literature Review.pdf

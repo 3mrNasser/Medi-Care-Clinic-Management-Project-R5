@@ -238,4 +238,73 @@
       }
     });
   });
+
+  /* ---------- Live notifications (SignalR)  <div data-vt-live-notifications data-hub-url="/hubs/notifications">
+     The server pushes "notification" { id, title, message, link, unreadCount } to the signed-in user.
+     Updates the sidebar badge [data-vt-unread] / topbar dot [data-vt-unread-dot] and shows a toast. ---------- */
+  // The SignalR library is loaded after this file (page Scripts section), so start once the page has loaded.
+  const startLive = () => {
+  const live = $('[data-vt-live-notifications]');
+  if (live && window.signalR) {
+    const setUnread = (count) => {
+      $$('[data-vt-unread]').forEach((b) => {
+        b.textContent = count > 99 ? '99+' : String(count);
+        b.setAttribute('aria-label', `${count} unread`);
+        b.hidden = count === 0;
+      });
+      $$('[data-vt-unread-dot]').forEach((d) => { d.hidden = count === 0; });
+    };
+
+    const region = document.createElement('div');
+    region.className = 'vt-toasts';
+    region.setAttribute('aria-live', 'polite');
+    region.setAttribute('role', 'status');
+    document.body.appendChild(region);
+
+    const showToast = (n) => {
+      const toast = document.createElement('div');
+      toast.className = 'vt-toast';
+      const title = document.createElement('strong');
+      title.className = 'vt-toast__title';
+      title.textContent = n.title;            // textContent: never inject server text as HTML
+      const msg = document.createElement('p');
+      msg.className = 'vt-toast__msg';
+      msg.textContent = n.message;
+      toast.append(title, msg);
+
+      const actions = document.createElement('div');
+      actions.className = 'vt-toast__actions';
+      const view = document.createElement('a');
+      view.className = 'vt-toast__link';
+      view.href = live.dataset.listUrl || '/Notifications';
+      view.textContent = 'View';
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.className = 'vt-toast__close';
+      close.setAttribute('aria-label', 'Dismiss');
+      close.textContent = '×';
+      close.addEventListener('click', () => toast.remove());
+      actions.append(view, close);
+      toast.appendChild(actions);
+
+      region.appendChild(toast);
+      setTimeout(() => toast.classList.add('is-leaving'), 7500);
+      setTimeout(() => toast.remove(), 8000);
+    };
+
+    const connection = new window.signalR.HubConnectionBuilder()
+      .withUrl(live.dataset.hubUrl)
+      .withAutomaticReconnect()
+      .build();
+
+    connection.on('notification', (n) => {
+      setUnread(n.unreadCount);
+      showToast(n);
+    });
+
+    connection.start().catch(() => { /* offline or signed out: the page still works without live updates */ });
+  }
+  };
+  if (document.readyState === 'complete') startLive();
+  else window.addEventListener('load', startLive, { once: true });
 })();

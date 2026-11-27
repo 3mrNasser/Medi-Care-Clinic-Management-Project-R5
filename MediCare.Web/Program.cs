@@ -5,6 +5,7 @@ using MediCare.Data.Repositories.Interfaces;
 using MediCare.Data.Seed;
 using MediCare.Services.Implementations;
 using MediCare.Services.Interfaces;
+using MediCare.Web.Hubs;
 using MediCare.Web.Infrastructure;
 using MediCare.Web.Security;
 using Microsoft.AspNetCore.Identity;
@@ -76,6 +77,13 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
 
+// Notifications: in-app + live (SignalR) + email + SMS, and the 24-hour reminder job.
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IRealtimeNotifier, SignalRNotifier>();
+builder.Services.AddHttpClient<ISmsSender, TwilioSmsSender>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddHostedService<ReminderBackgroundService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -105,5 +113,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 app.Run();
