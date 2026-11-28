@@ -9,7 +9,10 @@ namespace MediCare.Web.Infrastructure;
 //   dotnet user-secrets set "Twilio:AuthToken"  "..."   --project MediCare.Web
 //   dotnet user-secrets set "Twilio:From"       "+1..." --project MediCare.Web   (your Twilio number)
 // Without them: Development writes the SMS to the server log; other environments skip it and log an error.
-// A Twilio trial account can only text numbers verified in the Twilio console.
+// A Twilio trial account can only text numbers verified in the Twilio console. To demo without a paid plan,
+// send every SMS to one verified number instead of the patient's:
+//   dotnet user-secrets set "Twilio:OverrideTo" "+20..." --project MediCare.Web   (App Service: Twilio__OverrideTo)
+// The text then starts with the real recipient, e.g. "[to +201001234567] ...".
 public class TwilioSmsSender : ISmsSender
 {
     private readonly HttpClient _http;
@@ -30,6 +33,7 @@ public class TwilioSmsSender : ISmsSender
         var sid = _config["Twilio:AccountSid"];
         var token = _config["Twilio:AuthToken"];
         var from = _config["Twilio:From"];
+        (toPhoneNumber, message) = ApplyOverride(_config["Twilio:OverrideTo"], toPhoneNumber, message);
 
         if (string.IsNullOrWhiteSpace(sid) || string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(from))
         {
@@ -62,4 +66,13 @@ public class TwilioSmsSender : ISmsSender
             _logger.LogError(ex, "Sending an SMS to {To} failed.", toPhoneNumber);
         }
     }
+
+    /// <summary>
+    /// When <paramref name="overrideTo"/> is set (Twilio trial: only verified numbers), every SMS goes to that
+    /// number and the text is prefixed with the intended recipient. Otherwise nothing changes.
+    /// </summary>
+    public static (string To, string Message) ApplyOverride(string? overrideTo, string toPhoneNumber, string message) =>
+        string.IsNullOrWhiteSpace(overrideTo)
+            ? (toPhoneNumber, message)
+            : (overrideTo.Trim(), $"[to {toPhoneNumber}] {message}");
 }

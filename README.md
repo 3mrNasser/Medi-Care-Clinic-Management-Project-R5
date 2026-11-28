@@ -62,7 +62,7 @@ Every service below is optional: without it the app still runs, and in Developme
 | Feature | Settings | How to set them locally |
 | :--- | :--- | :--- |
 | **Email** (password-reset codes, appointment emails, reminders) | `Email:Host`, `Email:Port`, `Email:UserName`, `Email:Password`, `Email:From`, `Email:EnableSsl` | `dotnet user-secrets set "Email:Host" "smtp.gmail.com" --project MediCare.Web` (Gmail: use an *App Password*; SendGrid SMTP also works: host `smtp.sendgrid.net`, user `apikey`) |
-| **SMS** (24-hour reminders, Twilio) | `Twilio:AccountSid`, `Twilio:AuthToken`, `Twilio:From` | `dotnet user-secrets set "Twilio:AccountSid" "AC..." --project MediCare.Web` (a trial account can only text verified numbers) |
+| **SMS** (24-hour reminders, Twilio) | `Twilio:AccountSid`, `Twilio:AuthToken`, `Twilio:From` | `dotnet user-secrets set "Twilio:AccountSid" "AC..." --project MediCare.Web` (a trial account can only text verified numbers; set `Twilio:OverrideTo` to your verified number to send every SMS there, prefixed with the real recipient) |
 | **Google sign-in** | `Authentication:Google:ClientId`, `Authentication:Google:ClientSecret` | `dotnet user-secrets set "Authentication:Google:ClientId" "..." --project MediCare.Web` (redirect URI: `https://<host>/signin-google`) |
 | **Reminder job** | `Reminders:Enabled` (default `true`), `Reminders:IntervalMinutes` (default `10`) | `appsettings.json` or user-secrets |
 
