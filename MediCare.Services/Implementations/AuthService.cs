@@ -3,6 +3,7 @@ using MediCare.Data.Repositories.Interfaces;
 using MediCare.Services.DTOs;
 using MediCare.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 
 namespace MediCare.Services.Implementations;
 
@@ -14,11 +15,14 @@ public class AuthService : IAuthService
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly string? _fixedCode;
 
-    public AuthService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork)
+    public AuthService(UserManager<ApplicationUser> userManager, IUnitOfWork unitOfWork,
+        IOptions<AuthCodeOptions>? codeOptions = null)
     {
         _userManager = userManager;
         _unitOfWork = unitOfWork;
+        _fixedCode = codeOptions?.Value.ValidFixedCode; // Auth:FixedCode (demo only)
     }
 
     public async Task<AuthResult> SignupAsync(string? role, string fullName, string email, string password)
@@ -118,7 +122,7 @@ public class AuthService : IAuthService
         if (existing != null && DateTime.UtcNow - existing.Value.Created < ResendDelay)
             return null;
 
-        var code = System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 10000).ToString("D4");
+        var code = _fixedCode ?? System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 10000).ToString("D4");
         var now = DateTime.UtcNow;
         var value = $"{HashCode(user.Id, code)}|{now:O}|{now.Add(CodeLifetime):O}|0";
         await _userManager.SetAuthenticationTokenAsync(user, CodeProvider, CodeName, value);

@@ -69,6 +69,8 @@ builder.Services.AddScoped<IPrescriptionService, PrescriptionService>();
 
 builder.Services.AddScoped<IMedicalRecordService, MedicalRecordService>();
 
+// Auth:FixedCode = "1234" makes every verification code that value (demo without SMS/email plan).
+builder.Services.Configure<MediCare.Services.AuthCodeOptions>(builder.Configuration.GetSection("Auth"));
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddHttpContextAccessor();
