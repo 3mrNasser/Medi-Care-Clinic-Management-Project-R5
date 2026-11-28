@@ -111,6 +111,8 @@ GitHub Actions workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
   * secret `AZURE_WEBAPP_PUBLISH_PROFILE` (Azure portal → App Service → *Download publish profile*)
 * On Azure, set `ConnectionStrings__DefaultConnection` (Azure SQL) and the optional secrets above as **App Service → Configuration** settings, then apply the migrations once:
   `dotnet ef database update --project MediCare.Data --startup-project MediCare.Web --connection "<Azure SQL connection string>"`.
+* On start in Production/Staging the app creates the `Patient` / `Doctor` / `Admin` roles if missing (needed for sign-up). To get the first admin account, also set `SeedAdmin__Email` and `SeedAdmin__Password`; the account is created once and its password is never overwritten. No test accounts are created outside Development.
+* Turn on **Always On** in App Service (the 24-hour reminder job is a background service), and set `Storage__UploadsPath` to a folder under `/home` (e.g. `/home/data/uploads`) so uploaded documents survive restarts and redeploys.
 
 ---
 
