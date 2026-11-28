@@ -59,8 +59,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 builder.Services.AddScoped<IAvailabilityService, AvailabilityService>();
@@ -102,6 +100,14 @@ if (app.Environment.IsDevelopment())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await DbSeeder.SeedAsync(context);
     await IdentitySeeder.SeedAsync(scope.ServiceProvider);
+}
+else if (app.Environment.IsProduction() || app.Environment.IsStaging())
+{
+    // Hosted: roles must exist or patient sign-up fails. The first admin comes from
+    // the SeedAdmin__Email / SeedAdmin__Password App Service settings (optional).
+    using var scope = app.Services.CreateScope();
+    await ProductionSeeder.SeedAsync(scope.ServiceProvider,
+        builder.Configuration["SeedAdmin:Email"], builder.Configuration["SeedAdmin:Password"]);
 }
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
