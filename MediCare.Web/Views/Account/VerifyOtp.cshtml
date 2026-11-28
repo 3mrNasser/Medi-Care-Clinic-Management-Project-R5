@@ -13,6 +13,11 @@
     <p class="vt-auth__lead">If <strong>@sentTo</strong> has an account, we sent a 4-digit code to it. It expires in 10 minutes.</p>
 }
 <partial name="_VtAlerts" />
+@if (TempData.Peek("ScreenCode") is string screenCode)
+{
+    @* Auth:ShowCodeOnScreen = true (demo without an email account) *@
+    <div class="vt-alert vt-alert--warning" role="status">Your code: <strong data-vt-screen-code>@screenCode</strong></div>
+}
 
 <form method="post" asp-controller="Account" asp-action="VerifyOtp" novalidate>
     <div asp-validation-summary="ModelOnly" class="vt-field-error"></div>

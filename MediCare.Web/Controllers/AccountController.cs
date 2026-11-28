@@ -14,12 +14,15 @@ public class AccountController : Controller
     private readonly IAuthService _authService;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IEmailService _emailService;
+    private readonly IConfiguration _config;
 
-    public AccountController(IAuthService authService, SignInManager<ApplicationUser> signInManager, IEmailService emailService)
+    public AccountController(IAuthService authService, SignInManager<ApplicationUser> signInManager,
+        IEmailService emailService, IConfiguration config)
     {
         _authService = authService;
         _signInManager = signInManager;
         _emailService = emailService;
+        _config = config;
     }
 
     [HttpGet]
@@ -107,6 +110,9 @@ public class AccountController : Controller
     // which is an encrypted cookie, so the browser can't read or change them.
     private const string ResetEmailKey = "ResetEmail";
     private const string ResetTokenKey = "ResetToken";
+    // Demo only: with Auth:ShowCodeOnScreen = true the code is also shown on the Verify page,
+    // so recovery works without an email account. Anyone who knows an email could then reset it.
+    private const string ScreenCodeKey = "ScreenCode";
 
     [HttpGet]
     public IActionResult ForgotPassword() => View();
@@ -154,6 +160,7 @@ public class AccountController : Controller
         }
 
         TempData[ResetTokenKey] = result.ResetToken;
+        TempData.Remove(ScreenCodeKey);
         return RedirectToAction(nameof(ResetPassword));
     }
 
@@ -206,6 +213,9 @@ public class AccountController : Controller
         var code = await _authService.CreatePasswordResetCodeAsync(email);
         if (code == null)
             return; // no account, or a code was sent less than a minute ago
+
+        if (_config.GetValue<bool>("Auth:ShowCodeOnScreen"))
+            TempData[ScreenCodeKey] = code;
 
         var body = $"""
             <p>Your Vitala verification code is:</p>
